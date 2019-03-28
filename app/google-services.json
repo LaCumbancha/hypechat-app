@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "121214121105",
+    "firebase_url": "https://hypechat-3e2eb.firebaseio.com",
+    "project_id": "hypechat-3e2eb",
+    "storage_bucket": "hypechat-3e2eb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:121214121105:android:78cc82140d5b0da5",
+        "android_client_info": {
+          "package_name": "com.example.hypechat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "121214121105-hv4eqsngr2gs1pcu5j3cmko7e3nvfh0o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdtDrf9kGAuWfUMQljGemcF7cDe4OVWq4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

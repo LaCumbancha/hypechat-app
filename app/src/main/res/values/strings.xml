@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Hypechat</string>
+    <string name="facebook_app_id">2100690693360490</string>
+    <string name="fb_login_protocol_scheme">fb2100690693360490</string>
+
 
     <!--Main-->
     <string name="login_with_facebook_button">LOG IN WITH FACEBOOK</string>
