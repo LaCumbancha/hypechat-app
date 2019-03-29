@@ -49,12 +49,9 @@ class LoginActivity : AppCompatActivity() {
                     if (task.isSuccessful) {
                         Log.d(TAG, "signInWithEmail:success")
                         Toast.makeText(this, "signInWithEmail:success!!!!", Toast.LENGTH_SHORT).show()
-                        val user = auth.currentUser
-                        //updateUI(user)
                     } else {
                         Log.w(TAG, "signInWithEmail:failure", task.exception)
                         Toast.makeText(this, "Authentication failed: ${task.exception}", Toast.LENGTH_SHORT).show()
-                        //updateUI(null)
                     }
                 }
         }
