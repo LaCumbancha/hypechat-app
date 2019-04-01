@@ -51,7 +51,9 @@ class LoginActivity : AppCompatActivity() {
                         Toast.makeText(this, "signInWithEmail:success!!!!", Toast.LENGTH_SHORT).show()
                     } else {
                         Log.w(TAG, "signInWithEmail:failure", task.exception)
-                        Toast.makeText(this, "Authentication failed: ${task.exception}", Toast.LENGTH_SHORT).show()
+                        val message = task.exception.toString()
+                        val index = message.indexOf(":")
+                        Toast.makeText(this, "Authentication failed: ${message.substring(index + 1)}", Toast.LENGTH_SHORT).show()
                     }
                 }
         }
