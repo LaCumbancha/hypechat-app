@@ -1,3 +1,33 @@
 <resources>
     <string name="app_name">Hypechat</string>
+    <string name="facebook_app_id">2100690693360490</string>
+    <string name="fb_login_protocol_scheme">fb2100690693360490</string>
+
+
+    <!--Main-->
+    <string name="login_with_facebook_button">LOG IN WITH FACEBOOK</string>
+    <string name="login_with_email_button">LOG IN WITH EMAIL</string>
+    <string name="trouble_logging">
+        <u>Trouble logging in?</u>
+    </string>
+    <string name="not_yet_registered">You are not yet registered?</string>
+    <string name="register">REGISTER</string>
+    <!--Main-->
+
+    <!--Login-->
+    <string name="login_toolbar">Login</string>
+    <string name="login_button">LOGIN</string>
+    <string name="email_placeholder">Email</string>
+    <string name="password_placeholder">Password</string>
+    <!--Login-->
+
+    <!--Registration-->
+    <string name="registration_toolbar">Register</string>
+    <string name="register_button">REGISTER</string>
+    <string name="register_fullname_placeholder">Fullname</string>
+    <string name="register_email_placeholder">Email</string>
+    <string name="register_password_placeholder">Password</string>
+    <!--Registration-->
+
+
 </resources>
