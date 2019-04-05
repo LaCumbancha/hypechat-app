@@ -15,7 +15,6 @@
     <!--Main-->
 
     <!--Login-->
-    <string name="login_toolbar">Login</string>
     <string name="login_button">LOGIN</string>
     <string name="email_placeholder">Email</string>
     <string name="password_placeholder">Password</string>

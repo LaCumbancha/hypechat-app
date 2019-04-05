@@ -12,6 +12,7 @@ import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginResult
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -105,15 +106,44 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    private fun validateField(field: TextInputLayout): Boolean {
+
+        val fieldStr = field.editText!!.text.toString().trim()
+
+        if (fieldStr.isEmpty()){
+            field.error = "The field can not be empty"
+            return false
+        } else {
+            field.error = null
+            return true
+        }
+    }
+
+    fun loginUser(view: View){
+
+        if (validateField(emailTextInputLayout) && validateField(passwordTextInputLayout)){
+
+            val email = emailTextInputLayout.editText!!.text.toString()
+            val password = passwordTextInputLayout.editText!!.text.toString()
+
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        Log.d(TAG, "signInWithEmail:success")
+                        Toast.makeText(this, "signInWithEmail:success!!!!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Log.w(TAG, "signInWithEmail:failure", task.exception)
+                        val message = task.exception.toString()
+                        val index = message.indexOf(":")
+                        Toast.makeText(this, "Authentication failed: ${message.substring(index + 1)}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         callbackManager.onActivityResult(requestCode, resultCode, data)
-    }
-
-    fun loginWithEmail(view: View){
-
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
     }
 
     fun register(view: View){
