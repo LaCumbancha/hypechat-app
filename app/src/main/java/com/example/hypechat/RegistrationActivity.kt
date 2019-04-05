@@ -1,5 +1,6 @@
 package com.example.hypechat
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -73,6 +74,9 @@ class RegistrationActivity : AppCompatActivity() {
         ref.setValue(newUser)
             .addOnSuccessListener {
                 Log.d(TAG, "User saved to Database")
+                val intent = Intent(this, LatestMessagesActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
             }
             .addOnFailureListener {
                 Log.w(TAG, "Failed to save user to Database", it.cause)

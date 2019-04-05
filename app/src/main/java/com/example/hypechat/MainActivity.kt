@@ -43,7 +43,6 @@ class MainActivity : AppCompatActivity() {
             override fun onSuccess(loginResult: LoginResult) {
                 Log.d(TAG, "facebook:onSuccess:$loginResult")
                 handleFacebookAccessToken(loginResult.accessToken)
-                Toast.makeText(this@MainActivity, "facebook:onSuccess: $loginResult", Toast.LENGTH_SHORT).show()
             }
 
             override fun onCancel() {
@@ -66,8 +65,10 @@ class MainActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     Log.d(TAG, "signInWithCredential:success")
-                    Toast.makeText(this, "signInWithCredential:success!!!!!", Toast.LENGTH_SHORT).show()
                     saveUser(auth.currentUser)
+                    val intent = Intent(this, LatestMessagesActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
                 } else {
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
                     val message = task.exception.toString()
@@ -111,7 +112,7 @@ class MainActivity : AppCompatActivity() {
         val fieldStr = field.editText!!.text.toString().trim()
 
         if (fieldStr.isEmpty()){
-            field.error = "The field can not be empty"
+            field.error = "This field can not be empty"
             return false
         } else {
             field.error = null
@@ -130,7 +131,9 @@ class MainActivity : AppCompatActivity() {
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         Log.d(TAG, "signInWithEmail:success")
-                        Toast.makeText(this, "signInWithEmail:success!!!!", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this, LatestMessagesActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(intent)
                     } else {
                         Log.w(TAG, "signInWithEmail:failure", task.exception)
                         val message = task.exception.toString()
