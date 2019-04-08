@@ -15,8 +15,13 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".LatestMessagesActivity"
+        <activity android:name=".NewMessageActivity"
+                  android:parentActivityName=".LatestMessagesActivity"
                   android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".LatestMessagesActivity"
+                android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

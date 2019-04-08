@@ -4,5 +4,7 @@
     <dimen name="button_marginStart">20dp</dimen>
     <dimen name="button_marginEnd">20dp</dimen>
 
-
+    <dimen name="item_textSize">16sp</dimen>
+    <dimen name="item_marginStart">16dp</dimen>
+    <dimen name="item_imageSize">60dp</dimen>
 </resources>

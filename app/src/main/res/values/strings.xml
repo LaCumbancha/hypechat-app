@@ -34,5 +34,10 @@
     <string name="logout">Logout</string>
     <!--Latest Messages-->
 
+    <!--New Message-->
+    <string name="new_message_toolbar">New Message</string>
+    <string name="new_channel_button">New Channel</string>
+    <!--New Message-->
+
 
 </resources>

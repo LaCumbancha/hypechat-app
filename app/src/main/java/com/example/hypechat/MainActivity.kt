@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         callbackManager = CallbackManager.Factory.create()
-        loginFacebookButton.setReadPermissions("email", "public_profile")
+        loginFacebookButton.setReadPermissions("email", "public_profile", "user_photos")
     }
 
     fun loginWithFacebook(view: View){
