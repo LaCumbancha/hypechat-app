@@ -19,7 +19,7 @@ class UserItem(val user: User): Item<ViewHolder>() {
 
         viewHolder.itemView.usernameTextView.text = user.fullname
 
-        Picasso.get().load("z") //user.profilePicUrl
+        Picasso.get().load(user.profilePictureUrl)
                 .placeholder(R.drawable.ic_launcher_foreground)
                 .error(R.drawable.ic_launcher_foreground)
                 .into(viewHolder.itemView.profileImageView)

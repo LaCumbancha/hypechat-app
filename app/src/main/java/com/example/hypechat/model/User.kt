@@ -1,10 +1,6 @@
 package com.example.hypechat.model
 
-class User(val uid: String, val fullname: String){
+class User(val uid: String, val fullname: String, val profilePictureUrl: String){
 
-    var profilePictureUrl: String? = null
-
-    constructor(uid: String, fullname: String, profilePictureUrl: String) : this(uid, fullname){
-        this.profilePictureUrl = profilePictureUrl
-    }
+    constructor() : this("", "", "")
 }

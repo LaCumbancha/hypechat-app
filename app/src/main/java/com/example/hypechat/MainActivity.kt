@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
 
         val uid = currentUser!!.uid
         val fullName = currentUser.displayName
-        val email = currentUser.email
+        val photoUrl = currentUser.photoUrl.toString()
         val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
 
         ref.child("users").child(uid).addListenerForSingleValueEvent(object : ValueEventListener{
@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onDataChange(p0: DataSnapshot) {
                 if (!p0.exists()){
-                    val newUser = User(uid, fullName!!, email!!)
+                    val newUser = User(uid, fullName!!, photoUrl)
 
                     ref.setValue(newUser)
                         .addOnSuccessListener {
