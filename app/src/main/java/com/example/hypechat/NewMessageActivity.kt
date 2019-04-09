@@ -1,5 +1,6 @@
 package com.example.hypechat
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -41,6 +42,11 @@ class NewMessageActivity : AppCompatActivity() {
                     user?.let {
                         adapter.add(UserItem(it))
                     }
+                }
+                adapter.setOnItemClickListener { item, view ->
+                    val intent = Intent(view.context, ChatLogActivity::class.java)
+                    startActivity(intent)
+                    finish()
                 }
                 newMessageRecyclerView.adapter = adapter
             }

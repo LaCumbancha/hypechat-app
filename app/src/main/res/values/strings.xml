@@ -40,5 +40,9 @@
     <string name="new_channel_button">New Channel</string>
     <!--New Message-->
 
+    <!--Chat Log-->
+    <string name="type_a_message_hint">Type a message</string>
+    <!--Chat Log-->
+
 
 </resources>

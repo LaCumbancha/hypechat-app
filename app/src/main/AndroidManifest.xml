@@ -28,9 +28,14 @@
                     android:resource="@xml/filepaths"/>
         </provider>
 
-        <activity android:name=".NewMessageActivity"
+        <activity android:name=".ChatLogActivity"
                   android:parentActivityName=".LatestMessagesActivity"
                   android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".NewMessageActivity"
+                android:parentActivityName=".LatestMessagesActivity"
+                android:screenOrientation="portrait">
         </activity>
         <activity
                 android:name=".LatestMessagesActivity"

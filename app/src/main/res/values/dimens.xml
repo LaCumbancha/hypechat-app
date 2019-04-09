@@ -9,4 +9,6 @@
     <dimen name="item_imageSize">60dp</dimen>
 
     <dimen name="profile_imageSize">150dp</dimen>
+
+    <dimen name="chat_log_size">50dp</dimen>
 </resources>
