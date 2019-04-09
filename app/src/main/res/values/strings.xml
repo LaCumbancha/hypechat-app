@@ -22,6 +22,7 @@
 
     <!--Registration-->
     <string name="registration_toolbar">Register</string>
+    <string name="registration_picture_button">SELECT PICTURE</string>
     <string name="register_button">REGISTER</string>
     <string name="register_fullname_placeholder">Fullname</string>
     <string name="register_email_placeholder">Email</string>

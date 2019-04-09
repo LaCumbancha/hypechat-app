@@ -41,6 +41,19 @@
         <item name="android:layout_marginTop">@dimen/item_marginStart</item>
     </style>
 
+    <style name="ProfileImageView">
+        <item name="android:layout_width">@dimen/profile_imageSize</item>
+        <item name="android:layout_height">@dimen/profile_imageSize</item>
+    </style>
+
+    <style name="ProfileImageButton">
+        <item name="android:background">@drawable/rounded_select_picture_button</item>
+        <item name="android:layout_width">@dimen/profile_imageSize</item>
+        <item name="android:layout_height">@dimen/profile_imageSize</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:backgroundTint">@android:color/black</item>
+    </style>
+
     <style name="CustomToolbar">
         <item name="android:background">@drawable/gradient_background</item>
     </style>
