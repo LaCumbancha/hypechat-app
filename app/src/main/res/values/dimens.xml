@@ -11,4 +11,10 @@
     <dimen name="profile_imageSize">150dp</dimen>
 
     <dimen name="chat_log_size">50dp</dimen>
+    <dimen name="chat_log_padding_left">16dp</dimen>
+
+    <dimen name="chat_log_row_padding">16dp</dimen>
+    <dimen name="chat_log_row_marginStart">16dp</dimen>
+    <dimen name="chat_log_row_marginTop">8dp</dimen>
+    <dimen name="chat_log_row_maxwidth">320dp</dimen>
 </resources>

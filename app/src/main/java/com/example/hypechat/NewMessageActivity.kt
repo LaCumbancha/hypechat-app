@@ -16,6 +16,10 @@ import kotlinx.android.synthetic.main.activity_new_message.*
 
 class NewMessageActivity : AppCompatActivity() {
 
+    companion object {
+        val USER = "USER"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_message)
@@ -44,7 +48,10 @@ class NewMessageActivity : AppCompatActivity() {
                     }
                 }
                 adapter.setOnItemClickListener { item, view ->
+                    val userItem = item as UserItem
+
                     val intent = Intent(view.context, ChatLogActivity::class.java)
+                    intent.putExtra(USER, userItem.user)
                     startActivity(intent)
                     finish()
                 }

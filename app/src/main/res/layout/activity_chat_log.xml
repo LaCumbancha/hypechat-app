@@ -5,7 +5,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white"
+        android:background="@android:color/darker_gray"
         tools:context=".ChatLogActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -38,10 +38,9 @@
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="8dp" android:onClick="sendChatMessage"/>
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/chatLogRecyclerView"
-            android:background="@android:color/darker_gray"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintTop_toBottomOf="@+id/toolbarChatLog"
