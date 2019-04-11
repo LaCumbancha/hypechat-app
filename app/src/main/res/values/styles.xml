@@ -76,12 +76,13 @@
         <item name="android:maxWidth">@dimen/chat_log_row_maxwidth</item>
         <item name="android:textColor">@android:color/black</item>
         <item name="android:inputType">text</item>
+        <item name="android:backgroundTint">#D8FAFF</item>
     </style>
 
     <style name="ChatLogToRowTextView" parent="ChatLogFromRowTextView">
         <item name="android:background">@drawable/rounded_textview</item>
         <item name="android:layout_marginEnd">@dimen/chat_log_row_marginStart</item>
-        <item name="android:backgroundTint">#D8FAFF</item>
+        <item name="android:backgroundTint">@android:color/white</item>
     </style>
 
     <style name="CustomToolbar">

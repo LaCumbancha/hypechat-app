@@ -20,7 +20,9 @@ import kotlinx.android.synthetic.main.activity_chat_log.*
 class ChatLogActivity : AppCompatActivity() {
 
     private var user: User? = null
-    val chatLogAdapter = GroupAdapter<ViewHolder>()
+    private val fromId = FirebaseAuth.getInstance().uid
+    private var toId: String? = null
+    private val chatLogAdapter = GroupAdapter<ViewHolder>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +31,7 @@ class ChatLogActivity : AppCompatActivity() {
         user = intent.getParcelableExtra(NewMessageActivity.USER)
         user?.let {
             toolbarChatLog.title = it.fullname
+            toId = it.uid
         }
         setSupportActionBar(toolbarChatLog)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -39,17 +42,17 @@ class ChatLogActivity : AppCompatActivity() {
 
     private fun initializeChatLog(){
 
-        val ref = FirebaseDatabase.getInstance().getReference("/messages")
+        val ref = FirebaseDatabase.getInstance().getReference("/users-messages/$fromId/$toId")
         ref.addChildEventListener(object : ChildEventListener{
 
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                 val chatMessage = p0.getValue(ChatMessage::class.java)
                 if (chatMessage != null) {
 
-                    if (chatMessage.fromId == user!!.uid){
-                        chatLogAdapter.add(ChatToItem(chatMessage.message))
-                    } else {
+                    if (chatMessage.fromId == FirebaseAuth.getInstance().uid){
                         chatLogAdapter.add(ChatFromItem(chatMessage.message))
+                    } else {
+                        chatLogAdapter.add(ChatToItem(chatMessage.message))
                     }
                 }
             }
@@ -76,12 +79,16 @@ class ChatLogActivity : AppCompatActivity() {
     fun sendChatMessage(view: View){
 
         val message = chatLogEditText.text.toString()
-        val toId = FirebaseAuth.getInstance().uid
-        val fromId = user!!.uid
 
-        val ref = FirebaseDatabase.getInstance().getReference("/messages").push()
+        val ref = FirebaseDatabase.getInstance().getReference("/users-messages/$fromId/$toId").push()
+        val toRef = FirebaseDatabase.getInstance().getReference("/users-messages/$toId/$fromId").push()
 
-        val chatMessage = ChatMessage(ref.key!!, fromId, toId!!, message, System.currentTimeMillis()/1000) //seconds
+        val chatMessage = ChatMessage(ref.key!!, fromId!!, toId!!, message, System.currentTimeMillis()/1000) //seconds
         ref.setValue(chatMessage)
+            .addOnSuccessListener {
+                chatLogEditText.text.clear()
+                chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
+            }
+        toRef.setValue(chatMessage)
     }
 }
