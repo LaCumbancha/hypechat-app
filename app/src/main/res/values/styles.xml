@@ -85,6 +85,28 @@
         <item name="android:backgroundTint">@android:color/white</item>
     </style>
 
+    <style name="FullnameLatestMessageRowTextView">
+        <item name="android:layout_marginStart">@dimen/latest_message_row_margin_start</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">@dimen/latest_message_row_fullname_text_size</item>
+    </style>
+
+    <style name="LatestMessageRowTextView">
+        <item name="android:layout_marginStart">@dimen/latest_message_row_margin_start</item>
+        <item name="android:layout_marginEnd">@dimen/latest_message_row_margin</item>
+        <item name="android:layout_marginTop">@dimen/latest_message_row_margin</item>
+        <item name="android:textSize">@dimen/latest_message_row_text_size</item>
+    </style>
+
+    <style name="LatestMessageRowImageView">
+        <item name="android:layout_width">@dimen/latest_message_row_imageSize</item>
+        <item name="android:layout_height">@dimen/latest_message_row_imageSize</item>
+        <item name="android:layout_marginStart">@dimen/latest_message_row_image_margin_start</item>
+        <item name="android:layout_marginBottom">@dimen/latest_message_row_margin</item>
+        <item name="android:layout_marginTop">@dimen/latest_message_row_margin</item>
+    </style>
+
     <style name="CustomToolbar">
         <item name="android:background">@drawable/gradient_background</item>
     </style>

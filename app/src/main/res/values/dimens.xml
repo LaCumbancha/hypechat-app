@@ -17,4 +17,12 @@
     <dimen name="chat_log_row_marginStart">16dp</dimen>
     <dimen name="chat_log_row_marginTop">8dp</dimen>
     <dimen name="chat_log_row_maxwidth">320dp</dimen>
+
+    <dimen name="latest_message_row_imageSize">72dp</dimen>
+    <dimen name="latest_message_row_image_margin_start">24dp</dimen>
+    <dimen name="latest_message_row_margin">8dp</dimen>
+    <dimen name="latest_message_row_margin_start">16dp</dimen>
+    <dimen name="latest_message_row_text_size">18sp</dimen>
+    <dimen name="latest_message_row_fullname_text_size">16sp</dimen>
+
 </resources>
