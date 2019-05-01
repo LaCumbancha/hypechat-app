@@ -1,4 +1,4 @@
-package com.example.hypechat
+package com.example.hypechat.presentation.ui
 
 import android.Manifest
 import android.app.Activity
@@ -13,7 +13,8 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import com.example.hypechat.model.User
+import com.example.hypechat.R
+import com.example.hypechat.data.model.User
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase

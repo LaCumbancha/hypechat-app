@@ -1,4 +1,4 @@
-package com.example.hypechat.model
+package com.example.hypechat.data.model
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize

@@ -1,4 +1,4 @@
-package com.example.hypechat
+package com.example.hypechat.presentation.ui
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -6,7 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import com.example.hypechat.model.User
+import com.example.hypechat.R
+import com.example.hypechat.data.model.User
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback

@@ -1,4 +1,4 @@
-package com.example.hypechat.model
+package com.example.hypechat.data.model
 
 import com.example.hypechat.R
 import com.google.firebase.auth.FirebaseAuth

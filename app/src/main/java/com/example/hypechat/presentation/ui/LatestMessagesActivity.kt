@@ -1,4 +1,4 @@
-package com.example.hypechat
+package com.example.hypechat.presentation.ui
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -8,8 +8,9 @@ import android.view.MenuItem
 import android.view.View
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.hypechat.model.ChatMessage
-import com.example.hypechat.model.LatestMessageRow
+import com.example.hypechat.R
+import com.example.hypechat.data.model.ChatMessage
+import com.example.hypechat.data.model.LatestMessageRow
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener

@@ -1,13 +1,14 @@
-package com.example.hypechat
+package com.example.hypechat.presentation.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.hypechat.model.ChatFromItem
-import com.example.hypechat.model.ChatMessage
-import com.example.hypechat.model.ChatToItem
-import com.example.hypechat.model.User
+import com.example.hypechat.R
+import com.example.hypechat.data.model.ChatFromItem
+import com.example.hypechat.data.model.ChatMessage
+import com.example.hypechat.data.model.ChatToItem
+import com.example.hypechat.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
