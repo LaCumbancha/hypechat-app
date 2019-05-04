@@ -15,7 +15,6 @@
     <!--Main-->
 
     <!--Login-->
-    <string name="login_toolbar">Login</string>
     <string name="login_button">LOGIN</string>
     <string name="email_placeholder">Email</string>
     <string name="password_placeholder">Password</string>
@@ -23,11 +22,28 @@
 
     <!--Registration-->
     <string name="registration_toolbar">Register</string>
+    <string name="registration_picture_button">SELECT PICTURE</string>
     <string name="register_button">REGISTER</string>
     <string name="register_fullname_placeholder">Fullname</string>
     <string name="register_email_placeholder">Email</string>
     <string name="register_password_placeholder">Password</string>
     <!--Registration-->
+
+    <!--Latest Messages-->
+    <string name="latest_messages_toolbar">Hypechat</string>
+    <string name="my_profile">My profile</string>
+    <string name="logout">Logout</string>
+    <!--Latest Messages-->
+
+    <!--New Message-->
+    <string name="new_message_toolbar">New Message</string>
+    <string name="new_channel_button">New Channel</string>
+    <!--New Message-->
+
+    <!--Chat Log-->
+    <string name="type_a_message_hint">Type a message</string>
+    <string name="this_is_a_message">This is a message</string>
+    <!--Chat Log-->
 
 
 </resources>

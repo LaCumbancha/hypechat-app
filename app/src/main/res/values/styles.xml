@@ -27,6 +27,86 @@
         <item name="android:textAppearance">@android:style/TextAppearance.Holo</item>
     </style>
 
+    <style name="ItemTextView">
+        <item name="android:textSize">@dimen/item_textSize</item>
+        <item name="android:layout_marginStart">@dimen/item_marginStart</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="ItemImageView">
+        <item name="android:layout_width">@dimen/item_imageSize</item>
+        <item name="android:layout_height">@dimen/item_imageSize</item>
+        <item name="android:layout_marginStart">@dimen/item_marginStart</item>
+        <item name="android:layout_marginTop">@dimen/item_marginStart</item>
+    </style>
+
+    <style name="ProfileImageView">
+        <item name="android:layout_width">@dimen/profile_imageSize</item>
+        <item name="android:layout_height">@dimen/profile_imageSize</item>
+    </style>
+
+    <style name="ProfileImageButton">
+        <item name="android:background">@drawable/rounded_select_picture_button</item>
+        <item name="android:layout_width">@dimen/profile_imageSize</item>
+        <item name="android:layout_height">@dimen/profile_imageSize</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:backgroundTint">@android:color/black</item>
+    </style>
+
+    <style name="ChatLogSendButton">
+        <item name="android:backgroundTint">@android:color/black</item>
+        <item name="android:background">@drawable/ic_send_white_24dp</item>
+        <item name="android:layout_width">@dimen/chat_log_size</item>
+        <item name="android:layout_height">@dimen/chat_log_size</item>
+    </style>
+
+    <style name="ChatLogEditText">
+        <item name="android:background">@drawable/rounded_textview</item>
+        <item name="android:backgroundTint">@android:color/white</item>
+        <item name="android:layout_height">@dimen/chat_log_size</item>
+        <item name="android:paddingLeft">@dimen/chat_log_padding_left</item>
+    </style>
+
+    <style name="ChatLogFromRowTextView">
+        <item name="android:background">@drawable/rounded_textview</item>
+        <item name="android:padding">@dimen/chat_log_row_padding</item>
+        <item name="android:layout_marginStart">@dimen/chat_log_row_marginStart</item>
+        <item name="android:layout_marginTop">@dimen/chat_log_row_marginTop</item>
+        <item name="android:maxWidth">@dimen/chat_log_row_maxwidth</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:inputType">text</item>
+        <item name="android:backgroundTint">#D8FAFF</item>
+    </style>
+
+    <style name="ChatLogToRowTextView" parent="ChatLogFromRowTextView">
+        <item name="android:background">@drawable/rounded_textview</item>
+        <item name="android:layout_marginEnd">@dimen/chat_log_row_marginStart</item>
+        <item name="android:backgroundTint">@android:color/white</item>
+    </style>
+
+    <style name="FullnameLatestMessageRowTextView">
+        <item name="android:layout_marginStart">@dimen/latest_message_row_margin_start</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">@dimen/latest_message_row_fullname_text_size</item>
+    </style>
+
+    <style name="LatestMessageRowTextView">
+        <item name="android:layout_marginStart">@dimen/latest_message_row_margin_start</item>
+        <item name="android:layout_marginEnd">@dimen/latest_message_row_margin</item>
+        <item name="android:layout_marginTop">@dimen/latest_message_row_margin</item>
+        <item name="android:textSize">@dimen/latest_message_row_text_size</item>
+    </style>
+
+    <style name="LatestMessageRowImageView">
+        <item name="android:layout_width">@dimen/latest_message_row_imageSize</item>
+        <item name="android:layout_height">@dimen/latest_message_row_imageSize</item>
+        <item name="android:layout_marginStart">@dimen/latest_message_row_image_margin_start</item>
+        <item name="android:layout_marginBottom">@dimen/latest_message_row_margin</item>
+        <item name="android:layout_marginTop">@dimen/latest_message_row_margin</item>
+    </style>
+
     <style name="CustomToolbar">
         <item name="android:background">@drawable/gradient_background</item>
     </style>

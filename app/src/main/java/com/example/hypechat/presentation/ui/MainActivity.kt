@@ -1,4 +1,4 @@
-package com.example.hypechat
+package com.example.hypechat.presentation.ui
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -6,12 +6,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import com.example.hypechat.model.User
+import com.example.hypechat.R
+import com.example.hypechat.data.model.User
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginResult
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -34,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         callbackManager = CallbackManager.Factory.create()
-        loginFacebookButton.setReadPermissions("email", "public_profile")
+        loginFacebookButton.setReadPermissions("email", "public_profile", "user_photos")
     }
 
     fun loginWithFacebook(view: View){
@@ -42,7 +44,6 @@ class MainActivity : AppCompatActivity() {
             override fun onSuccess(loginResult: LoginResult) {
                 Log.d(TAG, "facebook:onSuccess:$loginResult")
                 handleFacebookAccessToken(loginResult.accessToken)
-                Toast.makeText(this@MainActivity, "facebook:onSuccess: $loginResult", Toast.LENGTH_SHORT).show()
             }
 
             override fun onCancel() {
@@ -65,8 +66,10 @@ class MainActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     Log.d(TAG, "signInWithCredential:success")
-                    Toast.makeText(this, "signInWithCredential:success!!!!!", Toast.LENGTH_SHORT).show()
                     saveUser(auth.currentUser)
+                    val intent = Intent(this, LatestMessagesActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
                 } else {
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
                     val message = task.exception.toString()
@@ -80,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
         val uid = currentUser!!.uid
         val fullName = currentUser.displayName
-        val email = currentUser.email
+        val photoUrl = currentUser.photoUrl.toString()
         val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
 
         ref.child("users").child(uid).addListenerForSingleValueEvent(object : ValueEventListener{
@@ -90,7 +93,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onDataChange(p0: DataSnapshot) {
                 if (!p0.exists()){
-                    val newUser = User(uid, fullName!!, email!!)
+                    val newUser = User(uid, fullName!!, photoUrl)
 
                     ref.setValue(newUser)
                         .addOnSuccessListener {
@@ -105,15 +108,46 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    private fun validateField(field: TextInputLayout): Boolean {
+
+        val fieldStr = field.editText!!.text.toString().trim()
+
+        if (fieldStr.isEmpty()){
+            field.error = "This field can not be empty"
+            return false
+        } else {
+            field.error = null
+            return true
+        }
+    }
+
+    fun loginUser(view: View){
+
+        if (validateField(emailTextInputLayout) && validateField(passwordTextInputLayout)){
+
+            val email = emailTextInputLayout.editText!!.text.toString()
+            val password = passwordTextInputLayout.editText!!.text.toString()
+
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        Log.d(TAG, "signInWithEmail:success")
+                        val intent = Intent(this, LatestMessagesActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(intent)
+                    } else {
+                        Log.w(TAG, "signInWithEmail:failure", task.exception)
+                        val message = task.exception.toString()
+                        val index = message.indexOf(":")
+                        Toast.makeText(this, "Authentication failed: ${message.substring(index + 1)}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         callbackManager.onActivityResult(requestCode, resultCode, data)
-    }
-
-    fun loginWithEmail(view: View){
-
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
     }
 
     fun register(view: View){
