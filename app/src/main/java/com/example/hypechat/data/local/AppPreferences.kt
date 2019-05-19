@@ -8,6 +8,8 @@ object AppPreferences {
     private const val MODE = Context.MODE_PRIVATE
     private lateinit var preferences: SharedPreferences
 
+    val AUTH_TOKEN = "auth_token"
+
     fun init(context: Context) {
         preferences = context.getSharedPreferences(
             NAME,
@@ -23,6 +25,16 @@ object AppPreferences {
         val editor = edit()
         operation(editor)
         editor.apply()
+    }
+
+    fun setToken(token: String) {
+        preferences.edit {
+            it.putString(AUTH_TOKEN, token)
+        }
+    }
+
+    fun getToken(): String? {
+        return preferences.getString(AUTH_TOKEN, null)
     }
 
 //    var language: String?
