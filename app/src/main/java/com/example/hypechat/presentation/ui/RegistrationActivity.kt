@@ -14,7 +14,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.hypechat.R
+import com.example.hypechat.data.local.AppPreferences
 import com.example.hypechat.data.model.User
+import com.example.hypechat.data.repository.HypechatRepository
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -36,6 +38,7 @@ class RegistrationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_registration)
 
         auth = FirebaseAuth.getInstance()
+        AppPreferences.init(this)
 
         setSupportActionBar(toolbarRegistration)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -94,22 +97,37 @@ class RegistrationActivity : AppCompatActivity() {
 
     fun registerUser(view: View){
 
-        if (validateField(fullnameTextInputLayout) && validateField(registerEmailTextInputLayout)
+        if (validateField(userNameTextInputLayout) && validateField(registerEmailTextInputLayout)
             && validateField(registerPasswordTextInputLayout) && selectedPhotoUri != null){
 
+            var firstName: String? = null
+            var lastName: String? = null
+            var profilePicUrl: String? = null
+            firstNameTextInputLayout.editText?.let {
+                firstName = it.text.toString()
+            }
+            lastNameTextInputLayout.editText?.let {
+                lastName = it.text.toString()
+            }
+            val username = userNameTextInputLayout.editText!!.text.toString()
             val email = registerEmailTextInputLayout.editText!!.text.toString()
             val password = registerPasswordTextInputLayout.editText!!.text.toString()
 
-            auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        Log.d(TAG, "createUserWithEmail:success")
-                        Toast.makeText(this, "createUserWithEmail:success!!!!!", Toast.LENGTH_SHORT).show()
-                        saveProfilePicture()
-                    } else {
-                        Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                        Toast.makeText(this, "Authentication failed: ${task.exception}", Toast.LENGTH_SHORT).show()
+            val filename = UUID.randomUUID().toString()
+            val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
+
+            ref.putFile(selectedPhotoUri!!)
+                .addOnSuccessListener {
+                    Log.d(TAG, "Successfully uploaded profile picture: ${it.metadata?.path}")
+                    ref.downloadUrl.addOnSuccessListener { uri ->
+                        Log.d(TAG, "File location: $uri")
+                        profilePicUrl = uri.toString()
+                        register(username, email, password, firstName, lastName, profilePicUrl)
                     }
+                }
+                .addOnFailureListener {
+                    Log.w(TAG, "Failed to upload profile picture to Storage", it.cause)
+                    register(username, email, password, firstName, lastName, profilePicUrl)
                 }
         } else if (selectedPhotoUri == null){
 
@@ -119,6 +137,28 @@ class RegistrationActivity : AppCompatActivity() {
             builder.setPositiveButton("Ok", null)
             val dialog = builder.create()
             dialog.show()
+        }
+    }
+
+    private fun register(username:String, email: String, password: String, firstName:String?,
+                         lastName: String?, profilePicUrl: String?){
+
+        HypechatRepository().registerUser(username, email, password, firstName, lastName, profilePicUrl){ response ->
+
+            response?.let {
+                //verificar si el user es null o no. si es null mostrar message de error
+                Log.d(TAG, "signInWithEmail:success")
+                Toast.makeText(this, "signInWithEmail:success: ${it.status}", Toast.LENGTH_SHORT).show()
+                AppPreferences.setToken(it.user.token)
+                AppPreferences.setUserName(it.user.username)
+                //setear en app preferences el username
+                val intent = Intent(this, LatestMessagesActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+            }
+            if (response == null){
+                Toast.makeText(this, "Authentication failed: signInWithEmail:failure", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -143,7 +183,7 @@ class RegistrationActivity : AppCompatActivity() {
     private fun saveUser(profilePictureUrl: String){
 
         val uid = auth.uid
-        val fullName = fullnameTextInputLayout.editText!!.text.toString()
+        val fullName = userNameTextInputLayout.editText!!.text.toString()
         val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
         val newUser = User(uid!!, fullName, profilePictureUrl)
 

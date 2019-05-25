@@ -9,6 +9,7 @@ object AppPreferences {
     private lateinit var preferences: SharedPreferences
 
     val AUTH_TOKEN = "auth_token"
+    val USERNAME = "username"
 
     fun init(context: Context) {
         preferences = context.getSharedPreferences(
@@ -27,6 +28,12 @@ object AppPreferences {
         editor.apply()
     }
 
+    fun clearSharedPreferences(){
+        preferences.edit{
+            it.clear()
+        }
+    }
+
     fun setToken(token: String) {
         preferences.edit {
             it.putString(AUTH_TOKEN, token)
@@ -35,6 +42,16 @@ object AppPreferences {
 
     fun getToken(): String? {
         return preferences.getString(AUTH_TOKEN, null)
+    }
+
+    fun setUserName(username: String) {
+        preferences.edit {
+            it.putString(USERNAME, username)
+        }
+    }
+
+    fun getUserName(): String? {
+        return preferences.getString(USERNAME, null)
     }
 
 //    var language: String?

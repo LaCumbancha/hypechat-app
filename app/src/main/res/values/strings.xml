@@ -24,7 +24,9 @@
     <string name="registration_toolbar">Register</string>
     <string name="registration_picture_button">SELECT PICTURE</string>
     <string name="register_button">REGISTER</string>
-    <string name="register_fullname_placeholder">Fullname</string>
+    <string name="register_firstname_placeholder">First Name</string>
+    <string name="register_lastname_placeholder">Last Name</string>
+    <string name="register_username_placeholder">Username</string>
     <string name="register_email_placeholder">Email</string>
     <string name="register_password_placeholder">Password</string>
     <!--Registration-->

@@ -7,7 +7,9 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.example.hypechat.R
+import com.example.hypechat.data.local.AppPreferences
 import com.example.hypechat.data.model.User
+import com.example.hypechat.data.repository.HypechatRepository
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -36,6 +38,7 @@ class MainActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         callbackManager = CallbackManager.Factory.create()
+        AppPreferences.init(this)
         loginFacebookButton.setReadPermissions("email", "public_profile", "user_photos")
     }
 
@@ -66,7 +69,7 @@ class MainActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     Log.d(TAG, "signInWithCredential:success")
-                    saveUser(auth.currentUser)
+                    //saveUser(auth.currentUser)
                     val intent = Intent(this, LatestMessagesActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
@@ -77,35 +80,6 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Authentication failed: ${message.substring(index + 1)}", Toast.LENGTH_SHORT).show()
                 }
             }
-    }
-
-    private fun saveUser(currentUser: FirebaseUser?){
-
-        val uid = currentUser!!.uid
-        val fullName = currentUser.displayName
-        val photoUrl = currentUser.photoUrl.toString()
-        val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
-
-        ref.child("users").child(uid).addListenerForSingleValueEvent(object : ValueEventListener{
-            override fun onCancelled(p0: DatabaseError) {
-                Log.w(TAG, "Failed to save user to Database", p0.toException())
-            }
-
-            override fun onDataChange(p0: DataSnapshot) {
-                if (!p0.exists()){
-                    val newUser = User(uid, fullName!!, photoUrl)
-
-                    ref.setValue(newUser)
-                        .addOnSuccessListener {
-                            Log.d(TAG, "User saved to Database")
-                            //Toast.makeText(this@MainActivity, "User saved to Database", Toast.LENGTH_SHORT).show()
-                        }
-                        .addOnFailureListener {
-                            Log.w(TAG, "Failed to save user to Database", it.cause)
-                        }
-                }
-            }
-        })
     }
 
     private fun validateField(field: TextInputLayout): Boolean {
@@ -128,20 +102,23 @@ class MainActivity : AppCompatActivity() {
             val email = emailTextInputLayout.editText!!.text.toString()
             val password = passwordTextInputLayout.editText!!.text.toString()
 
-            auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        Log.d(TAG, "signInWithEmail:success")
-                        val intent = Intent(this, LatestMessagesActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        startActivity(intent)
-                    } else {
-                        Log.w(TAG, "signInWithEmail:failure", task.exception)
-                        val message = task.exception.toString()
-                        val index = message.indexOf(":")
-                        Toast.makeText(this, "Authentication failed: ${message.substring(index + 1)}", Toast.LENGTH_SHORT).show()
-                    }
+            HypechatRepository().loginUser(email, password){ response ->
+
+                response?.let {
+                    //verificar si el user es null o no. si es null mostrar message de error
+                    Log.d(TAG, "signInWithEmail:success")
+                    Toast.makeText(this, "signInWithEmail:success: ${it.status}", Toast.LENGTH_SHORT).show()
+                    AppPreferences.setToken(it.user.token)
+                    AppPreferences.setUserName(it.user.username)
+                    //setear en app preferences el username
+                    val intent = Intent(this, LatestMessagesActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
                 }
+                if (response == null){
+                    Toast.makeText(this, "Authentication failed: signInWithEmail:failure", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
