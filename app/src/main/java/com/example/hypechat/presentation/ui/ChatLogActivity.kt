@@ -3,12 +3,16 @@ package com.example.hypechat.presentation.ui
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hypechat.R
+import com.example.hypechat.data.local.AppPreferences
 import com.example.hypechat.data.model.ChatFromItem
 import com.example.hypechat.data.model.ChatMessage
 import com.example.hypechat.data.model.ChatToItem
 import com.example.hypechat.data.model.User
+import com.example.hypechat.data.model.rest.UserResponse
+import com.example.hypechat.data.repository.HypechatRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
@@ -20,21 +24,21 @@ import kotlinx.android.synthetic.main.activity_chat_log.*
 
 class ChatLogActivity : AppCompatActivity() {
 
-    private var user: User? = null
+    private var user: UserResponse? = null
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseDatabase.getInstance()
     private val fromId = auth.uid
-    private var toId: String? = null
+    private var selectedUserId: Int? = null
     private val chatLogAdapter = GroupAdapter<ViewHolder>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_log)
 
-        user = intent.getParcelableExtra(NewMessageActivity.USER)
+        user = intent.getSerializableExtra(NewMessageActivity.USER) as UserResponse
         user?.let {
-            toolbarChatLog.title = it.fullname
-            toId = it.uid
+            toolbarChatLog.title = it.username
+            selectedUserId = it.id
         }
         setSupportActionBar(toolbarChatLog)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -46,7 +50,7 @@ class ChatLogActivity : AppCompatActivity() {
 
     private fun initializeChatLog(){
 
-        val ref = db.getReference("/users-messages/$fromId/$toId")
+        /*val ref = db.getReference("/users-messages/$fromId/$toId")
         ref.addChildEventListener(object : ChildEventListener{
 
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
@@ -78,12 +82,35 @@ class ChatLogActivity : AppCompatActivity() {
 
             }
 
-        })
+        })*/
+
+        val username = AppPreferences.getUserName()
+        val token = AppPreferences.getToken()
+        if (username != null && token != null && selectedUserId != null) {
+            HypechatRepository().getMessagesFromChat(username, token, selectedUserId!!){ response ->
+
+                response?.let {
+                    val messages = it.messages
+                    for (message in messages){
+                        if (message.fromId == selectedUserId){
+                            chatLogAdapter.add(ChatToItem(message.message))
+                        } else {
+                            chatLogAdapter.add(ChatFromItem(message.message))
+                        }
+                    }
+                    Toast.makeText(this, "getUsers: ${it.status}", Toast.LENGTH_SHORT).show()
+                }
+                if (response == null){
+                    Toast.makeText(this, "getMessagesFromChat failed", Toast.LENGTH_SHORT).show()
+                }
+
+            }
+        }
     }
 
     fun sendChatMessage(view: View){
 
-        val message = chatLogEditText.text.toString()
+        /*val message = chatLogEditText.text.toString()
 
         val ref = db.getReference("/users-messages/$fromId/$toId").push()
         val toRef = db.getReference("/users-messages/$toId/$fromId").push()
@@ -98,6 +125,6 @@ class ChatLogActivity : AppCompatActivity() {
             }
         toRef.setValue(chatMessage)
         latestMessagesRef.setValue(chatMessage)
-        latestMessagesToRef.setValue(chatMessage)
+        latestMessagesToRef.setValue(chatMessage)*/
     }
 }

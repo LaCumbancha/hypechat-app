@@ -6,11 +6,14 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hypechat.R
+import com.example.hypechat.data.local.AppPreferences
 import com.example.hypechat.data.model.ChatMessage
 import com.example.hypechat.data.model.LatestMessageRow
+import com.example.hypechat.data.repository.HypechatRepository
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
@@ -20,8 +23,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.activity_latest_messages.*
-
-
 
 class LatestMessagesActivity : AppCompatActivity() {
 
@@ -35,18 +36,20 @@ class LatestMessagesActivity : AppCompatActivity() {
         setContentView(R.layout.activity_latest_messages)
 
         setSupportActionBar(toolbarLatestMessages)
+        AppPreferences.init(this)
         verifyUserIsLoggedIn()
 
         latestMessagesRecyclerView.layoutManager = LinearLayoutManager(this)
         latestMessagesRecyclerView.adapter = latestMessagesAdapter
         latestMessagesRecyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-        initializeLatestMessages()
-        setAdapterOnItemClickListener()
+        //initializeLatestMessages()
+        //setAdapterOnItemClickListener()
     }
 
     private fun verifyUserIsLoggedIn(){
-        val uid = auth.uid
-        if (uid == null){
+        //val uid = auth.uid
+        val token = AppPreferences.getToken()
+        if (token == null){
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
@@ -115,15 +118,7 @@ class LatestMessagesActivity : AppCompatActivity() {
         }
 
         R.id.action_exit -> {
-            for (user in auth.currentUser!!.providerData) {
-                if (user.providerId == "facebook.com") {
-                    LoginManager.getInstance().logOut()
-                }
-                auth.signOut()
-            }
-            val intentMain = Intent(this, MainActivity::class.java)
-            intentMain.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intentMain)
+            logout()
             true
         }
 
@@ -131,6 +126,29 @@ class LatestMessagesActivity : AppCompatActivity() {
             // If we got here, the user's action was not recognized.
             // Invoke the superclass to handle it.
             super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun logout(){
+        val username = AppPreferences.getUserName()
+        val token = AppPreferences.getToken()
+        if (username != null && token != null){
+            latestMessagesProgressBar.visibility = View.VISIBLE
+            HypechatRepository().logoutUser(username, token){ response ->
+
+                response?.let {
+                    Toast.makeText(this, "logout:success: ${it.status}", Toast.LENGTH_SHORT).show()
+                    AppPreferences.clearSharedPreferences()
+                    val intentMain = Intent(this, MainActivity::class.java)
+                    intentMain.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intentMain)
+                    latestMessagesProgressBar.visibility = View.INVISIBLE
+                }
+                if (response == null){
+                    Toast.makeText(this, "Sing out failed", Toast.LENGTH_SHORT).show()
+                    latestMessagesProgressBar.visibility = View.INVISIBLE
+                }
+            }
         }
     }
 }

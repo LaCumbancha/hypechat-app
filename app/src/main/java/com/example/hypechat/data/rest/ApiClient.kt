@@ -4,9 +4,7 @@ import com.example.hypechat.data.model.ChatMessage
 import com.example.hypechat.data.model.User
 import com.example.hypechat.data.model.rest.*
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface ApiClient {
 
@@ -16,12 +14,15 @@ interface ApiClient {
     @POST("/users/login")
     fun loginUser(@Body body: LoginRequest): Call<ApiResponse>
 
-    @POST("/users")
-    fun logoutUser(@Body body: Request): Call<ApiResponse>
+    @POST("/users/logout")
+    fun logoutUser(@Header("Cookie") usernameAndToken: String): Call<ApiResponse>
 
-    @GET("/users")
-    fun getUsers(@Body body: Request): Call<List<UserResponse>>
+    @GET("/users/%")
+    fun getUsers(@Header("Cookie") usernameAndToken: String): Call<UsersResponse>
 
-    @GET("/messages")
-    fun getMessages(@Body body: Request): Call<List<ChatMessage>>
+    @POST("/messages")
+    fun sendMessage(@Header("Cookie") usernameAndToken: String, @Body body: MessageRequest): Call<ApiResponse>
+
+    @GET("/messages/{chat_id}")
+    fun getMessagesFromChat(@Header("Cookie") usernameAndToken: String, @Path("chat_id") chatId: Int): Call<MessagesResponse>
 }

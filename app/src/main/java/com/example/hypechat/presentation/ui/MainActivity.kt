@@ -1,10 +1,12 @@
 package com.example.hypechat.presentation.ui
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.example.hypechat.R
 import com.example.hypechat.data.local.AppPreferences
@@ -39,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         callbackManager = CallbackManager.Factory.create()
         AppPreferences.init(this)
+        showScreen()
         loginFacebookButton.setReadPermissions("email", "public_profile", "user_photos")
     }
 
@@ -99,6 +102,7 @@ class MainActivity : AppCompatActivity() {
 
         if (validateField(emailTextInputLayout) && validateField(passwordTextInputLayout)){
 
+            loadingScreen(view)
             val email = emailTextInputLayout.editText!!.text.toString()
             val password = passwordTextInputLayout.editText!!.text.toString()
 
@@ -110,13 +114,14 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "signInWithEmail:success: ${it.status}", Toast.LENGTH_SHORT).show()
                     AppPreferences.setToken(it.user.token)
                     AppPreferences.setUserName(it.user.username)
-                    //setear en app preferences el username
                     val intent = Intent(this, LatestMessagesActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
+                    mainProgressBar.visibility = View.INVISIBLE
                 }
                 if (response == null){
                     Toast.makeText(this, "Authentication failed: signInWithEmail:failure", Toast.LENGTH_SHORT).show()
+                    showScreen()
                 }
             }
         }
@@ -131,5 +136,34 @@ class MainActivity : AppCompatActivity() {
 
         val intent = Intent(this, RegistrationActivity::class.java)
         startActivity(intent)
+    }
+
+    private fun loadingScreen(view: View){
+        mainProgressBar.visibility = View.VISIBLE
+        emailTextInputLayout.visibility = View.INVISIBLE
+        passwordTextInputLayout.visibility = View.INVISIBLE
+        loginButton.visibility = View.INVISIBLE
+        loginFacebookButton.visibility = View.INVISIBLE
+        troubleLoggingTextView.visibility = View.INVISIBLE
+        notYetRegisteredTextView.visibility = View.INVISIBLE
+        registerButton.visibility = View.INVISIBLE
+        view.hideKeyboard()
+    }
+
+    private fun showScreen(){
+        mainProgressBar.visibility = View.GONE
+        emailTextInputLayout.visibility = View.VISIBLE
+        passwordTextInputLayout.visibility = View.VISIBLE
+        loginButton.visibility = View.VISIBLE
+        loginFacebookButton.visibility = View.VISIBLE
+        troubleLoggingTextView.visibility = View.VISIBLE
+        notYetRegisteredTextView.visibility = View.VISIBLE
+        registerButton.visibility = View.VISIBLE
+    }
+
+    fun View.hideKeyboard(){
+
+        val inm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inm.hideSoftInputFromWindow(windowToken, 0)
     }
 }
