@@ -21,8 +21,16 @@ import com.google.firebase.database.FirebaseDatabase
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.activity_chat_log.*
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class ChatLogActivity : AppCompatActivity() {
+
+    companion object {
+        val USER = "USER"
+        val USERNAME = "USERNAME"
+        val USERID = "USERID"
+    }
 
     private var user: UserResponse? = null
     private val auth = FirebaseAuth.getInstance()
@@ -35,10 +43,16 @@ class ChatLogActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_log)
 
-        user = intent.getSerializableExtra(NewMessageActivity.USER) as UserResponse
+        user = intent.getSerializableExtra(USER) as UserResponse?
+        val username = intent.getStringExtra(USERNAME)
+        val selectedId = intent.getIntExtra(USERID, 0)
         user?.let {
             toolbarChatLog.title = it.username
             selectedUserId = it.id
+        }
+        if (username != null && selectedId != 0){
+            toolbarChatLog.title = username
+            selectedUserId = selectedId
         }
         setSupportActionBar(toolbarChatLog)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -90,7 +104,7 @@ class ChatLogActivity : AppCompatActivity() {
             HypechatRepository().getMessagesFromChat(username, token, selectedUserId!!){ response ->
 
                 response?.let {
-                    val messages = it.messages
+                    val messages = it.messages.sortedBy { message -> LocalDateTime.parse(message.timestamp, DateTimeFormatter.RFC_1123_DATE_TIME) }
                     for (message in messages){
                         if (message.fromId == selectedUserId){
                             chatLogAdapter.add(ChatToItem(message.message))

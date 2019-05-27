@@ -13,6 +13,7 @@ import com.example.hypechat.R
 import com.example.hypechat.data.local.AppPreferences
 import com.example.hypechat.data.model.ChatMessage
 import com.example.hypechat.data.model.LatestMessageRow
+import com.example.hypechat.data.model.rest.ChatResponse
 import com.example.hypechat.data.repository.HypechatRepository
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
@@ -29,7 +30,7 @@ class LatestMessagesActivity : AppCompatActivity() {
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseDatabase.getInstance()
     private val latestMessagesAdapter = GroupAdapter<ViewHolder>()
-    private val latestMessagesMap = HashMap<String, ChatMessage>()
+    private val latestMessagesMap = HashMap<Int, ChatResponse>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,12 +43,11 @@ class LatestMessagesActivity : AppCompatActivity() {
         latestMessagesRecyclerView.layoutManager = LinearLayoutManager(this)
         latestMessagesRecyclerView.adapter = latestMessagesAdapter
         latestMessagesRecyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-        //initializeLatestMessages()
-        //setAdapterOnItemClickListener()
+        initializeLatestMessages()
+        setAdapterOnItemClickListener()
     }
 
     private fun verifyUserIsLoggedIn(){
-        //val uid = auth.uid
         val token = AppPreferences.getToken()
         if (token == null){
             val intent = Intent(this, MainActivity::class.java)
@@ -61,7 +61,8 @@ class LatestMessagesActivity : AppCompatActivity() {
             val intent = Intent(this, ChatLogActivity::class.java)
             val row = item as LatestMessageRow
 
-            intent.putExtra(NewMessageActivity.USER, row.chatPartnerUser)
+            intent.putExtra(ChatLogActivity.USERNAME, row.chat.chatName)
+            intent.putExtra(ChatLogActivity.USERID, row.chat.receiverId)
             startActivity(intent)
         }
     }
@@ -74,7 +75,7 @@ class LatestMessagesActivity : AppCompatActivity() {
     }
 
     private fun initializeLatestMessages(){
-        val fromId = auth.uid
+        /*val fromId = auth.uid
         val ref = db.getReference("/latest-messages/$fromId")
 
         ref.addChildEventListener(object : ChildEventListener{
@@ -99,7 +100,26 @@ class LatestMessagesActivity : AppCompatActivity() {
             override fun onChildRemoved(p0: DataSnapshot) {
             }
 
-        })
+        })*/
+        val username = AppPreferences.getUserName()
+        val token = AppPreferences.getToken()
+        if (username != null && token != null) {
+            HypechatRepository().getChatsPreviews(username, token){response ->
+
+                response?.let {
+                    val chats = it.chats
+                    for (chat in chats){
+                        latestMessagesMap[chat.senderId] = chat
+                    }
+                    Toast.makeText(this, "getChatsPreviews:success: ${it.status}", Toast.LENGTH_SHORT).show()
+                    refreshLatestMessagesRecyclerView()
+                }
+                if (response == null){
+                    Toast.makeText(this, "getUsers failed", Toast.LENGTH_SHORT).show()
+                }
+
+            }
+        }
     }
 
     fun newMessage(view: View){

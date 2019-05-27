@@ -102,7 +102,6 @@ class RegistrationActivity : AppCompatActivity() {
 
             var firstName: String? = null
             var lastName: String? = null
-            var profilePicUrl: String? = null
             firstNameTextInputLayout.editText?.let {
                 firstName = it.text.toString()
             }
@@ -116,18 +115,14 @@ class RegistrationActivity : AppCompatActivity() {
             val filename = UUID.randomUUID().toString()
             val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
 
-            ref.putFile(selectedPhotoUri!!)
-                .addOnSuccessListener {
-                    Log.d(TAG, "Successfully uploaded profile picture: ${it.metadata?.path}")
-                    ref.downloadUrl.addOnSuccessListener { uri ->
-                        Log.d(TAG, "File location: $uri")
-                        profilePicUrl = uri.toString()
-                        register(username, email, password, firstName, lastName, profilePicUrl)
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        Log.d(TAG, "createUserWithEmail:success")
+                        saveProfilePicture(username, email, password, firstName, lastName)
+                    } else {
+                        Log.w(TAG, "createUserWithEmail:failure", task.exception)
                     }
-                }
-                .addOnFailureListener {
-                    Log.w(TAG, "Failed to upload profile picture to Storage", it.cause)
-                    register(username, email, password, firstName, lastName, profilePicUrl)
                 }
         } else if (selectedPhotoUri == null){
 
@@ -162,7 +157,7 @@ class RegistrationActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveProfilePicture(){
+    private fun saveProfilePicture(username: String, email: String, password: String, firstName: String?, lastName: String?){
 
         val filename = UUID.randomUUID().toString()
         val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
@@ -170,32 +165,15 @@ class RegistrationActivity : AppCompatActivity() {
         ref.putFile(selectedPhotoUri!!)
             .addOnSuccessListener {
                 Log.d(TAG, "Successfully uploaded profile picture: ${it.metadata?.path}")
-                ref.downloadUrl.addOnSuccessListener {
-                    Log.d(TAG, "File location: $it")
-                    saveUser(it.toString())
+                ref.downloadUrl.addOnSuccessListener { uri ->
+                    Log.d(TAG, "File location: $uri")
+                    val profilePicUrl = uri.toString()
+                    register(username, email, password, firstName, lastName, profilePicUrl)
                 }
             }
             .addOnFailureListener {
                 Log.w(TAG, "Failed to upload profile picture to Storage", it.cause)
-            }
-    }
-
-    private fun saveUser(profilePictureUrl: String){
-
-        val uid = auth.uid
-        val fullName = userNameTextInputLayout.editText!!.text.toString()
-        val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
-        val newUser = User(uid!!, fullName, profilePictureUrl)
-
-        ref.setValue(newUser)
-            .addOnSuccessListener {
-                Log.d(TAG, "User saved to Database")
-                val intent = Intent(this, LatestMessagesActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
-            }
-            .addOnFailureListener {
-                Log.w(TAG, "Failed to save user to Database", it.cause)
+                register(username, email, password, firstName, lastName, null)
             }
     }
 }

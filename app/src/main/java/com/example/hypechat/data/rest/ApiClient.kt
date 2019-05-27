@@ -25,4 +25,7 @@ interface ApiClient {
 
     @GET("/messages/{chat_id}")
     fun getMessagesFromChat(@Header("Cookie") usernameAndToken: String, @Path("chat_id") chatId: Int): Call<MessagesResponse>
+
+    @GET("/messages/previews")
+    fun getChatsPreviews(@Header("Cookie") usernameAndToken: String): Call<ChatsResponse>
 }

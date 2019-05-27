@@ -122,4 +122,20 @@ class HypechatRepository {
             }
         })
     }
+
+    fun getChatsPreviews(username: String, token: String, onSuccess: (user: ChatsResponse?) -> Unit) {
+
+        val cookie = "username=$username; auth_token=$token"
+        val call = client.getChatsPreviews(cookie)
+
+        call.enqueue(object : Callback<ChatsResponse> {
+            override fun onFailure(call: Call<ChatsResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ChatsResponse>, response: Response<ChatsResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
 }
