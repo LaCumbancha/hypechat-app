@@ -3,10 +3,12 @@ package com.example.hypechat.presentation.ui
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.SparseArray
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.core.util.forEach
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hypechat.R
@@ -30,7 +32,7 @@ class LatestMessagesActivity : AppCompatActivity() {
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseDatabase.getInstance()
     private val latestMessagesAdapter = GroupAdapter<ViewHolder>()
-    private val latestMessagesMap = HashMap<Int, ChatResponse>()
+    private val latestMessagesMap = SparseArray<ChatResponse>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,13 +45,14 @@ class LatestMessagesActivity : AppCompatActivity() {
         latestMessagesRecyclerView.layoutManager = LinearLayoutManager(this)
         latestMessagesRecyclerView.adapter = latestMessagesAdapter
         latestMessagesRecyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+
         initializeLatestMessages()
         setAdapterOnItemClickListener()
     }
 
     private fun verifyUserIsLoggedIn(){
-        val token = AppPreferences.getToken()
-        if (token == null){
+        val auth = AppPreferences.getCookies()
+        if (auth == null){
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
@@ -69,55 +72,26 @@ class LatestMessagesActivity : AppCompatActivity() {
 
     private fun refreshLatestMessagesRecyclerView(){
         latestMessagesAdapter.clear()
-        latestMessagesMap.values.forEach {
-            latestMessagesAdapter.add(LatestMessageRow(it))
+        latestMessagesMap.forEach { key, value ->
+            latestMessagesAdapter.add(LatestMessageRow(value))
         }
     }
 
     private fun initializeLatestMessages(){
-        /*val fromId = auth.uid
-        val ref = db.getReference("/latest-messages/$fromId")
-
-        ref.addChildEventListener(object : ChildEventListener{
-            override fun onChildAdded(p0: DataSnapshot, p1: String?) {
-                val chatMessage = p0.getValue(ChatMessage::class.java) ?: return
-                latestMessagesMap[p0.key!!] = chatMessage
-                refreshLatestMessagesRecyclerView()
-            }
-
-            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-                val chatMessage = p0.getValue(ChatMessage::class.java) ?: return
-                latestMessagesMap[p0.key!!] = chatMessage
-                refreshLatestMessagesRecyclerView()
-            }
-
-            override fun onCancelled(p0: DatabaseError) {
-            }
-
-            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
-            }
-
-            override fun onChildRemoved(p0: DataSnapshot) {
-            }
-
-        })*/
-        val username = AppPreferences.getUserName()
-        val token = AppPreferences.getToken()
-        if (username != null && token != null) {
-            HypechatRepository().getChatsPreviews(username, token){response ->
-
-                response?.let {
-                    val chats = it.chats
-                    for (chat in chats){
-                        latestMessagesMap[chat.senderId] = chat
-                    }
-                    Toast.makeText(this, "getChatsPreviews:success: ${it.status}", Toast.LENGTH_SHORT).show()
-                    refreshLatestMessagesRecyclerView()
-                }
-                if (response == null){
-                    Toast.makeText(this, "getUsers failed", Toast.LENGTH_SHORT).show()
-                }
-
+        latestMessagesProgressBar.visibility = View.VISIBLE
+        HypechatRepository().getChatsPreviews{response ->
+             response?.let {
+                 val chats = it.chats
+                 for (chat in chats){
+                     latestMessagesMap.put(chat.receiverId, chat)
+                 }
+                 Toast.makeText(this, "getChatsPreviews:success: ${it.status}", Toast.LENGTH_SHORT).show()
+                 refreshLatestMessagesRecyclerView()
+                 latestMessagesProgressBar.visibility = View.INVISIBLE
+             }
+            if (response == null){
+                Toast.makeText(this, "getUsers failed", Toast.LENGTH_SHORT).show()
+                latestMessagesProgressBar.visibility = View.INVISIBLE
             }
         }
     }
@@ -150,24 +124,20 @@ class LatestMessagesActivity : AppCompatActivity() {
     }
 
     private fun logout(){
-        val username = AppPreferences.getUserName()
-        val token = AppPreferences.getToken()
-        if (username != null && token != null){
-            latestMessagesProgressBar.visibility = View.VISIBLE
-            HypechatRepository().logoutUser(username, token){ response ->
+        latestMessagesProgressBar.visibility = View.VISIBLE
+        HypechatRepository().logoutUser{ response ->
 
-                response?.let {
-                    Toast.makeText(this, "logout:success: ${it.status}", Toast.LENGTH_SHORT).show()
-                    AppPreferences.clearSharedPreferences()
-                    val intentMain = Intent(this, MainActivity::class.java)
-                    intentMain.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intentMain)
-                    latestMessagesProgressBar.visibility = View.INVISIBLE
-                }
-                if (response == null){
-                    Toast.makeText(this, "Sing out failed", Toast.LENGTH_SHORT).show()
-                    latestMessagesProgressBar.visibility = View.INVISIBLE
-                }
+            response?.let {
+                Toast.makeText(this, "logout:success: ${it.status}", Toast.LENGTH_SHORT).show()
+                AppPreferences.clearSharedPreferences()
+                val intentMain = Intent(this, MainActivity::class.java)
+                intentMain.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intentMain)
+                latestMessagesProgressBar.visibility = View.INVISIBLE
+            }
+            if (response == null){
+                Toast.makeText(this, "Sing out failed", Toast.LENGTH_SHORT).show()
+                latestMessagesProgressBar.visibility = View.INVISIBLE
             }
         }
     }

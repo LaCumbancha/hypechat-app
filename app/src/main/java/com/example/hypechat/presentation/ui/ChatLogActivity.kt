@@ -98,47 +98,41 @@ class ChatLogActivity : AppCompatActivity() {
 
         })*/
 
-        val username = AppPreferences.getUserName()
-        val token = AppPreferences.getToken()
-        if (username != null && token != null && selectedUserId != null) {
-            HypechatRepository().getMessagesFromChat(username, token, selectedUserId!!){ response ->
+        HypechatRepository().getMessagesFromChat(selectedUserId!!){ response ->
 
-                response?.let {
-                    val messages = it.messages.sortedBy { message -> LocalDateTime.parse(message.timestamp, DateTimeFormatter.RFC_1123_DATE_TIME) }
-                    for (message in messages){
-                        if (message.fromId == selectedUserId){
-                            chatLogAdapter.add(ChatToItem(message.message))
-                        } else {
-                            chatLogAdapter.add(ChatFromItem(message.message))
-                        }
+            response?.let {
+                val messages = it.messages.sortedBy { message -> LocalDateTime.parse(message.timestamp, DateTimeFormatter.RFC_1123_DATE_TIME) }
+                for (message in messages){
+                    if (message.fromId == selectedUserId){
+                        chatLogAdapter.add(ChatToItem(message.message))
+                    } else {
+                        chatLogAdapter.add(ChatFromItem(message.message))
                     }
-                    Toast.makeText(this, "getUsers: ${it.status}", Toast.LENGTH_SHORT).show()
                 }
-                if (response == null){
-                    Toast.makeText(this, "getMessagesFromChat failed", Toast.LENGTH_SHORT).show()
-                }
-
+                Toast.makeText(this, "getUsers: ${it.status}", Toast.LENGTH_SHORT).show()
+            }
+            if (response == null){
+                Toast.makeText(this, "getMessagesFromChat failed", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     fun sendChatMessage(view: View){
 
-        /*val message = chatLogEditText.text.toString()
+        val message = chatLogEditText.text.toString()
+        if (message != ""){
+            HypechatRepository().sendMessage(selectedUserId!!, message){ response ->
 
-        val ref = db.getReference("/users-messages/$fromId/$toId").push()
-        val toRef = db.getReference("/users-messages/$toId/$fromId").push()
-        val latestMessagesRef = db.getReference("/latest-messages/$fromId/$toId")
-        val latestMessagesToRef = db.getReference("/latest-messages/$toId/$fromId")
-
-        val chatMessage = ChatMessage(ref.key!!, fromId!!, toId!!, message, System.currentTimeMillis()/1000) //seconds
-        ref.setValue(chatMessage)
-            .addOnSuccessListener {
-                chatLogEditText.text.clear()
-                chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
+                response?.let {
+                    chatLogAdapter.add(ChatFromItem(message))
+                    chatLogEditText.text.clear()
+                    chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
+                    Toast.makeText(this, "sendMessage: ${it.status}", Toast.LENGTH_SHORT).show()
+                }
+                if (response == null){
+                    Toast.makeText(this, "sendMessage failed", Toast.LENGTH_SHORT).show()
+                }
             }
-        toRef.setValue(chatMessage)
-        latestMessagesRef.setValue(chatMessage)
-        latestMessagesToRef.setValue(chatMessage)*/
+        }
     }
 }

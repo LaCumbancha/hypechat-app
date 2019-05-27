@@ -10,6 +10,7 @@ object AppPreferences {
 
     val AUTH_TOKEN = "auth_token"
     val USERNAME = "username"
+    val PREF_COOKIES = "cookies"
 
     fun init(context: Context) {
         preferences = context.getSharedPreferences(
@@ -52,6 +53,16 @@ object AppPreferences {
 
     fun getUserName(): String? {
         return preferences.getString(USERNAME, null)
+    }
+
+    fun setCookies(cookies: HashSet<String>) {
+        preferences.edit {
+            it.putStringSet(PREF_COOKIES, cookies)
+        }
+    }
+
+    fun getCookies(): HashSet<String>? {
+        return preferences.getStringSet(PREF_COOKIES, null) as HashSet<String>?
     }
 
 //    var language: String?

@@ -3,17 +3,32 @@ package com.example.hypechat.data.repository
 import android.util.Log
 import com.example.hypechat.data.model.rest.*
 import com.example.hypechat.data.rest.ApiClient
+import com.example.hypechat.data.rest.utils.AddCookiesInterceptor
+import com.example.hypechat.data.rest.utils.ReceivedCookiesInterceptor
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 class HypechatRepository {
 
+    private val httpConnectTimeoutSeconds = 10
+    private val httpWriteTimeoutSeconds = 10
+    private val httpReadTimeoutSeconds = 10
     private val BASE_URL = "https://hypechat-server.herokuapp.com"
+    private val httpClient = OkHttpClient.Builder()
+        .addInterceptor(AddCookiesInterceptor())
+        .addInterceptor(ReceivedCookiesInterceptor())
+        .connectTimeout(httpConnectTimeoutSeconds.toLong(), TimeUnit.SECONDS)
+        .writeTimeout(httpWriteTimeoutSeconds.toLong(), TimeUnit.SECONDS)
+        .readTimeout(httpReadTimeoutSeconds.toLong(), TimeUnit.SECONDS)
+        .build()
     private val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
+        .client(httpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     private val client = createService(ApiClient::class.java)
@@ -58,10 +73,10 @@ class HypechatRepository {
         })
     }
 
-    fun logoutUser(username: String, token: String, onSuccess: (user: ApiResponse?) -> Unit) {
+    fun logoutUser(onSuccess: (user: ApiResponse?) -> Unit) {
 
-        val cookie = "username=$username; auth_token=$token"
-        val call = client.logoutUser(cookie)
+        //val cookie = "username=$username; auth_token=$token"
+        val call = client.logoutUser()
 
         call.enqueue(object : Callback<ApiResponse> {
             override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
@@ -74,10 +89,10 @@ class HypechatRepository {
         })
     }
 
-    fun getUsers(username: String, token: String, onSuccess: (user: UsersResponse?) -> Unit) {
+    fun getUsers(onSuccess: (user: UsersResponse?) -> Unit) {
 
-        val cookie = "username=$username; auth_token=$token"
-        val call = client.getUsers(cookie)
+        //val cookie = "username=$username; auth_token=$token"
+        val call = client.getUsers()
 
         call.enqueue(object : Callback<UsersResponse> {
             override fun onFailure(call: Call<UsersResponse>, t: Throwable) {
@@ -90,10 +105,10 @@ class HypechatRepository {
         })
     }
 
-    fun getMessagesFromChat(username: String, token: String, fromId: Int, onSuccess: (user: MessagesResponse?) -> Unit) {
+    fun getMessagesFromChat(fromId: Int, onSuccess: (user: MessagesResponse?) -> Unit) {
 
-        val cookie = "username=$username; auth_token=$token"
-        val call = client.getMessagesFromChat(cookie, fromId)
+        //val cookie = "username=$username; auth_token=$token"
+        val call = client.getMessagesFromChat(fromId)
 
         call.enqueue(object : Callback<MessagesResponse> {
             override fun onFailure(call: Call<MessagesResponse>, t: Throwable) {
@@ -106,11 +121,11 @@ class HypechatRepository {
         })
     }
 
-    fun sendMessage(username: String, token: String, toId: Int, message: String, onSuccess: (user: ApiResponse?) -> Unit) {
+    fun sendMessage(toId: Int, message: String, onSuccess: (user: ApiResponse?) -> Unit) {
 
-        val cookie = "username=$username; auth_token=$token"
+        //val cookie = "username=$username; auth_token=$token"
         val body = MessageRequest(toId, message)
-        val call = client.sendMessage(cookie, body)
+        val call = client.sendMessage(body)
 
         call.enqueue(object : Callback<ApiResponse> {
             override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
@@ -123,10 +138,10 @@ class HypechatRepository {
         })
     }
 
-    fun getChatsPreviews(username: String, token: String, onSuccess: (user: ChatsResponse?) -> Unit) {
+    fun getChatsPreviews(onSuccess: (user: ChatsResponse?) -> Unit) {
 
-        val cookie = "username=$username; auth_token=$token"
-        val call = client.getChatsPreviews(cookie)
+        //val cookie = "username=$username; auth_token=$token"
+        val call = client.getChatsPreviews()
 
         call.enqueue(object : Callback<ChatsResponse> {
             override fun onFailure(call: Call<ChatsResponse>, t: Throwable) {

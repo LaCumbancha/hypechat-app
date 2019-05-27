@@ -144,8 +144,8 @@ class RegistrationActivity : AppCompatActivity() {
                 //verificar si el user es null o no. si es null mostrar message de error
                 Log.d(TAG, "signInWithEmail:success")
                 Toast.makeText(this, "signInWithEmail:success: ${it.status}", Toast.LENGTH_SHORT).show()
-                AppPreferences.setToken(it.user.token)
-                AppPreferences.setUserName(it.user.username)
+                //AppPreferences.setToken(it.user.token)
+                //AppPreferences.setUserName(it.user.username)
                 //setear en app preferences el username
                 val intent = Intent(this, LatestMessagesActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)

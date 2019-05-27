@@ -3,6 +3,7 @@ package com.example.hypechat.presentation.ui
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hypechat.R
@@ -37,59 +38,28 @@ class NewMessageActivity : AppCompatActivity() {
     }
 
     private fun fetchUsers(){
-        /*val ref = FirebaseDatabase.getInstance().getReference("/users")
-        ref.addListenerForSingleValueEvent(object: ValueEventListener{
-
-            override fun onCancelled(p0: DatabaseError) {
-
-            }
-
-            override fun onDataChange(p0: DataSnapshot) {
+        newMessageProgressBar.visibility = View.VISIBLE
+        HypechatRepository().getUsers{response ->
+            response?.let {
+                val users = it.users
                 val adapter = GroupAdapter<ViewHolder>()
-                p0.children.forEach {
-                    val user = it.getValue(User::class.java)
-                    user?.let {
-                        adapter.add(UserItem(it))
-                    }
+                for (user in users){
+                    adapter.add(UserItem(user))
                 }
+                Toast.makeText(this, "getUsers:success: ${it.status}", Toast.LENGTH_SHORT).show()
                 adapter.setOnItemClickListener { item, view ->
                     val userItem = item as UserItem
-
                     val intent = Intent(view.context, ChatLogActivity::class.java)
                     intent.putExtra(USER, userItem.user)
                     startActivity(intent)
                     finish()
                 }
                 newMessageRecyclerView.adapter = adapter
+                newMessageProgressBar.visibility = View.INVISIBLE
             }
-
-        })*/
-        val username = AppPreferences.getUserName()
-        val token = AppPreferences.getToken()
-        if (username != null && token != null) {
-            HypechatRepository().getUsers(username, token){response ->
-
-                response?.let {
-                    val users = it.users
-                    val adapter = GroupAdapter<ViewHolder>()
-                    for (user in users){
-                        adapter.add(UserItem(user))
-                    }
-                    Toast.makeText(this, "getUsers:success: ${it.status}", Toast.LENGTH_SHORT).show()
-                    adapter.setOnItemClickListener { item, view ->
-                        val userItem = item as UserItem
-
-                        val intent = Intent(view.context, ChatLogActivity::class.java)
-                        intent.putExtra(USER, userItem.user)
-                        startActivity(intent)
-                        finish()
-                    }
-                    newMessageRecyclerView.adapter = adapter
-                }
-                if (response == null){
-                    Toast.makeText(this, "getUsers failed", Toast.LENGTH_SHORT).show()
-                }
-
+            if (response == null){
+                Toast.makeText(this, "getUsers failed", Toast.LENGTH_SHORT).show()
+                newMessageProgressBar.visibility = View.INVISIBLE
             }
         }
 

@@ -1,7 +1,5 @@
 package com.example.hypechat.data.rest
 
-import com.example.hypechat.data.model.ChatMessage
-import com.example.hypechat.data.model.User
 import com.example.hypechat.data.model.rest.*
 import retrofit2.Call
 import retrofit2.http.*
@@ -15,17 +13,17 @@ interface ApiClient {
     fun loginUser(@Body body: LoginRequest): Call<ApiResponse>
 
     @POST("/users/logout")
-    fun logoutUser(@Header("Cookie") usernameAndToken: String): Call<ApiResponse>
+    fun logoutUser(): Call<ApiResponse>
 
     @GET("/users/%")
-    fun getUsers(@Header("Cookie") usernameAndToken: String): Call<UsersResponse>
+    fun getUsers(): Call<UsersResponse>
 
     @POST("/messages")
-    fun sendMessage(@Header("Cookie") usernameAndToken: String, @Body body: MessageRequest): Call<ApiResponse>
+    fun sendMessage(@Body body: MessageRequest): Call<ApiResponse>
 
     @GET("/messages/{chat_id}")
-    fun getMessagesFromChat(@Header("Cookie") usernameAndToken: String, @Path("chat_id") chatId: Int): Call<MessagesResponse>
+    fun getMessagesFromChat(@Path("chat_id") chatId: Int): Call<MessagesResponse>
 
     @GET("/messages/previews")
-    fun getChatsPreviews(@Header("Cookie") usernameAndToken: String): Call<ChatsResponse>
+    fun getChatsPreviews(): Call<ChatsResponse>
 }
