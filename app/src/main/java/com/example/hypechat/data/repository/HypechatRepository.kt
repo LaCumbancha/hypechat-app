@@ -31,8 +31,12 @@ class HypechatRepository {
         .client(httpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-    private val client = createService(ApiClient::class.java)
+    private var client : ApiClient? = null
     //private var authToken: String? = null
+
+    init {
+        client = createService(ApiClient::class.java)
+    }
 
     private fun <S> createService(serviceClass: Class<S>): S {
         return retrofit.create(serviceClass)
@@ -42,9 +46,9 @@ class HypechatRepository {
 
         val body = LoginRequest(email, password)
         //val call = client.loginUser(email, password)
-        val call = client.loginUser(body)
+        val call = client?.loginUser(body)
 
-        call.enqueue(object : Callback<ApiResponse> {
+        call?.enqueue(object : Callback<ApiResponse> {
             override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
                 Log.w("HypechatRepository: ", t)
             }
@@ -60,9 +64,9 @@ class HypechatRepository {
 
         val body = RegisterRequest(username, email, password, firstName, lastName, profilePic)
         //val call = client.loginUser(email, password)
-        val call = client.registerUser(body)
+        val call = client?.registerUser(body)
 
-        call.enqueue(object : Callback<ApiResponse> {
+        call?.enqueue(object : Callback<ApiResponse> {
             override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
                 Log.w("HypechatRepository: ", t)
             }
@@ -76,9 +80,9 @@ class HypechatRepository {
     fun logoutUser(onSuccess: (user: ApiResponse?) -> Unit) {
 
         //val cookie = "username=$username; auth_token=$token"
-        val call = client.logoutUser()
+        val call = client?.logoutUser()
 
-        call.enqueue(object : Callback<ApiResponse> {
+        call?.enqueue(object : Callback<ApiResponse> {
             override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
                 Log.w("HypechatRepository: ", t)
             }
@@ -92,9 +96,9 @@ class HypechatRepository {
     fun getUsers(onSuccess: (user: UsersResponse?) -> Unit) {
 
         //val cookie = "username=$username; auth_token=$token"
-        val call = client.getUsers()
+        val call = client?.getUsers()
 
-        call.enqueue(object : Callback<UsersResponse> {
+        call?.enqueue(object : Callback<UsersResponse> {
             override fun onFailure(call: Call<UsersResponse>, t: Throwable) {
                 Log.w("HypechatRepository: ", t)
             }
@@ -108,9 +112,9 @@ class HypechatRepository {
     fun getMessagesFromChat(fromId: Int, onSuccess: (user: MessagesResponse?) -> Unit) {
 
         //val cookie = "username=$username; auth_token=$token"
-        val call = client.getMessagesFromChat(fromId)
+        val call = client?.getMessagesFromChat(fromId)
 
-        call.enqueue(object : Callback<MessagesResponse> {
+        call?.enqueue(object : Callback<MessagesResponse> {
             override fun onFailure(call: Call<MessagesResponse>, t: Throwable) {
                 Log.w("HypechatRepository: ", t)
             }
@@ -125,9 +129,9 @@ class HypechatRepository {
 
         //val cookie = "username=$username; auth_token=$token"
         val body = MessageRequest(toId, message)
-        val call = client.sendMessage(body)
+        val call = client?.sendMessage(body)
 
-        call.enqueue(object : Callback<ApiResponse> {
+        call?.enqueue(object : Callback<ApiResponse> {
             override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
                 Log.w("HypechatRepository: ", t)
             }
@@ -141,9 +145,9 @@ class HypechatRepository {
     fun getChatsPreviews(onSuccess: (user: ChatsResponse?) -> Unit) {
 
         //val cookie = "username=$username; auth_token=$token"
-        val call = client.getChatsPreviews()
+        val call = client?.getChatsPreviews()
 
-        call.enqueue(object : Callback<ChatsResponse> {
+        call?.enqueue(object : Callback<ChatsResponse> {
             override fun onFailure(call: Call<ChatsResponse>, t: Throwable) {
                 Log.w("HypechatRepository: ", t)
             }

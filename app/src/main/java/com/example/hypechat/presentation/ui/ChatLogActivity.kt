@@ -2,6 +2,7 @@ package com.example.hypechat.presentation.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,6 +39,7 @@ class ChatLogActivity : AppCompatActivity() {
     private val fromId = auth.uid
     private var selectedUserId: Int? = null
     private val chatLogAdapter = GroupAdapter<ViewHolder>()
+    private val TAG = "ChatLog"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -120,17 +122,22 @@ class ChatLogActivity : AppCompatActivity() {
     fun sendChatMessage(view: View){
 
         val message = chatLogEditText.text.toString()
+
         if (message != ""){
+
+            chatLogAdapter.add(ChatFromItem(message))
+            chatLogEditText.text.clear()
+            chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
+
             HypechatRepository().sendMessage(selectedUserId!!, message){ response ->
 
                 response?.let {
-                    chatLogAdapter.add(ChatFromItem(message))
-                    chatLogEditText.text.clear()
-                    chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
                     Toast.makeText(this, "sendMessage: ${it.status}", Toast.LENGTH_SHORT).show()
+                    Log.d(TAG, "sendMessage: ${it.status}")
                 }
                 if (response == null){
                     Toast.makeText(this, "sendMessage failed", Toast.LENGTH_SHORT).show()
+                    Log.w(TAG, "sendMessage failed")
                 }
             }
         }

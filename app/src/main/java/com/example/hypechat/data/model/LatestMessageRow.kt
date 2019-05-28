@@ -24,8 +24,8 @@ class LatestMessageRow(val chat: ChatResponse): Item<ViewHolder>() {
 
         viewHolder.itemView.fullnameLatestMessageRowTextView.text = chat.chatName
         Picasso.get().load(chat.chatPicture)
-            .placeholder(R.drawable.ic_launcher_foreground)
-            .error(R.drawable.ic_launcher_foreground)
+            .placeholder(R.drawable.profile_placeholder)
+            .error(R.drawable.profile_placeholder)
             .into(viewHolder.itemView.userLatestMessageRowImageView)
     }
 }

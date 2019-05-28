@@ -100,6 +100,7 @@ class RegistrationActivity : AppCompatActivity() {
         if (validateField(userNameTextInputLayout) && validateField(registerEmailTextInputLayout)
             && validateField(registerPasswordTextInputLayout) && selectedPhotoUri != null){
 
+            loadingScreen()
             var firstName: String? = null
             var lastName: String? = null
             firstNameTextInputLayout.editText?.let {
@@ -142,17 +143,14 @@ class RegistrationActivity : AppCompatActivity() {
 
             response?.let {
                 //verificar si el user es null o no. si es null mostrar message de error
-                Log.d(TAG, "signInWithEmail:success")
-                Toast.makeText(this, "signInWithEmail:success: ${it.status}", Toast.LENGTH_SHORT).show()
-                //AppPreferences.setToken(it.user.token)
-                //AppPreferences.setUserName(it.user.username)
-                //setear en app preferences el username
+                Log.d(TAG, "registerUser:success: ${it.status}")
                 val intent = Intent(this, LatestMessagesActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
+                registrationProgressBar.visibility = View.INVISIBLE
             }
             if (response == null){
-                Toast.makeText(this, "Authentication failed: signInWithEmail:failure", Toast.LENGTH_SHORT).show()
+                Log.w(TAG, "registerUser:failure")
             }
         }
     }
@@ -175,5 +173,15 @@ class RegistrationActivity : AppCompatActivity() {
                 Log.w(TAG, "Failed to upload profile picture to Storage", it.cause)
                 register(username, email, password, firstName, lastName, null)
             }
+    }
+
+    private fun loadingScreen(){
+        registrationProgressBar.visibility = View.VISIBLE
+        registrationCardView.visibility = View.GONE
+    }
+
+    private fun showScreen() {
+        registrationProgressBar.visibility = View.INVISIBLE
+        registrationCardView.visibility = View.VISIBLE
     }
 }

@@ -3,6 +3,7 @@ package com.example.hypechat.presentation.ui
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.util.SparseArray
 import android.view.Menu
 import android.view.MenuItem
@@ -33,6 +34,7 @@ class LatestMessagesActivity : AppCompatActivity() {
     private val db = FirebaseDatabase.getInstance()
     private val latestMessagesAdapter = GroupAdapter<ViewHolder>()
     private val latestMessagesMap = SparseArray<ChatResponse>()
+    private val TAG = "LatestMessages"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,12 +42,12 @@ class LatestMessagesActivity : AppCompatActivity() {
 
         setSupportActionBar(toolbarLatestMessages)
         AppPreferences.init(this)
-        verifyUserIsLoggedIn()
 
         latestMessagesRecyclerView.layoutManager = LinearLayoutManager(this)
         latestMessagesRecyclerView.adapter = latestMessagesAdapter
         latestMessagesRecyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 
+        verifyUserIsLoggedIn()
         initializeLatestMessages()
         setAdapterOnItemClickListener()
     }
@@ -85,12 +87,13 @@ class LatestMessagesActivity : AppCompatActivity() {
                  for (chat in chats){
                      latestMessagesMap.put(chat.receiverId, chat)
                  }
-                 Toast.makeText(this, "getChatsPreviews:success: ${it.status}", Toast.LENGTH_SHORT).show()
+                 Log.d(TAG, "getChatsPreviews:success: ${it.status}")
                  refreshLatestMessagesRecyclerView()
                  latestMessagesProgressBar.visibility = View.INVISIBLE
              }
             if (response == null){
                 Toast.makeText(this, "getUsers failed", Toast.LENGTH_SHORT).show()
+                Log.w(TAG, "getUsers:failure")
                 latestMessagesProgressBar.visibility = View.INVISIBLE
             }
         }
@@ -128,7 +131,8 @@ class LatestMessagesActivity : AppCompatActivity() {
         HypechatRepository().logoutUser{ response ->
 
             response?.let {
-                Toast.makeText(this, "logout:success: ${it.status}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, it.status, Toast.LENGTH_SHORT).show()
+                Log.d(TAG, "logout:success: ${it.status}")
                 AppPreferences.clearSharedPreferences()
                 val intentMain = Intent(this, MainActivity::class.java)
                 intentMain.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -137,6 +141,7 @@ class LatestMessagesActivity : AppCompatActivity() {
             }
             if (response == null){
                 Toast.makeText(this, "Sing out failed", Toast.LENGTH_SHORT).show()
+                Log.d(TAG, "logout:failure")
                 latestMessagesProgressBar.visibility = View.INVISIBLE
             }
         }
