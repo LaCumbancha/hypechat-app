@@ -12,6 +12,7 @@ import com.example.hypechat.R
 import com.example.hypechat.data.local.AppPreferences
 import com.example.hypechat.data.model.User
 import com.example.hypechat.data.repository.HypechatRepository
+import com.example.hypechat.data.rest.utils.ServerStatus
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -109,20 +110,44 @@ class MainActivity : AppCompatActivity() {
             HypechatRepository().loginUser(email, password){ response ->
 
                 response?.let {
-                    //verificar si el user es null o no. si es null mostrar message de error
-                    Log.d(TAG, "signInWithEmail:success")
-                    Toast.makeText(this, "signInWithEmail:success: ${it.status}", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, LatestMessagesActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
-                    mainProgressBar.visibility = View.INVISIBLE
+
+                    when (it.status){
+                        ServerStatus.ACTIVE.status -> navigateToLatestMessages()
+                        ServerStatus.WRONG_CREDENTIALS.status -> loginFailed(it.message)
+                    }
                 }
                 if (response == null){
-                    Toast.makeText(this, "Authentication failed: signInWithEmail:failure", Toast.LENGTH_SHORT).show()
-                    showScreen()
+                    Log.w(TAG, "loginUser:failure")
+                    errorOccurred()
                 }
             }
         }
+    }
+
+    private fun navigateToLatestMessages(){
+
+        Log.d(TAG, "signInWithEmail:success")
+        val intent = Intent(this, LatestMessagesActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        mainProgressBar.visibility = View.INVISIBLE
+    }
+
+    private fun loginFailed(msg: String){
+        showScreen()
+        Log.w(TAG, msg)
+
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setTitle("Error")
+        builder.setMessage(msg)
+
+        builder.setPositiveButton("Ok"){ dialog, which ->
+            dialog.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -163,5 +188,21 @@ class MainActivity : AppCompatActivity() {
 
         val inm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inm.hideSoftInputFromWindow(windowToken, 0)
+    }
+
+    private fun errorOccurred(){
+
+        showScreen()
+
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setTitle("Error")
+        builder.setMessage("There was a problem during the login process. Please, try again.")
+
+        builder.setPositiveButton("Ok"){ dialog, which ->
+            dialog.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
     }
 }

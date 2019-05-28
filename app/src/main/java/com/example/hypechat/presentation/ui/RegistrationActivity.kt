@@ -17,6 +17,7 @@ import com.example.hypechat.R
 import com.example.hypechat.data.local.AppPreferences
 import com.example.hypechat.data.model.User
 import com.example.hypechat.data.repository.HypechatRepository
+import com.example.hypechat.data.rest.utils.ServerStatus
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -113,9 +114,6 @@ class RegistrationActivity : AppCompatActivity() {
             val email = registerEmailTextInputLayout.editText!!.text.toString()
             val password = registerPasswordTextInputLayout.editText!!.text.toString()
 
-            val filename = UUID.randomUUID().toString()
-            val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
-
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
@@ -123,6 +121,7 @@ class RegistrationActivity : AppCompatActivity() {
                         saveProfilePicture(username, email, password, firstName, lastName)
                     } else {
                         Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                        errorOccurred()
                     }
                 }
         } else if (selectedPhotoUri == null){
@@ -142,17 +141,44 @@ class RegistrationActivity : AppCompatActivity() {
         HypechatRepository().registerUser(username, email, password, firstName, lastName, profilePicUrl){ response ->
 
             response?.let {
-                //verificar si el user es null o no. si es null mostrar message de error
-                Log.d(TAG, "registerUser:success: ${it.status}")
-                val intent = Intent(this, LatestMessagesActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
-                registrationProgressBar.visibility = View.INVISIBLE
+
+                when (it.status){
+                    ServerStatus.ACTIVE.status -> navigateToLatestMessages()
+                    ServerStatus.ALREADY_REGISTERED.status -> registrationFailed(it.message)
+                }
             }
             if (response == null){
                 Log.w(TAG, "registerUser:failure")
+                errorOccurred()
             }
         }
+    }
+
+    private fun navigateToLatestMessages(){
+
+        Log.d(TAG, "registerUser:success")
+        val intent = Intent(this, LatestMessagesActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        registrationProgressBar.visibility = View.INVISIBLE
+    }
+
+    private fun registrationFailed(msg: String){
+
+        registrationProgressBar.visibility = View.INVISIBLE
+        registrationCardView.visibility = View.VISIBLE
+        Log.w(TAG, msg)
+
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setTitle("Error")
+        builder.setMessage(msg)
+
+        builder.setPositiveButton("Ok"){ dialog, which ->
+            dialog.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
     }
 
     private fun saveProfilePicture(username: String, email: String, password: String, firstName: String?, lastName: String?){
@@ -180,8 +206,19 @@ class RegistrationActivity : AppCompatActivity() {
         registrationCardView.visibility = View.GONE
     }
 
-    private fun showScreen() {
+    private fun errorOccurred(){
         registrationProgressBar.visibility = View.INVISIBLE
         registrationCardView.visibility = View.VISIBLE
+
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setTitle("Error")
+        builder.setMessage("There was a problem during the registration process. Please, try again.")
+
+        builder.setPositiveButton("Ok"){ dialog, which ->
+            dialog.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
     }
 }

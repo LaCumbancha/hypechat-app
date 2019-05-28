@@ -18,23 +18,11 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:elevation="4dp"/>
-    <Button
-            android:text="@string/new_channel_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/newChannelButton"
-            style="@style/AppTheme.RoundedCornerMaterialButton"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/toolbarNewMessage"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="8dp"/>
     <androidx.recyclerview.widget.RecyclerView
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:id="@+id/newMessageRecyclerView"
-            app:layout_constraintTop_toBottomOf="@+id/newChannelButton"
+            app:layout_constraintTop_toBottomOf="@+id/toolbarNewMessage"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>

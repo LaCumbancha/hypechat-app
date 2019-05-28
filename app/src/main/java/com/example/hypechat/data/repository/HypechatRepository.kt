@@ -19,27 +19,30 @@ class HypechatRepository {
     private val httpWriteTimeoutSeconds = 10
     private val httpReadTimeoutSeconds = 10
     private val BASE_URL = "https://hypechat-server.herokuapp.com"
-    private val httpClient = OkHttpClient.Builder()
-        .addInterceptor(AddCookiesInterceptor())
-        .addInterceptor(ReceivedCookiesInterceptor())
-        .connectTimeout(httpConnectTimeoutSeconds.toLong(), TimeUnit.SECONDS)
-        .writeTimeout(httpWriteTimeoutSeconds.toLong(), TimeUnit.SECONDS)
-        .readTimeout(httpReadTimeoutSeconds.toLong(), TimeUnit.SECONDS)
-        .build()
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .client(httpClient)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    private var httpClient: OkHttpClient? = null
+    private var retrofit: Retrofit? = null
     private var client : ApiClient? = null
-    //private var authToken: String? = null
 
     init {
+        httpClient = OkHttpClient.Builder()
+            .addInterceptor(AddCookiesInterceptor())
+            .addInterceptor(ReceivedCookiesInterceptor())
+            .connectTimeout(httpConnectTimeoutSeconds.toLong(), TimeUnit.SECONDS)
+            .writeTimeout(httpWriteTimeoutSeconds.toLong(), TimeUnit.SECONDS)
+            .readTimeout(httpReadTimeoutSeconds.toLong(), TimeUnit.SECONDS)
+            .build()
+        httpClient?.let {
+            retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .client(it)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+        }
         client = createService(ApiClient::class.java)
     }
 
-    private fun <S> createService(serviceClass: Class<S>): S {
-        return retrofit.create(serviceClass)
+    private fun <S> createService(serviceClass: Class<S>): S? {
+        return retrofit?.create(serviceClass)
     }
 
     fun loginUser(email: String, password: String, onSuccess: (user: ApiResponse?) -> Unit) {

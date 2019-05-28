@@ -18,6 +18,7 @@ import com.example.hypechat.data.model.ChatMessage
 import com.example.hypechat.data.model.LatestMessageRow
 import com.example.hypechat.data.model.rest.ChatResponse
 import com.example.hypechat.data.repository.HypechatRepository
+import com.example.hypechat.data.rest.utils.ServerStatus
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
@@ -81,15 +82,16 @@ class LatestMessagesActivity : AppCompatActivity() {
 
     private fun initializeLatestMessages(){
         latestMessagesProgressBar.visibility = View.VISIBLE
+
         HypechatRepository().getChatsPreviews{response ->
+
              response?.let {
-                 val chats = it.chats
-                 for (chat in chats){
-                     latestMessagesMap.put(chat.receiverId, chat)
+
+                 when (it.status){
+                     ServerStatus.LIST.status -> initializeChats(it.chats)
+                     ServerStatus.WRONG_TOKEN.status -> tokenFailed(it.message)
+                     ServerStatus.CHAT_NOT_FOUND.status -> loadingChatsFailed(it.message)
                  }
-                 Log.d(TAG, "getChatsPreviews:success: ${it.status}")
-                 refreshLatestMessagesRecyclerView()
-                 latestMessagesProgressBar.visibility = View.INVISIBLE
              }
             if (response == null){
                 Toast.makeText(this, "getUsers failed", Toast.LENGTH_SHORT).show()
@@ -97,6 +99,36 @@ class LatestMessagesActivity : AppCompatActivity() {
                 latestMessagesProgressBar.visibility = View.INVISIBLE
             }
         }
+    }
+
+    private fun initializeChats(chats: List<ChatResponse>){
+
+        for (chat in chats){
+            latestMessagesMap.put(chat.receiverId, chat)
+        }
+        Log.d(TAG, "getChatsPreviews:success")
+        refreshLatestMessagesRecyclerView()
+        latestMessagesProgressBar.visibility = View.INVISIBLE
+    }
+
+    private fun loadingChatsFailed(msg: String){
+
+        latestMessagesProgressBar.visibility = View.INVISIBLE
+
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setTitle("Error")
+        builder.setMessage(msg)
+
+        builder.setPositiveButton("Refresh"){ dialog, which ->
+            dialog.dismiss()
+            initializeLatestMessages()
+        }
+        builder.setNegativeButton("Cancel"){ dialog, which ->
+            dialog.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
     }
 
     fun newMessage(view: View){
@@ -131,19 +163,45 @@ class LatestMessagesActivity : AppCompatActivity() {
         HypechatRepository().logoutUser{ response ->
 
             response?.let {
-                Toast.makeText(this, it.status, Toast.LENGTH_SHORT).show()
-                Log.d(TAG, "logout:success: ${it.status}")
-                AppPreferences.clearSharedPreferences()
-                val intentMain = Intent(this, MainActivity::class.java)
-                intentMain.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intentMain)
-                latestMessagesProgressBar.visibility = View.INVISIBLE
+                when (it.status){
+                    ServerStatus.LOGGED_OUT.status -> navigateToMain()
+                    ServerStatus.WRONG_TOKEN.status -> tokenFailed(it.message)
+                }
+
             }
             if (response == null){
                 Toast.makeText(this, "Sing out failed", Toast.LENGTH_SHORT).show()
-                Log.d(TAG, "logout:failure")
+                Log.w(TAG, "logout:failure")
                 latestMessagesProgressBar.visibility = View.INVISIBLE
             }
         }
+    }
+
+    private fun navigateToMain(){
+        Toast.makeText(this, ServerStatus.LOGGED_OUT.status, Toast.LENGTH_SHORT).show()
+        Log.d(TAG, "logout:success")
+        AppPreferences.clearSharedPreferences()
+        val intentMain = Intent(this, MainActivity::class.java)
+        intentMain.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intentMain)
+        latestMessagesProgressBar.visibility = View.INVISIBLE
+    }
+
+    private fun tokenFailed(msg: String){
+
+        latestMessagesProgressBar.visibility = View.INVISIBLE
+        Log.w(TAG, msg)
+
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setTitle("Error")
+        builder.setMessage(msg)
+
+        builder.setPositiveButton("Ok"){ dialog, which ->
+            dialog.dismiss()
+            verifyUserIsLoggedIn()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
     }
 }

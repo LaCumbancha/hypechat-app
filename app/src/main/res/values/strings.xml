@@ -32,7 +32,7 @@
     <!--Registration-->
 
     <!--Latest Messages-->
-    <string name="latest_messages_toolbar">Hypechat</string>
+    <string name="latest_messages_toolbar">Active Chats</string>
     <string name="my_profile">My profile</string>
     <string name="logout">Logout</string>
     <!--Latest Messages-->
