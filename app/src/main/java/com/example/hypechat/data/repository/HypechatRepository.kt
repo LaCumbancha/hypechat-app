@@ -62,17 +62,17 @@ class HypechatRepository {
     }
 
     fun registerUser(username:String, email: String, password: String, firstName:String?,
-                     lastName: String?, profilePic: String? , onSuccess: (user: ApiResponse?) -> Unit) {
+                     lastName: String?, profilePic: String? , onSuccess: (user: RegisterResponse?) -> Unit) {
 
         val body = RegisterRequest(username, email, password, firstName, lastName, profilePic)
         val call = client?.registerUser(body)
 
-        call?.enqueue(object : Callback<ApiResponse> {
-            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+        call?.enqueue(object : Callback<RegisterResponse> {
+            override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
                 Log.w("HypechatRepository: ", t)
             }
 
-            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+            override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
                 onSuccess(response.body())
             }
         })
@@ -96,6 +96,21 @@ class HypechatRepository {
     fun getUsers(onSuccess: (user: UsersResponse?) -> Unit) {
 
         val call = client?.getUsers()
+
+        call?.enqueue(object : Callback<UsersResponse> {
+            override fun onFailure(call: Call<UsersResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<UsersResponse>, response: Response<UsersResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun searchUsers(query: String, onSuccess: (user: UsersResponse?) -> Unit) {
+
+        val call = client?.searchUsers(query)
 
         call?.enqueue(object : Callback<UsersResponse> {
             override fun onFailure(call: Call<UsersResponse>, t: Throwable) {

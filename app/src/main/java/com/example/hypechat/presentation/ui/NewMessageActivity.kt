@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hypechat.R
@@ -28,6 +29,8 @@ class NewMessageActivity : AppCompatActivity() {
         val USER = "USER"
     }
     private val TAG = "NewMessage"
+    private var firstAdapter = GroupAdapter<ViewHolder>()
+    private var isFirst = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,9 +38,12 @@ class NewMessageActivity : AppCompatActivity() {
 
         setSupportActionBar(toolbarNewMessage)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        searchView.onActionViewExpanded()
+        searchView.clearFocus()
         AppPreferences.init(this)
 
         newMessageRecyclerView.layoutManager = LinearLayoutManager(this)
+        setSearchViewListener()
         fetchUsers()
     }
 
@@ -68,22 +74,75 @@ class NewMessageActivity : AppCompatActivity() {
 
     }
 
+    private fun searchUsers(query: String){
+        newMessageProgressBar.visibility = View.VISIBLE
+        HypechatRepository().searchUsers(query){response ->
+            response?.let {
+
+                when (it.status){
+                    ServerStatus.LIST.status -> loadUsers(it.users)
+                    ServerStatus.WRONG_TOKEN.status -> tokenFailed(it.message)
+                }
+            }
+            if (response == null){
+                Log.w(TAG, "searchUsers:failure")
+                newMessageProgressBar.visibility = View.INVISIBLE
+            }
+        }
+
+    }
+
     private fun loadUsers(users: List<UserResponse>){
 
-        val adapter = GroupAdapter<ViewHolder>()
-        for (user in users){
-            adapter.add(UserItem(user))
+        if (users.isEmpty()){
+            newMessageRecyclerView.visibility = View.GONE
+            searchNotFoundImageView.visibility = View.VISIBLE
+            searchNotFoundTextView.visibility = View.VISIBLE
+        } else {
+
+            val adapter = GroupAdapter<ViewHolder>()
+            for (user in users){
+                adapter.add(UserItem(user))
+            }
+            Log.d(TAG, "getUsers:success")
+            adapter.setOnItemClickListener { item, view ->
+                val userItem = item as UserItem
+                val intent = Intent(view.context, ChatLogActivity::class.java)
+                intent.putExtra(USER, userItem.user)
+                startActivity(intent)
+                finish()
+            }
+            if (isFirst){
+                firstAdapter = adapter
+                isFirst = false
+            }
+            newMessageRecyclerView.adapter = adapter
         }
-        Log.d(TAG, "getUsers:success")
-        adapter.setOnItemClickListener { item, view ->
-            val userItem = item as UserItem
-            val intent = Intent(view.context, ChatLogActivity::class.java)
-            intent.putExtra(USER, userItem.user)
-            startActivity(intent)
-            finish()
-        }
-        newMessageRecyclerView.adapter = adapter
         newMessageProgressBar.visibility = View.INVISIBLE
+    }
+
+    private fun setSearchViewListener(){
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let {
+                    searchUsers(it)
+                }
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let {
+                    if (it.isEmpty()){
+                        newMessageRecyclerView.adapter = firstAdapter
+                        newMessageRecyclerView.visibility = View.VISIBLE
+                        newMessageProgressBar.visibility = View.INVISIBLE
+                        searchNotFoundImageView.visibility = View.GONE
+                        searchNotFoundTextView.visibility = View.GONE
+                    }
+                }
+                return false
+            }
+        })
     }
 
     private fun tokenFailed(msg: String){

@@ -30,6 +30,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.activity_latest_messages.*
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class LatestMessagesActivity : AppCompatActivity() {
 
@@ -37,6 +39,7 @@ class LatestMessagesActivity : AppCompatActivity() {
     private val db = FirebaseDatabase.getInstance()
     private val latestMessagesAdapter = GroupAdapter<ViewHolder>()
     private val latestMessagesMap = SparseArray<ChatResponse>()
+    private val latestMessagesList = mutableListOf<ChatResponse>()
     private val TAG = "LatestMessages"
     private var fab_open: Animation? = null
     private var fab_close: Animation? = null
@@ -83,15 +86,16 @@ class LatestMessagesActivity : AppCompatActivity() {
             val row = item as LatestMessageRow
 
             intent.putExtra(ChatLogActivity.USERNAME, row.chat.chatName)
-            intent.putExtra(ChatLogActivity.USERID, row.chat.receiverId)
+            intent.putExtra(ChatLogActivity.SENDERID, row.chat.senderId)
+            intent.putExtra(ChatLogActivity.RECEIVERID, row.chat.receiverId)
             startActivity(intent)
         }
     }
 
     private fun refreshLatestMessagesRecyclerView(){
         latestMessagesAdapter.clear()
-        latestMessagesMap.forEach { key, value ->
-            latestMessagesAdapter.add(LatestMessageRow(value))
+        for (chat in latestMessagesList){
+            latestMessagesAdapter.add(LatestMessageRow(chat))
         }
     }
 
@@ -118,8 +122,11 @@ class LatestMessagesActivity : AppCompatActivity() {
 
     private fun initializeChats(chats: List<ChatResponse>){
 
-        for (chat in chats){
-            latestMessagesMap.put(chat.receiverId, chat)
+        val sortedChats = chats.sortedByDescending { chat ->
+            LocalDateTime.parse(chat.timestamp, DateTimeFormatter.RFC_1123_DATE_TIME)
+        }
+        for (chat in sortedChats){
+            latestMessagesList.add(chat)
         }
         Log.d(TAG, "getChatsPreviews:success")
         refreshLatestMessagesRecyclerView()

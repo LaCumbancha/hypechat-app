@@ -5,6 +5,7 @@
 
 
     <!--Main-->
+    <string name="hypechat_name">HYPECHAT</string>
     <string name="login_with_facebook_button">LOG IN WITH FACEBOOK</string>
     <string name="login_with_email_button">LOG IN WITH EMAIL</string>
     <string name="trouble_logging">
@@ -40,6 +41,8 @@
 
     <!--New Message-->
     <string name="new_message_toolbar">New Message</string>
+    <string name="search_bar_placeholder">Search for a user</string>
+    <string name="no_results">No results found</string>
     <string name="new_channel_button">New Channel</string>
     <!--New Message-->
 

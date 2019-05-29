@@ -18,11 +18,31 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:elevation="4dp"/>
+    <SearchView
+            android:id="@+id/searchView"
+            style="@style/SearchView"
+            app:layout_constraintTop_toBottomOf="@id/toolbarNewMessage"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    <ImageView
+            style="@style/SearchNotFoundImageView"
+            android:id="@+id/searchNotFoundImageView"
+            app:layout_constraintTop_toBottomOf="@id/searchView"
+            app:layout_constraintBottom_toTopOf="@id/searchNotFoundTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+    <TextView
+            style="@style/SearchNotFoundTextView"
+            android:id="@+id/searchNotFoundTextView"
+            app:layout_constraintTop_toBottomOf="@id/searchNotFoundImageView"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/searchNotFoundImageView"
+            app:layout_constraintEnd_toEndOf="@+id/searchNotFoundImageView"/>
     <androidx.recyclerview.widget.RecyclerView
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:id="@+id/newMessageRecyclerView"
-            app:layout_constraintTop_toBottomOf="@+id/toolbarNewMessage"
+            app:layout_constraintTop_toBottomOf="@+id/searchView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>

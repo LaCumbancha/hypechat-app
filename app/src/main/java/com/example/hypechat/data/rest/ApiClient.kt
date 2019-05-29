@@ -7,7 +7,7 @@ import retrofit2.http.*
 interface ApiClient {
 
     @POST("/users")
-    fun registerUser(@Body body: RegisterRequest): Call<ApiResponse>
+    fun registerUser(@Body body: RegisterRequest): Call<RegisterResponse>
 
     @POST("/users/login")
     fun loginUser(@Body body: LoginRequest): Call<ApiResponse>
@@ -17,6 +17,9 @@ interface ApiClient {
 
     @GET("/users/%")
     fun getUsers(): Call<UsersResponse>
+
+    @GET("/users/{query}")
+    fun searchUsers(@Path("query") query: String): Call<UsersResponse>
 
     @POST("/messages")
     fun sendMessage(@Body body: MessageRequest): Call<ApiResponse>

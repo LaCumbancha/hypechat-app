@@ -121,7 +121,9 @@ class RegistrationActivity : AppCompatActivity() {
                         saveProfilePicture(username, email, password, firstName, lastName)
                     } else {
                         Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                        errorOccurred()
+                        val error = task.exception.toString().split(": ")
+                        val msg = error[1]
+                        errorOccurred(msg)
                     }
                 }
         } else if (selectedPhotoUri == null){
@@ -149,7 +151,7 @@ class RegistrationActivity : AppCompatActivity() {
             }
             if (response == null){
                 Log.w(TAG, "registerUser:failure")
-                errorOccurred()
+                errorOccurred(null)
             }
         }
     }
@@ -206,13 +208,17 @@ class RegistrationActivity : AppCompatActivity() {
         registrationCardView.visibility = View.GONE
     }
 
-    private fun errorOccurred(){
+    private fun errorOccurred(error: String?){
         registrationProgressBar.visibility = View.INVISIBLE
         registrationCardView.visibility = View.VISIBLE
 
         val builder = android.app.AlertDialog.Builder(this)
         builder.setTitle("Error")
-        builder.setMessage("There was a problem during the registration process. Please, try again.")
+        var msg = "There was a problem during the registration process. Please, try again."
+        error?.let {
+            msg = it
+        }
+        builder.setMessage(msg)
 
         builder.setPositiveButton("Ok"){ dialog, which ->
             dialog.dismiss()

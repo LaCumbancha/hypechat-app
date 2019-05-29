@@ -33,7 +33,8 @@ class ChatLogActivity : AppCompatActivity() {
     companion object {
         val USER = "USER"
         val USERNAME = "USERNAME"
-        val USERID = "USERID"
+        val RECEIVERID = "RECEIVERID"
+        val SENDERID = "SENDERID"
     }
 
     private var user: UserResponse? = null
@@ -41,6 +42,8 @@ class ChatLogActivity : AppCompatActivity() {
     private val db = FirebaseDatabase.getInstance()
     private val fromId = auth.uid
     private var selectedUserId: Int? = null
+    private var senderId: Int? = null
+    private var receiverId: Int? = null
     private val chatLogAdapter = GroupAdapter<ViewHolder>()
     private val TAG = "ChatLog"
 
@@ -50,14 +53,16 @@ class ChatLogActivity : AppCompatActivity() {
 
         user = intent.getSerializableExtra(USER) as UserResponse?
         val username = intent.getStringExtra(USERNAME)
-        val selectedId = intent.getIntExtra(USERID, 0)
+        val receiver = intent.getIntExtra(RECEIVERID, 0)
+        val sender = intent.getIntExtra(SENDERID, 0)
         user?.let {
             toolbarChatLog.title = it.username
-            selectedUserId = it.id
+            receiverId = it.id
         }
-        if (username != null && selectedId != 0){
+        if (username != null && receiver != 0 && sender != 0){
             toolbarChatLog.title = username
-            selectedUserId = selectedId
+            senderId = sender
+            receiverId = receiver
         }
         setSupportActionBar(toolbarChatLog)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -79,7 +84,7 @@ class ChatLogActivity : AppCompatActivity() {
     private fun initializeChatLog(){
 
         chatLogProgressBar.visibility = View.VISIBLE
-        HypechatRepository().getMessagesFromChat(selectedUserId!!){ response ->
+        HypechatRepository().getMessagesFromChat(receiverId!!){ response ->
 
             response?.let {
 
@@ -102,7 +107,7 @@ class ChatLogActivity : AppCompatActivity() {
             LocalDateTime.parse(message.timestamp, DateTimeFormatter.RFC_1123_DATE_TIME)
         }
         for (message in sortedMessages){
-            if (message.fromId == selectedUserId){
+            if (message.fromId == receiverId){
                 chatLogAdapter.add(ChatToItem(message.message))
             } else {
                 chatLogAdapter.add(ChatFromItem(message.message))
@@ -161,7 +166,7 @@ class ChatLogActivity : AppCompatActivity() {
             chatLogEditText.text.clear()
             chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
 
-            HypechatRepository().sendMessage(selectedUserId!!, message){ response ->
+            HypechatRepository().sendMessage(receiverId!!, message){ response ->
 
                 response?.let {
 
