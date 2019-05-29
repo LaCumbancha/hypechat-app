@@ -3,8 +3,8 @@ package com.example.hypechat.data.repository
 import android.util.Log
 import com.example.hypechat.data.model.rest.*
 import com.example.hypechat.data.rest.ApiClient
-import com.example.hypechat.data.rest.utils.AddCookiesInterceptor
-import com.example.hypechat.data.rest.utils.ReceivedCookiesInterceptor
+import com.example.hypechat.data.rest.utils.AddTokenInterceptor
+import com.example.hypechat.data.rest.utils.ReceivedTokenInterceptor
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -25,8 +25,8 @@ class HypechatRepository {
 
     init {
         httpClient = OkHttpClient.Builder()
-            .addInterceptor(AddCookiesInterceptor())
-            .addInterceptor(ReceivedCookiesInterceptor())
+            .addInterceptor(AddTokenInterceptor())
+            .addInterceptor(ReceivedTokenInterceptor())
             .connectTimeout(httpConnectTimeoutSeconds.toLong(), TimeUnit.SECONDS)
             .writeTimeout(httpWriteTimeoutSeconds.toLong(), TimeUnit.SECONDS)
             .readTimeout(httpReadTimeoutSeconds.toLong(), TimeUnit.SECONDS)
@@ -48,7 +48,6 @@ class HypechatRepository {
     fun loginUser(email: String, password: String, onSuccess: (user: ApiResponse?) -> Unit) {
 
         val body = LoginRequest(email, password)
-        //val call = client.loginUser(email, password)
         val call = client?.loginUser(body)
 
         call?.enqueue(object : Callback<ApiResponse> {
@@ -66,7 +65,6 @@ class HypechatRepository {
                      lastName: String?, profilePic: String? , onSuccess: (user: ApiResponse?) -> Unit) {
 
         val body = RegisterRequest(username, email, password, firstName, lastName, profilePic)
-        //val call = client.loginUser(email, password)
         val call = client?.registerUser(body)
 
         call?.enqueue(object : Callback<ApiResponse> {
@@ -82,7 +80,6 @@ class HypechatRepository {
 
     fun logoutUser(onSuccess: (user: ApiResponse?) -> Unit) {
 
-        //val cookie = "username=$username; auth_token=$token"
         val call = client?.logoutUser()
 
         call?.enqueue(object : Callback<ApiResponse> {
@@ -98,7 +95,6 @@ class HypechatRepository {
 
     fun getUsers(onSuccess: (user: UsersResponse?) -> Unit) {
 
-        //val cookie = "username=$username; auth_token=$token"
         val call = client?.getUsers()
 
         call?.enqueue(object : Callback<UsersResponse> {
@@ -114,7 +110,6 @@ class HypechatRepository {
 
     fun getMessagesFromChat(fromId: Int, onSuccess: (user: MessagesResponse?) -> Unit) {
 
-        //val cookie = "username=$username; auth_token=$token"
         val call = client?.getMessagesFromChat(fromId)
 
         call?.enqueue(object : Callback<MessagesResponse> {
@@ -130,7 +125,6 @@ class HypechatRepository {
 
     fun sendMessage(toId: Int, message: String, onSuccess: (user: ApiResponse?) -> Unit) {
 
-        //val cookie = "username=$username; auth_token=$token"
         val body = MessageRequest(toId, message)
         val call = client?.sendMessage(body)
 
@@ -147,7 +141,6 @@ class HypechatRepository {
 
     fun getChatsPreviews(onSuccess: (user: ChatsResponse?) -> Unit) {
 
-        //val cookie = "username=$username; auth_token=$token"
         val call = client?.getChatsPreviews()
 
         call?.enqueue(object : Callback<ChatsResponse> {

@@ -6,16 +6,14 @@ import okhttp3.Response
 import java.io.IOException
 
 
-class ReceivedCookiesInterceptor : Interceptor {
+class ReceivedTokenInterceptor : Interceptor {
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalResponse = chain.proceed(chain.request())
 
-        if (originalResponse.headers("X-Auth-Token").isNotEmpty() && originalResponse.headers("X-Auth-Username").isNotEmpty()){
+        if (originalResponse.headers("X-Auth-Token").isNotEmpty()){
             val token = originalResponse.headers("X-Auth-Token")
-            val username = originalResponse.headers("X-Auth-Username")
-            AppPreferences.setUserName(username.first())
             AppPreferences.setToken(token.first())
         }
 

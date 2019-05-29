@@ -186,6 +186,11 @@ class LatestMessagesActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+
+        R.id.action_my_teams -> {
+            true
+        }
+
         R.id.action_my_profile -> {
             true
         }

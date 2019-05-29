@@ -9,8 +9,8 @@
     <androidx.appcompat.widget.Toolbar
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            style="@style/CustomToolbar"
-            android:theme="?attr/actionBarTheme"
+            android:theme="@style/CustomToolbar"
+            android:background="@drawable/gradient_background"
             android:minHeight="?attr/actionBarSize"
             app:title="@string/new_message_toolbar"
             android:id="@+id/toolbarNewMessage"
