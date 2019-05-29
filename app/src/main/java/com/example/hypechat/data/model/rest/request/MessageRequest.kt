@@ -1,3 +1,3 @@
-package com.example.hypechat.data.model.rest
+package com.example.hypechat.data.model.rest.request
 
 class MessageRequest (val chat_id: Int, val text_content: String)

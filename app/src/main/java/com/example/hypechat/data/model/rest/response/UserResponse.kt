@@ -1,4 +1,4 @@
-package com.example.hypechat.data.model.rest
+package com.example.hypechat.data.model.rest.response
 
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable

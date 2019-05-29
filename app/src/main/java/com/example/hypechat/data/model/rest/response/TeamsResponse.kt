@@ -1,11 +1,10 @@
-package com.example.hypechat.data.model.rest
+package com.example.hypechat.data.model.rest.response
 
 import com.google.gson.annotations.SerializedName
 
-data class ChatsResponse (
+data class TeamsResponse (
 
     @SerializedName("status") val status : String,
-    @SerializedName("chats") val chats : List<ChatResponse>,
+    @SerializedName("teams") val teams : List<TeamResponse>,
     @SerializedName("message") val message : String
-
 )

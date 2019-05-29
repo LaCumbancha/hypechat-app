@@ -1,4 +1,4 @@
-package com.example.hypechat.data.model.rest
+package com.example.hypechat.data.model.rest.request
 
 class RegisterRequest (val username: String,
                        val email: String,

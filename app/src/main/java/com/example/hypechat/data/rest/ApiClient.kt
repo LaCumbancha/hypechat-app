@@ -1,6 +1,7 @@
 package com.example.hypechat.data.rest
 
-import com.example.hypechat.data.model.rest.*
+import com.example.hypechat.data.model.rest.request.*
+import com.example.hypechat.data.model.rest.response.*
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -29,4 +30,13 @@ interface ApiClient {
 
     @GET("/messages/previews")
     fun getChatsPreviews(): Call<ChatsResponse>
+
+    @POST("/teams")
+    fun createTeam(@Body body: TeamCreationRequest): Call<TeamCreationResponse>
+
+    @POST("/teams/{team_id}/invite")
+    fun inviteUserToTeam(@Path("team_id") team_id: Int, @Body body: InvitationRequest): Call<ApiResponse>
+
+    @GET("/users/teams")
+    fun getTeams(): Call<TeamsResponse>
 }

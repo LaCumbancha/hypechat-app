@@ -1,7 +1,10 @@
 package com.example.hypechat.data.repository
 
 import android.util.Log
-import com.example.hypechat.data.model.rest.*
+import com.example.hypechat.data.model.rest.request.LoginRequest
+import com.example.hypechat.data.model.rest.request.MessageRequest
+import com.example.hypechat.data.model.rest.request.RegisterRequest
+import com.example.hypechat.data.model.rest.response.*
 import com.example.hypechat.data.rest.ApiClient
 import com.example.hypechat.data.rest.utils.AddTokenInterceptor
 import com.example.hypechat.data.rest.utils.ReceivedTokenInterceptor
@@ -64,7 +67,14 @@ class HypechatRepository {
     fun registerUser(username:String, email: String, password: String, firstName:String?,
                      lastName: String?, profilePic: String? , onSuccess: (user: RegisterResponse?) -> Unit) {
 
-        val body = RegisterRequest(username, email, password, firstName, lastName, profilePic)
+        val body = RegisterRequest(
+            username,
+            email,
+            password,
+            firstName,
+            lastName,
+            profilePic
+        )
         val call = client?.registerUser(body)
 
         call?.enqueue(object : Callback<RegisterResponse> {
@@ -164,6 +174,21 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ChatsResponse>, response: Response<ChatsResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun getTeams(onSuccess: (teams: TeamsResponse?) -> Unit) {
+
+        val call = client?.getTeams()
+
+        call?.enqueue(object : Callback<TeamsResponse> {
+            override fun onFailure(call: Call<TeamsResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<TeamsResponse>, response: Response<TeamsResponse>) {
                 onSuccess(response.body())
             }
         })

@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
-            android:name="com.example.hypechat.presentation.utils.MyApplication"
+            android:name=".presentation.utils.MyApplication"
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
@@ -28,17 +28,22 @@
                     android:resource="@xml/filepaths"/>
         </provider>
 
-        <activity android:name="com.example.hypechat.presentation.ui.ChatLogActivity"
-                  android:parentActivityName="com.example.hypechat.presentation.ui.LatestMessagesActivity"
+        <activity android:name=".presentation.ui.TeamsActivity"
+                  android:parentActivityName=".presentation.ui.LatestMessagesActivity"
                   android:screenOrientation="portrait">
         </activity>
         <activity
-                android:name="com.example.hypechat.presentation.ui.NewMessageActivity"
-                android:parentActivityName="com.example.hypechat.presentation.ui.LatestMessagesActivity"
+                android:name=".presentation.ui.ChatLogActivity"
+                android:parentActivityName=".presentation.ui.LatestMessagesActivity"
                 android:screenOrientation="portrait">
         </activity>
         <activity
-                android:name="com.example.hypechat.presentation.ui.LatestMessagesActivity"
+                android:name=".presentation.ui.NewMessageActivity"
+                android:parentActivityName=".presentation.ui.LatestMessagesActivity"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".presentation.ui.LatestMessagesActivity"
                 android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -47,12 +52,12 @@
             </intent-filter>
         </activity>
         <activity
-                android:name="com.example.hypechat.presentation.ui.RegistrationActivity"
-                android:parentActivityName="com.example.hypechat.presentation.ui.MainActivity"
+                android:name=".presentation.ui.RegistrationActivity"
+                android:parentActivityName=".presentation.ui.MainActivity"
                 android:screenOrientation="portrait">
         </activity>
         <activity
-                android:name="com.example.hypechat.presentation.ui.MainActivity"
+                android:name=".presentation.ui.MainActivity"
                 android:screenOrientation="portrait">
         </activity>
 

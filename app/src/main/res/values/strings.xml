@@ -51,5 +51,10 @@
     <string name="this_is_a_message">This is a message</string>
     <!--Chat Log-->
 
+    <!--Teams-->
+    <string name="teams_toolbar">Teams</string>
+    <string name="no_teams">No teams found</string>
+    <!--Teams-->
+
 
 </resources>

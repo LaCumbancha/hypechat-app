@@ -11,21 +11,15 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Toast
-import androidx.core.util.forEach
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hypechat.R
 import com.example.hypechat.data.local.AppPreferences
-import com.example.hypechat.data.model.ChatMessage
 import com.example.hypechat.data.model.LatestMessageRow
-import com.example.hypechat.data.model.rest.ChatResponse
+import com.example.hypechat.data.model.rest.response.ChatResponse
 import com.example.hypechat.data.repository.HypechatRepository
 import com.example.hypechat.data.rest.utils.ServerStatus
-import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
@@ -183,7 +177,7 @@ class LatestMessagesActivity : AppCompatActivity() {
     }
 
     fun newChannel(view: View){
-        //val intent = Intent(this, NewMessageActivity::class.java)
+        //val intent = Intent(this, NewChannelActivity::class.java)
         //startActivity(intent)
     }
 
@@ -195,6 +189,8 @@ class LatestMessagesActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
 
         R.id.action_my_teams -> {
+            val intent = Intent(this, TeamsActivity::class.java)
+            startActivity(intent)
             true
         }
 

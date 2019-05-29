@@ -1,7 +1,7 @@
 package com.example.hypechat.data.model
 
 import com.example.hypechat.R
-import com.example.hypechat.data.model.rest.UserResponse
+import com.example.hypechat.data.model.rest.response.UserResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.Item
