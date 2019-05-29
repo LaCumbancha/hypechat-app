@@ -12,14 +12,11 @@ class ReceivedCookiesInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalResponse = chain.proceed(chain.request())
 
-        if (originalResponse.headers("Set-Cookie").isNotEmpty()) {
-            val cookies = HashSet<String>()
-
-            for (header in originalResponse.headers("Set-Cookie")) {
-                cookies.add(header)
-            }
-
-            AppPreferences.setCookies(cookies)
+        if (originalResponse.headers("X-Auth-Token").isNotEmpty() && originalResponse.headers("X-Auth-Username").isNotEmpty()){
+            val token = originalResponse.headers("X-Auth-Token")
+            val username = originalResponse.headers("X-Auth-Username")
+            AppPreferences.setUserName(username.first())
+            AppPreferences.setToken(token.first())
         }
 
         return originalResponse

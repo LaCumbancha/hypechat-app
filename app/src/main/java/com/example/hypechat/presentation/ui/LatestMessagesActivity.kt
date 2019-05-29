@@ -8,6 +8,8 @@ import android.util.SparseArray
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.core.util.forEach
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -36,6 +38,11 @@ class LatestMessagesActivity : AppCompatActivity() {
     private val latestMessagesAdapter = GroupAdapter<ViewHolder>()
     private val latestMessagesMap = SparseArray<ChatResponse>()
     private val TAG = "LatestMessages"
+    private var fab_open: Animation? = null
+    private var fab_close: Animation? = null
+    private var fab_clock: Animation? = null
+    private var fab_anticlock: Animation? = null
+    private var isOpen = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +50,7 @@ class LatestMessagesActivity : AppCompatActivity() {
 
         setSupportActionBar(toolbarLatestMessages)
         AppPreferences.init(this)
+        loadAnimations()
 
         latestMessagesRecyclerView.layoutManager = LinearLayoutManager(this)
         latestMessagesRecyclerView.adapter = latestMessagesAdapter
@@ -53,8 +61,15 @@ class LatestMessagesActivity : AppCompatActivity() {
         setAdapterOnItemClickListener()
     }
 
+    private fun loadAnimations(){
+        fab_open = AnimationUtils.loadAnimation(this, R.anim.fab_open)
+        fab_close = AnimationUtils.loadAnimation(this, R.anim.fab_close)
+        fab_clock = AnimationUtils.loadAnimation(this, R.anim.fab_rotate_clock)
+        fab_anticlock = AnimationUtils.loadAnimation(this, R.anim.fab_rotate_anticlock)
+    }
+
     private fun verifyUserIsLoggedIn(){
-        val auth = AppPreferences.getCookies()
+        val auth = AppPreferences.getToken()
         if (auth == null){
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -131,9 +146,38 @@ class LatestMessagesActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    fun openNew(view: View){
+
+        if (isOpen) {
+            newMessageTextView.visibility = View.INVISIBLE
+            newChannelTextView.visibility = View.INVISIBLE
+            fabNewChannel.startAnimation(fab_close)
+            fabNewMessage.startAnimation(fab_close)
+            fabNew.startAnimation(fab_anticlock)
+            fabNewChannel.isClickable = false
+            fabNewMessage.isClickable =false
+            isOpen = false
+
+        } else {
+            newMessageTextView.visibility = View.VISIBLE
+            newChannelTextView.visibility = View.VISIBLE
+            fabNewChannel.startAnimation(fab_open)
+            fabNewMessage.startAnimation(fab_open)
+            fabNew.startAnimation(fab_clock)
+            fabNewChannel.isClickable = true
+            fabNewMessage.isClickable = true
+            isOpen = true
+        }
+    }
+
     fun newMessage(view: View){
         val intent = Intent(this, NewMessageActivity::class.java)
         startActivity(intent)
+    }
+
+    fun newChannel(view: View){
+        //val intent = Intent(this, NewMessageActivity::class.java)
+        //startActivity(intent)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
