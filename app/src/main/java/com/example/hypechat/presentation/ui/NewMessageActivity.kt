@@ -98,7 +98,6 @@ class NewMessageActivity : AppCompatActivity() {
             for (user in users){
                 adapter.add(UserItem(user))
             }
-            Log.d(TAG, "getUsers:success")
             adapter.setOnItemClickListener { item, view ->
                 val userItem = item as UserItem
                 val intent = Intent(view.context, ChatLogActivity::class.java)
