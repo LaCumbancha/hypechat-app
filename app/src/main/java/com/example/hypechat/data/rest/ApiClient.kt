@@ -16,20 +16,20 @@ interface ApiClient {
     @POST("/users/logout")
     fun logoutUser(): Call<ApiResponse>
 
-    @GET("/users/%")
-    fun getUsers(): Call<UsersResponse>
+    @GET("/teams/{team_id}/users/%")
+    fun getUsers(@Path("team_id") team_id: Int): Call<UsersResponse>
 
-    @GET("/users/{query}")
-    fun searchUsers(@Path("query") query: String): Call<UsersResponse>
+    @GET("/teams/{team_id}/users/{query}")
+    fun searchUsers(@Path("team_id") team_id: Int, @Path("query") query: String): Call<UsersResponse>
 
-    @POST("/messages")
-    fun sendMessage(@Body body: MessageRequest): Call<ApiResponse>
+    @POST("/teams/{team_id}/messages")
+    fun sendMessage(@Body body: MessageRequest, @Path("team_id") team_id: Int): Call<ApiResponse>
 
-    @GET("/messages/{chat_id}")
-    fun getMessagesFromChat(@Path("chat_id") chatId: Int): Call<MessagesResponse>
+    @GET("/teams/{team_id}/messages/{chat_id}")
+    fun getMessagesFromChat(@Path("team_id") team_id: Int, @Path("chat_id") chatId: Int): Call<MessagesResponse>
 
-    @GET("/messages/previews")
-    fun getChatsPreviews(): Call<ChatsResponse>
+    @GET("/teams/{team_id}/messages/previews")
+    fun getChatsPreviews(@Path("team_id") team_id: Int): Call<ChatsResponse>
 
     @POST("/teams")
     fun createTeam(@Body body: TeamCreationRequest): Call<TeamCreationResponse>

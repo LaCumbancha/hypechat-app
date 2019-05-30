@@ -61,6 +61,7 @@ class ChatLogActivity : AppCompatActivity() {
         }
         setSupportActionBar(toolbarChatLog)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        AppPreferences.init(this)
 
         chatLogRecyclerView.layoutManager = LinearLayoutManager(this)
         chatLogRecyclerView.adapter = chatLogAdapter
@@ -79,7 +80,8 @@ class ChatLogActivity : AppCompatActivity() {
     private fun initializeChatLog(){
 
         chatLogProgressBar.visibility = View.VISIBLE
-        HypechatRepository().getMessagesFromChat(receiverId!!){ response ->
+        val teamId = AppPreferences.getTeamId()
+        HypechatRepository().getMessagesFromChat(teamId, receiverId!!){ response ->
 
             response?.let {
 
@@ -160,8 +162,9 @@ class ChatLogActivity : AppCompatActivity() {
             chatLogAdapter.add(ChatFromItem(message))
             chatLogEditText.text.clear()
             chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
+            val teamId = AppPreferences.getTeamId()
 
-            HypechatRepository().sendMessage(receiverId!!, message){ response ->
+            HypechatRepository().sendMessage(receiverId!!, message, teamId){ response ->
 
                 response?.let {
 
@@ -169,6 +172,7 @@ class ChatLogActivity : AppCompatActivity() {
                         ServerStatus.SENT.status -> Log.d(TAG, "sendMessage: ${it.status}")
                         ServerStatus.WRONG_TOKEN.status -> tokenFailed(it.message)
                         ServerStatus.USER_NOT_FOUND.status -> sendMessageFailed(it.message)
+                        ServerStatus.ERROR.status -> sendMessageFailed(it.message)
                         else -> Toast.makeText(this, "sendMessage: ${it.status}", Toast.LENGTH_SHORT).show()
                     }
                 }

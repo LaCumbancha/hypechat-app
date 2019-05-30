@@ -1,4 +1,4 @@
-package com.example.hypechat.data.model.rest
+package com.example.hypechat.data.model
 
 import com.example.hypechat.R
 import com.example.hypechat.data.model.rest.response.TeamResponse
@@ -18,7 +18,7 @@ class TeamRow (val team: TeamResponse): Item<ViewHolder>() {
         viewHolder.itemView.teamRowLocationTextView.text = team.location
 
         viewHolder.itemView.teamNameRowTextView.text = team.team_name
-        Picasso.get().load("")
+        Picasso.get().load(team.picture)
             .placeholder(R.drawable.profile_placeholder)
             .error(R.drawable.profile_placeholder)
             .into(viewHolder.itemView.teamRowImageView)

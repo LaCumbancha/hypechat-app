@@ -52,7 +52,8 @@ class NewMessageActivity : AppCompatActivity() {
 
     private fun fetchUsers(){
         newMessageProgressBar.visibility = View.VISIBLE
-        HypechatRepository().getUsers{response ->
+        val teamId = AppPreferences.getTeamId()
+        HypechatRepository().getUsers(teamId){response ->
             response?.let {
 
                 when (it.status){
@@ -70,7 +71,8 @@ class NewMessageActivity : AppCompatActivity() {
 
     private fun searchUsers(query: String){
         newMessageProgressBar.visibility = View.VISIBLE
-        HypechatRepository().searchUsers(query){response ->
+        val teamId = AppPreferences.getTeamId()
+        HypechatRepository().searchUsers(teamId, query){response ->
             response?.let {
 
                 when (it.status){

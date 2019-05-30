@@ -29,10 +29,13 @@ import java.time.format.DateTimeFormatter
 
 class LatestMessagesActivity : AppCompatActivity() {
 
+    companion object {
+        val TEAM_ID = "TEAM_ID"
+    }
+
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseDatabase.getInstance()
     private val latestMessagesAdapter = GroupAdapter<ViewHolder>()
-    private val latestMessagesMap = SparseArray<ChatResponse>()
     private val latestMessagesList = mutableListOf<ChatResponse>()
     private val TAG = "LatestMessages"
     private var fab_open: Animation? = null
@@ -48,6 +51,11 @@ class LatestMessagesActivity : AppCompatActivity() {
         setSupportActionBar(toolbarLatestMessages)
         AppPreferences.init(this)
         loadAnimations()
+
+        val teamId = intent.getIntExtra(TEAM_ID, 0)
+        if (teamId != 0){
+            AppPreferences.setTeamId(teamId)
+        }
 
         latestMessagesRecyclerView.layoutManager = LinearLayoutManager(this)
         latestMessagesRecyclerView.adapter = latestMessagesAdapter
@@ -95,8 +103,9 @@ class LatestMessagesActivity : AppCompatActivity() {
 
     private fun initializeLatestMessages(){
         latestMessagesProgressBar.visibility = View.VISIBLE
+        val teamId = AppPreferences.getTeamId()
 
-        HypechatRepository().getChatsPreviews{response ->
+        HypechatRepository().getChatsPreviews(teamId){response ->
 
              response?.let {
 
@@ -107,8 +116,8 @@ class LatestMessagesActivity : AppCompatActivity() {
                  }
              }
             if (response == null){
-                Toast.makeText(this, "getUsers failed", Toast.LENGTH_SHORT).show()
-                Log.w(TAG, "getUsers:failure")
+                Toast.makeText(this, "getChatsPreviews failed", Toast.LENGTH_SHORT).show()
+                Log.w(TAG, "getChatsPreviews:failure")
                 latestMessagesProgressBar.visibility = View.INVISIBLE
             }
         }

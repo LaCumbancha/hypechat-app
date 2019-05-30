@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.hypechat.data.model.rest.request.LoginRequest
 import com.example.hypechat.data.model.rest.request.MessageRequest
 import com.example.hypechat.data.model.rest.request.RegisterRequest
+import com.example.hypechat.data.model.rest.request.TeamCreationRequest
 import com.example.hypechat.data.model.rest.response.*
 import com.example.hypechat.data.rest.ApiClient
 import com.example.hypechat.data.rest.utils.AddTokenInterceptor
@@ -103,24 +104,9 @@ class HypechatRepository {
         })
     }
 
-    fun getUsers(onSuccess: (user: UsersResponse?) -> Unit) {
+    fun getUsers(teamId: Int, onSuccess: (user: UsersResponse?) -> Unit) {
 
-        val call = client?.getUsers()
-
-        call?.enqueue(object : Callback<UsersResponse> {
-            override fun onFailure(call: Call<UsersResponse>, t: Throwable) {
-                Log.w("HypechatRepository: ", t)
-            }
-
-            override fun onResponse(call: Call<UsersResponse>, response: Response<UsersResponse>) {
-                onSuccess(response.body())
-            }
-        })
-    }
-
-    fun searchUsers(query: String, onSuccess: (user: UsersResponse?) -> Unit) {
-
-        val call = client?.searchUsers(query)
+        val call = client?.getUsers(teamId)
 
         call?.enqueue(object : Callback<UsersResponse> {
             override fun onFailure(call: Call<UsersResponse>, t: Throwable) {
@@ -133,9 +119,24 @@ class HypechatRepository {
         })
     }
 
-    fun getMessagesFromChat(fromId: Int, onSuccess: (user: MessagesResponse?) -> Unit) {
+    fun searchUsers(teamId: Int, query: String, onSuccess: (user: UsersResponse?) -> Unit) {
 
-        val call = client?.getMessagesFromChat(fromId)
+        val call = client?.searchUsers(teamId, query)
+
+        call?.enqueue(object : Callback<UsersResponse> {
+            override fun onFailure(call: Call<UsersResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<UsersResponse>, response: Response<UsersResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun getMessagesFromChat(teamId: Int, fromId: Int, onSuccess: (user: MessagesResponse?) -> Unit) {
+
+        val call = client?.getMessagesFromChat(teamId, fromId)
 
         call?.enqueue(object : Callback<MessagesResponse> {
             override fun onFailure(call: Call<MessagesResponse>, t: Throwable) {
@@ -148,10 +149,10 @@ class HypechatRepository {
         })
     }
 
-    fun sendMessage(toId: Int, message: String, onSuccess: (user: ApiResponse?) -> Unit) {
+    fun sendMessage(toId: Int, message: String, teamId: Int, onSuccess: (user: ApiResponse?) -> Unit) {
 
         val body = MessageRequest(toId, message)
-        val call = client?.sendMessage(body)
+        val call = client?.sendMessage(body, teamId)
 
         call?.enqueue(object : Callback<ApiResponse> {
             override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
@@ -164,9 +165,9 @@ class HypechatRepository {
         })
     }
 
-    fun getChatsPreviews(onSuccess: (user: ChatsResponse?) -> Unit) {
+    fun getChatsPreviews(teamId: Int, onSuccess: (user: ChatsResponse?) -> Unit) {
 
-        val call = client?.getChatsPreviews()
+        val call = client?.getChatsPreviews(teamId)
 
         call?.enqueue(object : Callback<ChatsResponse> {
             override fun onFailure(call: Call<ChatsResponse>, t: Throwable) {
@@ -189,6 +190,23 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<TeamsResponse>, response: Response<TeamsResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun createTeam(teamName: String, location: String?, description: String?, welcomeMessage: String?,
+                   profilePicUrl: String?, onSuccess: (user: TeamCreationResponse?) -> Unit) {
+
+        val body = TeamCreationRequest(teamName, location, description, welcomeMessage, profilePicUrl)
+        val call = client?.createTeam(body)
+
+        call?.enqueue(object : Callback<TeamCreationResponse> {
+            override fun onFailure(call: Call<TeamCreationResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<TeamCreationResponse>, response: Response<TeamCreationResponse>) {
                 onSuccess(response.body())
             }
         })

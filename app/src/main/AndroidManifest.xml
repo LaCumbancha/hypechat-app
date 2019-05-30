@@ -28,9 +28,19 @@
                     android:resource="@xml/filepaths"/>
         </provider>
 
-        <activity android:name=".presentation.ui.TeamsActivity"
+        <activity android:name=".presentation.ui.MyProfileActivity"
                   android:parentActivityName=".presentation.ui.LatestMessagesActivity"
                   android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".presentation.ui.NewTeamActivity"
+                android:parentActivityName=".presentation.ui.TeamsActivity"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".presentation.ui.TeamsActivity"
+                android:parentActivityName=".presentation.ui.LatestMessagesActivity"
+                android:screenOrientation="portrait">
         </activity>
         <activity
                 android:name=".presentation.ui.ChatLogActivity"

@@ -9,7 +9,7 @@ object AppPreferences {
     private lateinit var preferences: SharedPreferences
 
     val AUTH_TOKEN = "auth_token"
-    val USERNAME = "username"
+    val TEAM_ID = "team_id"
     val PREF_COOKIES = "cookies"
 
     fun init(context: Context) {
@@ -45,14 +45,14 @@ object AppPreferences {
         return preferences.getString(AUTH_TOKEN, null)
     }
 
-    fun setUserName(username: String) {
+    fun setTeamId(teamId: Int) {
         preferences.edit {
-            it.putString(USERNAME, username)
+            it.putInt(TEAM_ID, teamId)
         }
     }
 
-    fun getUserName(): String? {
-        return preferences.getString(USERNAME, null)
+    fun getTeamId(): Int {
+        return preferences.getInt(TEAM_ID, 0)
     }
 
     fun setCookies(cookies: HashSet<String>) {

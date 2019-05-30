@@ -19,13 +19,13 @@ import com.example.hypechat.data.rest.utils.ServerStatus
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.android.synthetic.main.activity_registration.*
+import kotlinx.android.synthetic.main.activity_new_team.*
 import java.util.*
 
-class RegistrationActivity : AppCompatActivity() {
+class NewTeamActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
-    private val TAG = "Registration"
+    private val TAG = "NewTeam"
     private val REQUEST_CODE_ASK_PERMISSIONS = 123
     private val REQUEST_IMAGE_PICK = 1
     private var currentPhotoPath: String = ""
@@ -33,13 +33,11 @@ class RegistrationActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_registration)
+        setContentView(R.layout.activity_new_team)
 
-        auth = FirebaseAuth.getInstance()
-        AppPreferences.init(this)
-
-        setSupportActionBar(toolbarRegistration)
+        setSupportActionBar(toolbarNewTeam)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        AppPreferences.init(this)
     }
 
     private fun validateField(field: TextInputLayout): Boolean {
@@ -55,7 +53,7 @@ class RegistrationActivity : AppCompatActivity() {
         }
     }
 
-    fun selectImageFromDevice(view: View) {
+    fun selectTeamImageFromDevice(view: View) {
         val hasReadExternalStoragePermission = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
         if (hasReadExternalStoragePermission != PackageManager.PERMISSION_GRANTED){
             requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE_ASK_PERMISSIONS)
@@ -74,8 +72,8 @@ class RegistrationActivity : AppCompatActivity() {
             selectedPhotoUri = data.data
             currentPhotoPath = getRealPathFromUri(selectedPhotoUri!!)
             val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, selectedPhotoUri)
-            registerProfileImageView.setImageBitmap(bitmap)
-            registrationPictureButton.alpha = 0f
+            newTeamImageView.setImageBitmap(bitmap)
+            newTeamPictureButton.alpha = 0f
         }
     }
 
@@ -93,36 +91,17 @@ class RegistrationActivity : AppCompatActivity() {
         }
     }
 
-    fun registerUser(view: View){
+    fun createTeam(view: View){
 
-        if (validateField(userNameTextInputLayout) && validateField(registerEmailTextInputLayout)
-            && validateField(registerPasswordTextInputLayout) && selectedPhotoUri != null){
+        if (validateField(newTeamNameTextInputLayout) && selectedPhotoUri != null){
 
             loadingScreen()
-            var firstName: String? = null
-            var lastName: String? = null
-            firstNameTextInputLayout.editText?.let {
-                firstName = it.text.toString()
-            }
-            lastNameTextInputLayout.editText?.let {
-                lastName = it.text.toString()
-            }
-            val username = userNameTextInputLayout.editText!!.text.toString()
-            val email = registerEmailTextInputLayout.editText!!.text.toString()
-            val password = registerPasswordTextInputLayout.editText!!.text.toString()
+            val teamName = newTeamNameTextInputLayout.editText!!.text.toString()
+            val location = newTeamLocationTextInputLayout.editText!!.text.toString()
+            val description = newTeamDescriptionTextInputLayout.editText!!.text.toString()
+            val welcomeMessage = newTeamWelcomeMessageTextInputLayout.editText!!.text.toString()
 
-            auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        Log.d(TAG, "createUserWithEmail:success")
-                        saveProfilePicture(username, email, password, firstName, lastName)
-                    } else {
-                        Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                        val error = task.exception.toString().split(": ")
-                        val msg = error[1]
-                        errorOccurred(msg)
-                    }
-                }
+            saveProfilePicture(teamName, location, description, welcomeMessage)
         } else if (selectedPhotoUri == null){
 
             val builder = AlertDialog.Builder(this)
@@ -134,53 +113,7 @@ class RegistrationActivity : AppCompatActivity() {
         }
     }
 
-    private fun register(username:String, email: String, password: String, firstName:String?,
-                         lastName: String?, profilePicUrl: String?){
-
-        HypechatRepository().registerUser(username, email, password, firstName, lastName, profilePicUrl){ response ->
-
-            response?.let {
-
-                when (it.status){
-                    ServerStatus.ACTIVE.status -> navigateToLatestMessages()
-                    ServerStatus.ALREADY_REGISTERED.status -> registrationFailed(it.message)
-                }
-            }
-            if (response == null){
-                Log.w(TAG, "registerUser:failure")
-                errorOccurred(null)
-            }
-        }
-    }
-
-    private fun navigateToLatestMessages(){
-
-        Log.d(TAG, "registerUser:success")
-        val intent = Intent(this, LatestMessagesActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-        startActivity(intent)
-        registrationProgressBar.visibility = View.INVISIBLE
-    }
-
-    private fun registrationFailed(msg: String){
-
-        registrationProgressBar.visibility = View.INVISIBLE
-        registrationCardView.visibility = View.VISIBLE
-        Log.w(TAG, msg)
-
-        val builder = android.app.AlertDialog.Builder(this)
-        builder.setTitle("Error")
-        builder.setMessage(msg)
-
-        builder.setPositiveButton("Ok"){ dialog, which ->
-            dialog.dismiss()
-        }
-
-        val dialog = builder.create()
-        dialog.show()
-    }
-
-    private fun saveProfilePicture(username: String, email: String, password: String, firstName: String?, lastName: String?){
+    private fun saveProfilePicture(teamName: String, location: String?, description: String?, welcomeMessage: String?){
 
         val filename = UUID.randomUUID().toString()
         val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
@@ -191,23 +124,53 @@ class RegistrationActivity : AppCompatActivity() {
                 ref.downloadUrl.addOnSuccessListener { uri ->
                     Log.d(TAG, "File location: $uri")
                     val profilePicUrl = uri.toString()
-                    register(username, email, password, firstName, lastName, profilePicUrl)
+                    create(teamName, location, description, welcomeMessage, profilePicUrl)
                 }
             }
             .addOnFailureListener {
                 Log.w(TAG, "Failed to upload profile picture to Storage", it.cause)
-                register(username, email, password, firstName, lastName, null)
+                create(teamName, location, description, welcomeMessage, null)
             }
     }
 
+    private fun create(teamName: String, location: String?, description: String?, welcomeMessage: String?, profilePicUrl: String?){
+
+        HypechatRepository().createTeam(teamName, location, description, welcomeMessage, profilePicUrl){ response ->
+
+            response?.let {
+
+                when (it.status){
+                    ServerStatus.CREATED.status -> navigateToLatestMessages(it.team.team_id)
+                    ServerStatus.ALREADY_REGISTERED.status -> creationFailed(it.message)
+                    ServerStatus.WRONG_TOKEN.status -> creationFailed(it.message)
+                    ServerStatus.ERROR.status -> creationFailed(it.message)
+                }
+            }
+            if (response == null){
+                Log.w(TAG, "registerUser:failure")
+                errorOccurred(null)
+            }
+        }
+    }
+
+    private fun navigateToLatestMessages(teamId: Int){
+
+        Log.d(TAG, "createTeam:success")
+        AppPreferences.setTeamId(teamId)
+        val intent = Intent(this, LatestMessagesActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        newTeamProgressBar.visibility = View.INVISIBLE
+    }
+
     private fun loadingScreen(){
-        registrationProgressBar.visibility = View.VISIBLE
-        registrationCardView.visibility = View.GONE
+        newTeamProgressBar.visibility = View.VISIBLE
+        newTeamCardView.visibility = View.GONE
     }
 
     private fun errorOccurred(error: String?){
-        registrationProgressBar.visibility = View.INVISIBLE
-        registrationCardView.visibility = View.VISIBLE
+        newTeamProgressBar.visibility = View.INVISIBLE
+        newTeamCardView.visibility = View.VISIBLE
 
         val builder = android.app.AlertDialog.Builder(this)
         builder.setTitle("Error")
@@ -215,6 +178,24 @@ class RegistrationActivity : AppCompatActivity() {
         error?.let {
             msg = it
         }
+        builder.setMessage(msg)
+
+        builder.setPositiveButton("Ok"){ dialog, which ->
+            dialog.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    private fun creationFailed(msg: String){
+
+        newTeamProgressBar.visibility = View.INVISIBLE
+        newTeamCardView.visibility = View.VISIBLE
+        Log.w(TAG, msg)
+
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setTitle("Error")
         builder.setMessage(msg)
 
         builder.setPositiveButton("Ok"){ dialog, which ->

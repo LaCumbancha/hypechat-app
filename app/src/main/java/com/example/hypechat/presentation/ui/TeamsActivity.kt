@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hypechat.R
 import com.example.hypechat.data.local.AppPreferences
-import com.example.hypechat.data.model.rest.TeamRow
+import com.example.hypechat.data.model.TeamRow
 import com.example.hypechat.data.model.rest.response.TeamResponse
 import com.example.hypechat.data.repository.HypechatRepository
 import com.example.hypechat.data.rest.utils.ServerStatus
@@ -36,12 +36,12 @@ class TeamsActivity : AppCompatActivity() {
         teamsRecyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 
         initializeTeams()
-        //setAdapterOnItemClickListener()
+        setAdapterOnItemClickListener()
     }
 
     fun newTeam(view: View){
-        //val intent = Intent(this, NewTeamActivity::class.java)
-        //startActivity(intent)
+        val intent = Intent(this, NewTeamActivity::class.java)
+        startActivity(intent)
     }
 
     private fun initializeTeams(){
@@ -68,8 +68,8 @@ class TeamsActivity : AppCompatActivity() {
         teamAdapter.setOnItemClickListener { item, view ->
             val intent = Intent(this, LatestMessagesActivity::class.java)
             val row = item as TeamRow
-
-            //intent.putExtra(LatestMessagesActivity.XXXX, row.team.chatName)
+            intent.putExtra(LatestMessagesActivity.TEAM_ID, row.team.team_id)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
         }
     }

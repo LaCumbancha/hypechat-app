@@ -6,7 +6,9 @@ data class TeamResponse (
 
     @SerializedName("description") val description : String?,
     @SerializedName("location") val location : String?,
-    @SerializedName("team_id") val team_id : Int,
+    @SerializedName("picture") val picture : String?,
+    @SerializedName("id") val team_id : Int,
     @SerializedName("team_name") val team_name : String,
+    @SerializedName("role") val role : String,
     @SerializedName("welcome_message") val welcome_message : String?
 )
