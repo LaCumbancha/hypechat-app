@@ -166,7 +166,7 @@ class HypechatRepository {
 
     fun sendMessage(toId: Int, message: String, teamId: Int, onSuccess: (user: ApiResponse?) -> Unit) {
 
-        val body = MessageRequest(toId, message)
+        val body = MessageRequest(toId, teamId, message)
         val call = client?.sendMessage(body)
 
         call?.enqueue(object : Callback<ApiResponse> {

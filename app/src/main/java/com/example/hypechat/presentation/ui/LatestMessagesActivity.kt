@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.util.SparseArray
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -26,6 +25,8 @@ import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.activity_latest_messages.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+
+
 
 class LatestMessagesActivity : AppCompatActivity() {
 

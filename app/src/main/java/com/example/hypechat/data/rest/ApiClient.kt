@@ -25,8 +25,7 @@ interface ApiClient {
     @GET("/teams/{team_id}/users/{query}")
     fun searchUsers(@Path("team_id") team_id: Int, @Path("query") query: String): Call<UsersResponse>
 
-    //@POST("/teams/{team_id}/messages")
-    @POST("/teams/1/messages")
+    @POST("/teams/messages")
     fun sendMessage(@Body body: MessageRequest): Call<ApiResponse>
 
     @GET("/teams/{team_id}/messages/{chat_id}")
@@ -38,7 +37,7 @@ interface ApiClient {
     @POST("/teams")
     fun createTeam(@Body body: TeamCreationRequest): Call<TeamCreationResponse>
 
-    @POST("/teams/{team_id}/invite")
+    @POST("/teams/{team_id}/invite") //meter el team id en el body
     fun inviteUserToTeam(@Path("team_id") team_id: Int, @Body body: InvitationRequest): Call<ApiResponse>
 
     @GET("/users/teams")
