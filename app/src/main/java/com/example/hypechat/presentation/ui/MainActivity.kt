@@ -10,7 +10,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.example.hypechat.R
 import com.example.hypechat.data.local.AppPreferences
-import com.example.hypechat.data.model.User
 import com.example.hypechat.data.repository.HypechatRepository
 import com.example.hypechat.data.rest.utils.ServerStatus
 import com.facebook.AccessToken
@@ -21,11 +20,6 @@ import com.facebook.login.LoginResult
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {

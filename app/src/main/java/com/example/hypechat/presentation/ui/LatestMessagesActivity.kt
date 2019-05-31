@@ -204,6 +204,8 @@ class LatestMessagesActivity : AppCompatActivity() {
         }
 
         R.id.action_my_profile -> {
+            val intent = Intent(this, MyProfileActivity::class.java)
+            startActivity(intent)
             true
         }
 

@@ -19,7 +19,7 @@ class TeamRow (val team: TeamResponse): Item<ViewHolder>() {
 
         viewHolder.itemView.teamNameRowTextView.text = team.team_name
         Picasso.get().load(team.picture)
-            .placeholder(R.drawable.profile_placeholder)
+            .placeholder(R.drawable.placeholder)
             .error(R.drawable.profile_placeholder)
             .into(viewHolder.itemView.teamRowImageView)
     }

@@ -23,7 +23,7 @@ class UserItem(val user: UserResponse): Item<ViewHolder>() {
 
         //user.profilePictureUrl
         Picasso.get().load(user.profile_pic)
-                .placeholder(R.drawable.profile_placeholder)
+                .placeholder(R.drawable.placeholder)
                 .error(R.drawable.profile_placeholder)
                 .into(viewHolder.itemView.profileImageView)
     }

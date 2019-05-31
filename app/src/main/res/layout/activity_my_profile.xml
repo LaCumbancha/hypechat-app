@@ -53,10 +53,11 @@
                         android:text="@string/registration_picture_button"
                         style="@style/ProfileImageButton"
                         android:id="@+id/myProfilePictureButton"
+                        android:enabled="false"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        android:layout_marginTop="8dp"/>
+                        android:layout_marginTop="8dp" android:onClick="selectProfileImageFromDevice"/>
 
                 <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="0dp"
@@ -72,6 +73,8 @@
                     <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
                             android:hint="@string/register_firstname_placeholder"
                             android:inputType="text"/>
                 </com.google.android.material.textfield.TextInputLayout>
@@ -88,6 +91,8 @@
                     <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
                             android:hint="@string/register_lastname_placeholder"
                             android:inputType="text"/>
                 </com.google.android.material.textfield.TextInputLayout>
@@ -104,6 +109,8 @@
                     <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
                             android:hint="@string/register_username_placeholder"
                             android:inputType="text"/>
                 </com.google.android.material.textfield.TextInputLayout>
@@ -121,6 +128,8 @@
                     <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
                             android:hint="@string/register_email_placeholder"
                             android:inputType="text"/>
                 </com.google.android.material.textfield.TextInputLayout>
@@ -133,12 +142,35 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:layout_marginTop="8dp"
-                        app:layout_constraintTop_toBottomOf="@+id/registerEmailTextInputLayout"/>
+                        app:layout_constraintTop_toBottomOf="@+id/registerEmailTextInputLayout"
+                        android:onClick="editProfile"/>
+                <Button
+                        android:text="@string/my_profile_save_button"
+                        style="@style/AppTheme.RoundedCornerMaterialButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/myProfileSaveButton"
+                        android:visibility="invisible"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintTop_toBottomOf="@+id/myProfileEditButton"/>
+                <Button
+                        android:text="@string/my_profile_cancel_button"
+                        style="@style/AppTheme.RoundedCornerMaterialButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/myProfileCancelButton"
+                        android:visibility="invisible"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintTop_toBottomOf="@+id/myProfileSaveButton" android:onClick="cancelEdit"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
     </androidx.core.widget.NestedScrollView>
     <ProgressBar
-            android:id="@+id/registrationProgressBar"
+            android:id="@+id/myProfileProgressBar"
             style="@style/ProgressBar"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

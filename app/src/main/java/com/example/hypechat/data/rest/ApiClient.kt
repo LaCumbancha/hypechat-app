@@ -16,14 +16,18 @@ interface ApiClient {
     @POST("/users/logout")
     fun logoutUser(): Call<ApiResponse>
 
+    @GET("/users/profile")
+    fun getUserProfile(): Call<ProfileResponse>
+
     @GET("/teams/{team_id}/users/%")
     fun getUsers(@Path("team_id") team_id: Int): Call<UsersResponse>
 
     @GET("/teams/{team_id}/users/{query}")
     fun searchUsers(@Path("team_id") team_id: Int, @Path("query") query: String): Call<UsersResponse>
 
-    @POST("/teams/{team_id}/messages")
-    fun sendMessage(@Body body: MessageRequest, @Path("team_id") team_id: Int): Call<ApiResponse>
+    //@POST("/teams/{team_id}/messages")
+    @POST("/teams/1/messages")
+    fun sendMessage(@Body body: MessageRequest): Call<ApiResponse>
 
     @GET("/teams/{team_id}/messages/{chat_id}")
     fun getMessagesFromChat(@Path("team_id") team_id: Int, @Path("chat_id") chatId: Int): Call<MessagesResponse>

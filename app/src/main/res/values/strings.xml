@@ -69,7 +69,8 @@
     <!--My Profile-->
     <string name="my_profile_toolbar">My Profile</string>
     <string name="my_profile_edit_button">EDIT PROFILE</string>
-    <string name="my_profile_upload_button">UPLOAD PROFILE</string>
+    <string name="my_profile_save_button">SAVE PROFILE</string>
+    <string name="my_profile_cancel_button">CANCEL</string>
     <string name="my_profile_first_name">First Name</string>
     <string name="my_profile_last_name">Description</string>
     <string name="my_profile_username">Welcome Message</string>

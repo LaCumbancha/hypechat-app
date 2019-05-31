@@ -104,6 +104,21 @@ class HypechatRepository {
         })
     }
 
+    fun getUserProfile(onSuccess: (user: ProfileResponse?) -> Unit) {
+
+        val call = client?.getUserProfile()
+
+        call?.enqueue(object : Callback<ProfileResponse> {
+            override fun onFailure(call: Call<ProfileResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ProfileResponse>, response: Response<ProfileResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
     fun getUsers(teamId: Int, onSuccess: (user: UsersResponse?) -> Unit) {
 
         val call = client?.getUsers(teamId)
@@ -152,7 +167,7 @@ class HypechatRepository {
     fun sendMessage(toId: Int, message: String, teamId: Int, onSuccess: (user: ApiResponse?) -> Unit) {
 
         val body = MessageRequest(toId, message)
-        val call = client?.sendMessage(body, teamId)
+        val call = client?.sendMessage(body)
 
         call?.enqueue(object : Callback<ApiResponse> {
             override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
