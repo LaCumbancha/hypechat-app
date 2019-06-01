@@ -4,6 +4,11 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".LatestMessagesActivity">
 
+    <item android:id="@+id/action_my_teams"
+          android:icon="@drawable/ic_group_white_24dp"
+          android:title="@string/my_teams"
+          app:showAsAction="ifRoom"/>
+
     <item android:id="@+id/action_my_profile"
           android:icon="@drawable/ic_person_white_24dp"
           android:title="@string/my_profile"

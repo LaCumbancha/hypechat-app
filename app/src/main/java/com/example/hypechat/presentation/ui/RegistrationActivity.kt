@@ -11,13 +11,13 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.hypechat.R
-import com.example.hypechat.data.model.User
+import com.example.hypechat.data.local.AppPreferences
+import com.example.hypechat.data.repository.HypechatRepository
+import com.example.hypechat.data.rest.utils.ServerStatus
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_registration.*
 import java.util.*
@@ -36,6 +36,7 @@ class RegistrationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_registration)
 
         auth = FirebaseAuth.getInstance()
+        AppPreferences.init(this)
 
         setSupportActionBar(toolbarRegistration)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -94,9 +95,19 @@ class RegistrationActivity : AppCompatActivity() {
 
     fun registerUser(view: View){
 
-        if (validateField(fullnameTextInputLayout) && validateField(registerEmailTextInputLayout)
+        if (validateField(userNameTextInputLayout) && validateField(registerEmailTextInputLayout)
             && validateField(registerPasswordTextInputLayout) && selectedPhotoUri != null){
 
+            loadingScreen()
+            var firstName: String? = null
+            var lastName: String? = null
+            firstNameTextInputLayout.editText?.let {
+                firstName = it.text.toString()
+            }
+            lastNameTextInputLayout.editText?.let {
+                lastName = it.text.toString()
+            }
+            val username = userNameTextInputLayout.editText!!.text.toString()
             val email = registerEmailTextInputLayout.editText!!.text.toString()
             val password = registerPasswordTextInputLayout.editText!!.text.toString()
 
@@ -104,11 +115,12 @@ class RegistrationActivity : AppCompatActivity() {
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         Log.d(TAG, "createUserWithEmail:success")
-                        Toast.makeText(this, "createUserWithEmail:success!!!!!", Toast.LENGTH_SHORT).show()
-                        saveProfilePicture()
+                        saveProfilePicture(username, email, password, firstName, lastName)
                     } else {
                         Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                        Toast.makeText(this, "Authentication failed: ${task.exception}", Toast.LENGTH_SHORT).show()
+                        val error = task.exception.toString().split(": ")
+                        val msg = error[1]
+                        errorOccurred(msg)
                     }
                 }
         } else if (selectedPhotoUri == null){
@@ -122,7 +134,53 @@ class RegistrationActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveProfilePicture(){
+    private fun register(username:String, email: String, password: String, firstName:String?,
+                         lastName: String?, profilePicUrl: String?){
+
+        HypechatRepository().registerUser(username, email, password, firstName, lastName, profilePicUrl){ response ->
+
+            response?.let {
+
+                when (it.status){
+                    ServerStatus.ACTIVE.status -> navigateToLatestMessages()
+                    ServerStatus.ALREADY_REGISTERED.status -> registrationFailed(it.message)
+                }
+            }
+            if (response == null){
+                Log.w(TAG, "registerUser:failure")
+                errorOccurred(null)
+            }
+        }
+    }
+
+    private fun navigateToLatestMessages(){
+
+        Log.d(TAG, "registerUser:success")
+        val intent = Intent(this, LatestMessagesActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        registrationProgressBar.visibility = View.INVISIBLE
+    }
+
+    private fun registrationFailed(msg: String){
+
+        registrationProgressBar.visibility = View.INVISIBLE
+        registrationCardView.visibility = View.VISIBLE
+        Log.w(TAG, msg)
+
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setTitle("Error")
+        builder.setMessage(msg)
+
+        builder.setPositiveButton("Ok"){ dialog, which ->
+            dialog.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    private fun saveProfilePicture(username: String, email: String, password: String, firstName: String?, lastName: String?){
 
         val filename = UUID.randomUUID().toString()
         val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
@@ -130,32 +188,40 @@ class RegistrationActivity : AppCompatActivity() {
         ref.putFile(selectedPhotoUri!!)
             .addOnSuccessListener {
                 Log.d(TAG, "Successfully uploaded profile picture: ${it.metadata?.path}")
-                ref.downloadUrl.addOnSuccessListener {
-                    Log.d(TAG, "File location: $it")
-                    saveUser(it.toString())
+                ref.downloadUrl.addOnSuccessListener { uri ->
+                    Log.d(TAG, "File location: $uri")
+                    val profilePicUrl = uri.toString()
+                    register(username, email, password, firstName, lastName, profilePicUrl)
                 }
             }
             .addOnFailureListener {
                 Log.w(TAG, "Failed to upload profile picture to Storage", it.cause)
+                register(username, email, password, firstName, lastName, null)
             }
     }
 
-    private fun saveUser(profilePictureUrl: String){
+    private fun loadingScreen(){
+        registrationProgressBar.visibility = View.VISIBLE
+        registrationCardView.visibility = View.GONE
+    }
 
-        val uid = auth.uid
-        val fullName = fullnameTextInputLayout.editText!!.text.toString()
-        val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
-        val newUser = User(uid!!, fullName, profilePictureUrl)
+    private fun errorOccurred(error: String?){
+        registrationProgressBar.visibility = View.INVISIBLE
+        registrationCardView.visibility = View.VISIBLE
 
-        ref.setValue(newUser)
-            .addOnSuccessListener {
-                Log.d(TAG, "User saved to Database")
-                val intent = Intent(this, LatestMessagesActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
-            }
-            .addOnFailureListener {
-                Log.w(TAG, "Failed to save user to Database", it.cause)
-            }
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setTitle("Error")
+        var msg = "There was a problem during the registration process. Please, try again."
+        error?.let {
+            msg = it
+        }
+        builder.setMessage(msg)
+
+        builder.setPositiveButton("Ok"){ dialog, which ->
+            dialog.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
     }
 }

@@ -8,6 +8,10 @@ object AppPreferences {
     private const val MODE = Context.MODE_PRIVATE
     private lateinit var preferences: SharedPreferences
 
+    val AUTH_TOKEN = "auth_token"
+    val TEAM_ID = "team_id"
+    val PREF_COOKIES = "cookies"
+
     fun init(context: Context) {
         preferences = context.getSharedPreferences(
             NAME,
@@ -23,6 +27,42 @@ object AppPreferences {
         val editor = edit()
         operation(editor)
         editor.apply()
+    }
+
+    fun clearSharedPreferences(){
+        preferences.edit{
+            it.clear()
+        }
+    }
+
+    fun setToken(token: String) {
+        preferences.edit {
+            it.putString(AUTH_TOKEN, token)
+        }
+    }
+
+    fun getToken(): String? {
+        return preferences.getString(AUTH_TOKEN, null)
+    }
+
+    fun setTeamId(teamId: Int) {
+        preferences.edit {
+            it.putInt(TEAM_ID, teamId)
+        }
+    }
+
+    fun getTeamId(): Int {
+        return preferences.getInt(TEAM_ID, 0)
+    }
+
+    fun setCookies(cookies: HashSet<String>) {
+        preferences.edit {
+            it.putStringSet(PREF_COOKIES, cookies)
+        }
+    }
+
+    fun getCookies(): HashSet<String>? {
+        return preferences.getStringSet(PREF_COOKIES, null) as HashSet<String>?
     }
 
 //    var language: String?

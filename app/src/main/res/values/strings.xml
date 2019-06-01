@@ -5,6 +5,7 @@
 
 
     <!--Main-->
+    <string name="hypechat_name">HYPECHAT</string>
     <string name="login_with_facebook_button">LOG IN WITH FACEBOOK</string>
     <string name="login_with_email_button">LOG IN WITH EMAIL</string>
     <string name="trouble_logging">
@@ -24,19 +25,24 @@
     <string name="registration_toolbar">Register</string>
     <string name="registration_picture_button">SELECT PICTURE</string>
     <string name="register_button">REGISTER</string>
-    <string name="register_fullname_placeholder">Fullname</string>
+    <string name="register_firstname_placeholder">First Name</string>
+    <string name="register_lastname_placeholder">Last Name</string>
+    <string name="register_username_placeholder">Username</string>
     <string name="register_email_placeholder">Email</string>
     <string name="register_password_placeholder">Password</string>
     <!--Registration-->
 
     <!--Latest Messages-->
-    <string name="latest_messages_toolbar">Hypechat</string>
+    <string name="latest_messages_toolbar">Active Chats</string>
+    <string name="my_teams">Teams</string>
     <string name="my_profile">My profile</string>
     <string name="logout">Logout</string>
     <!--Latest Messages-->
 
     <!--New Message-->
     <string name="new_message_toolbar">New Message</string>
+    <string name="search_bar_placeholder">Search for a user</string>
+    <string name="no_results">No results found</string>
     <string name="new_channel_button">New Channel</string>
     <!--New Message-->
 
@@ -44,6 +50,32 @@
     <string name="type_a_message_hint">Type a message</string>
     <string name="this_is_a_message">This is a message</string>
     <!--Chat Log-->
+
+    <!--Teams-->
+    <string name="teams_toolbar">Teams</string>
+    <string name="no_teams">No teams found</string>
+    <!--Teams-->
+
+    <!--New Team-->
+    <string name="new_team_toolbar">New Team</string>
+    <string name="new_team_picture_button">SELECT TEAM PICTURE</string>
+    <string name="new_team_button">CREATE TEAM</string>
+    <string name="new_team_name_placeholder">Team Name</string>
+    <string name="new_team_description_placeholder">Description</string>
+    <string name="new_team_welcome_message_placeholder">Welcome Message</string>
+    <string name="new_team_location_placeholder">Location</string>
+    <!--New Team-->
+
+    <!--My Profile-->
+    <string name="my_profile_toolbar">My Profile</string>
+    <string name="my_profile_edit_button">EDIT PROFILE</string>
+    <string name="my_profile_save_button">SAVE PROFILE</string>
+    <string name="my_profile_cancel_button">CANCEL</string>
+    <string name="my_profile_first_name">First Name</string>
+    <string name="my_profile_last_name">Description</string>
+    <string name="my_profile_username">Welcome Message</string>
+    <string name="my_profile_email">Location</string>
+    <!--My Profile-->
 
 
 </resources>

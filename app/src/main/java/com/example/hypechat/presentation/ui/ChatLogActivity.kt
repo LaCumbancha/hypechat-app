@@ -1,103 +1,202 @@
 package com.example.hypechat.presentation.ui
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hypechat.R
+import com.example.hypechat.data.local.AppPreferences
 import com.example.hypechat.data.model.ChatFromItem
-import com.example.hypechat.data.model.ChatMessage
 import com.example.hypechat.data.model.ChatToItem
-import com.example.hypechat.data.model.User
+import com.example.hypechat.data.model.rest.response.MessageResponse
+import com.example.hypechat.data.model.rest.response.UserResponse
+import com.example.hypechat.data.repository.HypechatRepository
+import com.example.hypechat.data.rest.utils.ServerStatus
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.activity_chat_log.*
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class ChatLogActivity : AppCompatActivity() {
 
-    private var user: User? = null
+    companion object {
+        val USER = "USER"
+        val USERNAME = "USERNAME"
+        val RECEIVERID = "RECEIVERID"
+        val SENDERID = "SENDERID"
+    }
+
+    private var user: UserResponse? = null
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseDatabase.getInstance()
     private val fromId = auth.uid
-    private var toId: String? = null
+    private var selectedUserId: Int? = null
+    private var senderId: Int? = null
+    private var receiverId: Int? = null
     private val chatLogAdapter = GroupAdapter<ViewHolder>()
+    private val TAG = "ChatLog"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_log)
 
-        user = intent.getParcelableExtra(NewMessageActivity.USER)
+        user = intent.getSerializableExtra(USER) as UserResponse?
+        val username = intent.getStringExtra(USERNAME)
+        val receiver = intent.getIntExtra(RECEIVERID, 0)
+        val sender = intent.getIntExtra(SENDERID, 0)
         user?.let {
-            toolbarChatLog.title = it.fullname
-            toId = it.uid
+            toolbarChatLog.title = it.username
+            receiverId = it.id
+        }
+        if (username != null && receiver != 0 && sender != 0){
+            toolbarChatLog.title = username
+            senderId = sender
+            receiverId = receiver
         }
         setSupportActionBar(toolbarChatLog)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        AppPreferences.init(this)
 
         chatLogRecyclerView.layoutManager = LinearLayoutManager(this)
         chatLogRecyclerView.adapter = chatLogAdapter
         initializeChatLog()
     }
 
+    private fun verifyUserIsLoggedIn(){
+        val auth = AppPreferences.getCookies()
+        if (auth == null){
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+        }
+    }
+
     private fun initializeChatLog(){
 
-        val ref = db.getReference("/users-messages/$fromId/$toId")
-        ref.addChildEventListener(object : ChildEventListener{
+        chatLogProgressBar.visibility = View.VISIBLE
+        val teamId = AppPreferences.getTeamId()
+        HypechatRepository().getMessagesFromChat(teamId, receiverId!!){ response ->
 
-            override fun onChildAdded(p0: DataSnapshot, p1: String?) {
-                val chatMessage = p0.getValue(ChatMessage::class.java)
-                if (chatMessage != null) {
+            response?.let {
 
-                    if (chatMessage.fromId == auth.uid){
-                        chatLogAdapter.add(ChatFromItem(chatMessage.message))
-                    } else {
-                        chatLogAdapter.add(ChatToItem(chatMessage.message))
-                    }
+                when (it.status){
+                    ServerStatus.LIST.status -> initializeChat(it.messages)
+                    ServerStatus.WRONG_TOKEN.status -> tokenFailed(it.message)
+                    ServerStatus.CHAT_NOT_FOUND.status -> loadingChatFailed(it.message)
                 }
-                chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
             }
-
-            override fun onCancelled(p0: DatabaseError) {
-
+            if (response == null){
+                Log.w(TAG, "getMessagesFromChat:failure")
+                chatLogProgressBar.visibility = View.INVISIBLE
             }
+        }
+    }
 
-            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+    private fun initializeChat(messages: List<MessageResponse>){
 
+        val sortedMessages = messages.sortedBy { message ->
+            LocalDateTime.parse(message.timestamp, DateTimeFormatter.RFC_1123_DATE_TIME)
+        }
+        for (message in sortedMessages){
+            if (message.fromId == receiverId){
+                chatLogAdapter.add(ChatToItem(message.message))
+            } else {
+                chatLogAdapter.add(ChatFromItem(message.message))
             }
+        }
+        Log.d(TAG, "getMessagesFromChat:success")
+        chatLogProgressBar.visibility = View.INVISIBLE
+    }
 
-            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+    private fun loadingChatFailed(msg: String){
 
-            }
+        chatLogProgressBar.visibility = View.INVISIBLE
+        Log.w(TAG, msg)
 
-            override fun onChildRemoved(p0: DataSnapshot) {
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setTitle("Error")
+        builder.setMessage(msg)
 
-            }
+        builder.setPositiveButton("Refresh"){ dialog, which ->
+            dialog.dismiss()
+            initializeChatLog()
+        }
+        builder.setNegativeButton("Cancel"){ dialog, which ->
+            dialog.dismiss()
+        }
 
-        })
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    private fun tokenFailed(msg: String){
+
+        chatLogProgressBar.visibility = View.INVISIBLE
+        Log.w(TAG, msg)
+
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setTitle("Error")
+        builder.setMessage(msg)
+
+        builder.setPositiveButton("Ok"){ dialog, which ->
+            dialog.dismiss()
+            verifyUserIsLoggedIn()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
     }
 
     fun sendChatMessage(view: View){
 
         val message = chatLogEditText.text.toString()
 
-        val ref = db.getReference("/users-messages/$fromId/$toId").push()
-        val toRef = db.getReference("/users-messages/$toId/$fromId").push()
-        val latestMessagesRef = db.getReference("/latest-messages/$fromId/$toId")
-        val latestMessagesToRef = db.getReference("/latest-messages/$toId/$fromId")
+        if (message != ""){
 
-        val chatMessage = ChatMessage(ref.key!!, fromId!!, toId!!, message, System.currentTimeMillis()/1000) //seconds
-        ref.setValue(chatMessage)
-            .addOnSuccessListener {
-                chatLogEditText.text.clear()
-                chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
+            chatLogAdapter.add(ChatFromItem(message))
+            chatLogEditText.text.clear()
+            chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
+            val teamId = AppPreferences.getTeamId()
+
+            HypechatRepository().sendMessage(receiverId!!, message, teamId){ response ->
+
+                response?.let {
+
+                    when (it.status){
+                        ServerStatus.SENT.status -> Log.d(TAG, "sendMessage: ${it.status}")
+                        ServerStatus.WRONG_TOKEN.status -> tokenFailed(it.message)
+                        ServerStatus.USER_NOT_FOUND.status -> sendMessageFailed(it.message)
+                        ServerStatus.ERROR.status -> sendMessageFailed(it.message)
+                        else -> Toast.makeText(this, "sendMessage: ${it.status}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                if (response == null){
+                    Toast.makeText(this, "sendMessage failed", Toast.LENGTH_SHORT).show()
+                    Log.w(TAG, "sendMessage failed")
+                }
             }
-        toRef.setValue(chatMessage)
-        latestMessagesRef.setValue(chatMessage)
-        latestMessagesToRef.setValue(chatMessage)
+        }
+    }
+
+    private fun sendMessageFailed(msg: String){
+
+        Log.w(TAG, msg)
+
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setTitle("Error")
+        builder.setMessage("$msg Please, try again.")
+
+        builder.setPositiveButton("Ok"){ dialog, which ->
+            dialog.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
     }
 }
