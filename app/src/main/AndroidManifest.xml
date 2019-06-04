@@ -12,9 +12,8 @@
     <application
             android:name=".presentation.utils.MyApplication"
             android:allowBackup="true"
-            android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
-            android:roundIcon="@mipmap/ic_launcher_round"
+            android:roundIcon="@mipmap/ic_launcher_hypechat"
             android:supportsRtl="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
@@ -27,6 +26,12 @@
                     android:name="android.support.FILE_PROVIDER_PATHS"
                     android:resource="@xml/filepaths"/>
         </provider>
+
+        <service android:name=".data.service.MessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <activity android:name=".presentation.ui.MyProfileActivity"
                   android:parentActivityName=".presentation.ui.LatestMessagesActivity"
