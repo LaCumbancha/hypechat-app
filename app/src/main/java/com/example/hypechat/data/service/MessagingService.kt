@@ -4,6 +4,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
 import android.util.Log
@@ -78,7 +79,8 @@ class MessagingService : FirebaseMessagingService() {
         notificationBuilder.setAutoCancel(true)
             .setDefaults(Notification.DEFAULT_ALL)
             .setWhen(System.currentTimeMillis())
-            .setSmallIcon(R.drawable.ic_action_hypechat)
+            .setSmallIcon(R.drawable.ic_action_hc)
+            .setLargeIcon(BitmapFactory.decodeResource(this.resources, R.mipmap.ic_launcher_hypechat))
             .setContentTitle(title)
             .setContentText(body)
 
