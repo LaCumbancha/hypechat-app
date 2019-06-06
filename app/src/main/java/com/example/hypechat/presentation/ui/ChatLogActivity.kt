@@ -81,7 +81,12 @@ class ChatLogActivity : AppCompatActivity() {
 
         chatLogProgressBar.visibility = View.VISIBLE
         val teamId = AppPreferences.getTeamId()
-        HypechatRepository().getMessagesFromChat(teamId, receiverId!!){ response ->
+        val id = if (senderId != null){
+            senderId
+        } else {
+            receiverId
+        }
+        HypechatRepository().getMessagesFromChat(teamId, id!!){ response ->
 
             response?.let {
 
@@ -103,8 +108,13 @@ class ChatLogActivity : AppCompatActivity() {
         val sortedMessages = messages.sortedBy { message ->
             LocalDateTime.parse(message.timestamp, DateTimeFormatter.RFC_1123_DATE_TIME)
         }
+        val id = if (senderId != null){
+            senderId
+        } else {
+            receiverId
+        }
         for (message in sortedMessages){
-            if (message.fromId == receiverId){
+            if (message.fromId == id){
                 chatLogAdapter.add(ChatToItem(message.message))
             } else {
                 chatLogAdapter.add(ChatFromItem(message.message))
@@ -163,8 +173,13 @@ class ChatLogActivity : AppCompatActivity() {
             chatLogEditText.text.clear()
             chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
             val teamId = AppPreferences.getTeamId()
+            val id = if (senderId != null){
+                senderId
+            } else {
+                receiverId
+            }
 
-            HypechatRepository().sendMessage(receiverId!!, message, teamId){ response ->
+            HypechatRepository().sendMessage(id!!, message, teamId){ response ->
 
                 response?.let {
 
