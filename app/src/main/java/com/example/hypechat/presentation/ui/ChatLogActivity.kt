@@ -1,9 +1,12 @@
 package com.example.hypechat.presentation.ui
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,6 +32,7 @@ class ChatLogActivity : AppCompatActivity() {
         val USER = "USER"
         val USERNAME = "USERNAME"
         val SENDERID = "SENDERID"
+        val USERPROFILE = 5
     }
 
     private var user: UserResponse? = null
@@ -67,6 +71,35 @@ class ChatLogActivity : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_chat_log, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+
+        R.id.action_view_profile -> {
+            val intent = Intent(this, UserProfileActivity::class.java)
+            intent.putExtra(UserProfileActivity.USERID, senderId!!)
+            startActivityForResult(intent, USERPROFILE)
+            true
+        }
+
+        else -> {
+            // If we got here, the user's action was not recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK && data != null){
+            senderId = data.getIntExtra(UserProfileActivity.USERID, 0)
         }
     }
 

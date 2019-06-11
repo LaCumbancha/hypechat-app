@@ -49,6 +49,7 @@
     <!--Chat Log-->
     <string name="type_a_message_hint">Type a message</string>
     <string name="this_is_a_message">This is a message</string>
+    <string name="view_profile">View user profile</string>
     <!--Chat Log-->
 
     <!--Teams-->
@@ -75,6 +76,7 @@
     <string name="my_profile_last_name">Description</string>
     <string name="my_profile_username">Welcome Message</string>
     <string name="my_profile_email">Location</string>
+    <string name="my_profile_role">Role</string>
     <!--My Profile-->
 
 

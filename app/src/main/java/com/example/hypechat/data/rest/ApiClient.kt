@@ -17,7 +17,10 @@ interface ApiClient {
     fun logoutUser(): Call<ApiResponse>
 
     @GET("/users/profile")
-    fun getUserProfile(): Call<ProfileResponse>
+    fun getMyProfile(): Call<ProfileResponse>
+
+    @GET("teams/{team_id}/users/{user_id}/profile")
+    fun getUserProfile(@Path("team_id") team_id: Int, @Path("user_id") userId: Int): Call<ProfileResponse>
 
     @GET("/teams/{team_id}/users/%")
     fun getUsers(@Path("team_id") team_id: Int): Call<UsersResponse>

@@ -43,7 +43,7 @@ class MyProfileActivity : AppCompatActivity() {
     private fun getUserData(){
         myProfileProgressBar.visibility = View.VISIBLE
 
-        HypechatRepository().getUserProfile{ response ->
+        HypechatRepository().getMyProfile{ response ->
 
             response?.let {
 

@@ -11,5 +11,6 @@ data class UserResponse (
     @SerializedName("last_name") val last_name : String?,
     @SerializedName("profile_pic") val profile_pic : String?,
     @SerializedName("username") val username : String,
+    @SerializedName("role") val role : String,
     @SerializedName("online") val online : Boolean
 ): Serializable

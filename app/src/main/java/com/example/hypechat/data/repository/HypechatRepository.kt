@@ -104,9 +104,24 @@ class HypechatRepository {
         })
     }
 
-    fun getUserProfile(onSuccess: (user: ProfileResponse?) -> Unit) {
+    fun getMyProfile(onSuccess: (user: ProfileResponse?) -> Unit) {
 
-        val call = client?.getUserProfile()
+        val call = client?.getMyProfile()
+
+        call?.enqueue(object : Callback<ProfileResponse> {
+            override fun onFailure(call: Call<ProfileResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ProfileResponse>, response: Response<ProfileResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun getUserProfile(teamId: Int, userId: Int, onSuccess: (user: ProfileResponse?) -> Unit) {
+
+        val call = client?.getUserProfile(teamId, userId)
 
         call?.enqueue(object : Callback<ProfileResponse> {
             override fun onFailure(call: Call<ProfileResponse>, t: Throwable) {

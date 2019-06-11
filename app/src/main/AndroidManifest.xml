@@ -29,13 +29,18 @@
 
         <service android:name=".data.service.MessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
 
-        <activity android:name=".presentation.ui.MyProfileActivity"
-                  android:parentActivityName=".presentation.ui.LatestMessagesActivity"
+        <activity android:name=".presentation.ui.UserProfileActivity"
+                  android:parentActivityName=".presentation.ui.ChatLogActivity"
                   android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".presentation.ui.MyProfileActivity"
+                android:parentActivityName=".presentation.ui.LatestMessagesActivity"
+                android:screenOrientation="portrait">
         </activity>
         <activity
                 android:name=".presentation.ui.NewTeamActivity"
