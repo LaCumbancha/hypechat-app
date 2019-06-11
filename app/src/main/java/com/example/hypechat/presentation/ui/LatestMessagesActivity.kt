@@ -186,8 +186,8 @@ class LatestMessagesActivity : AppCompatActivity() {
     }
 
     fun newChannel(view: View){
-        //val intent = Intent(this, NewChannelActivity::class.java)
-        //startActivity(intent)
+        val intent = Intent(this, NewChannelActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

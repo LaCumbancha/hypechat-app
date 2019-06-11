@@ -1,10 +1,7 @@
 package com.example.hypechat.data.repository
 
 import android.util.Log
-import com.example.hypechat.data.model.rest.request.LoginRequest
-import com.example.hypechat.data.model.rest.request.MessageRequest
-import com.example.hypechat.data.model.rest.request.RegisterRequest
-import com.example.hypechat.data.model.rest.request.TeamCreationRequest
+import com.example.hypechat.data.model.rest.request.*
 import com.example.hypechat.data.model.rest.response.*
 import com.example.hypechat.data.rest.ApiClient
 import com.example.hypechat.data.rest.utils.AddTokenInterceptor
@@ -238,6 +235,23 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<TeamCreationResponse>, response: Response<TeamCreationResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun createChannel(teamId: Int, name: String, visibility: String, description: String?, welcomeMessage: String?,
+                      onSuccess: (user: ChannelCreationResponse?) -> Unit) {
+
+        val body = ChannelCreationRequest(teamId, name, visibility, description, welcomeMessage)
+        val call = client?.createChannel(body)
+
+        call?.enqueue(object : Callback<ChannelCreationResponse> {
+            override fun onFailure(call: Call<ChannelCreationResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ChannelCreationResponse>, response: Response<ChannelCreationResponse>) {
                 onSuccess(response.body())
             }
         })

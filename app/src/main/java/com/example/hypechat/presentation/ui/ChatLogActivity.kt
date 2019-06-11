@@ -38,6 +38,7 @@ class ChatLogActivity : AppCompatActivity() {
     private var user: UserResponse? = null
     private val auth = FirebaseAuth.getInstance()
     private var senderId: Int? = null
+    private var userName: String? = null
     private val chatLogAdapter = GroupAdapter<ViewHolder>()
     private val TAG = "ChatLog"
 
@@ -50,10 +51,12 @@ class ChatLogActivity : AppCompatActivity() {
         val sender = intent.getIntExtra(SENDERID, 0)
         user?.let {
             toolbarChatLog.title = it.username
+            userName = it.username
             senderId = it.id
         }
         if (username != null && sender != 0){
             toolbarChatLog.title = username
+            userName = username
             senderId = sender
         }
         setSupportActionBar(toolbarChatLog)
@@ -84,6 +87,7 @@ class ChatLogActivity : AppCompatActivity() {
         R.id.action_view_profile -> {
             val intent = Intent(this, UserProfileActivity::class.java)
             intent.putExtra(UserProfileActivity.USERID, senderId!!)
+            intent.putExtra(UserProfileActivity.USERNAME, userName!!)
             startActivityForResult(intent, USERPROFILE)
             true
         }

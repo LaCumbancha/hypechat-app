@@ -28,6 +28,8 @@ interface ApiClient {
     @GET("/teams/{team_id}/users/{query}")
     fun searchUsers(@Path("team_id") team_id: Int, @Path("query") query: String): Call<UsersResponse>
 
+    //MESSAGES
+
     @POST("/teams/messages")
     fun sendMessage(@Body body: MessageRequest): Call<ApiResponse>
 
@@ -37,6 +39,8 @@ interface ApiClient {
     @GET("/teams/{team_id}/messages/previews")
     fun getChatsPreviews(@Path("team_id") team_id: Int): Call<ChatsResponse>
 
+    //TEAMS
+
     @POST("/teams")
     fun createTeam(@Body body: TeamCreationRequest): Call<TeamCreationResponse>
 
@@ -45,4 +49,9 @@ interface ApiClient {
 
     @GET("/users/teams")
     fun getTeams(): Call<TeamsResponse>
+
+    //CHANNELS
+
+    @POST("/teams/channels")
+    fun createChannel(@Body body: ChannelCreationRequest): Call<ChannelCreationResponse>
 }

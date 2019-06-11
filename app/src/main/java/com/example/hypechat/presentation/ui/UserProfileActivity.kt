@@ -20,6 +20,7 @@ class UserProfileActivity : AppCompatActivity() {
 
     companion object {
         val USERID = "USERID"
+        val USERNAME = "USERNAME"
     }
 
     private val TAG = "User Profile"
@@ -29,6 +30,7 @@ class UserProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_profile)
 
+        toolbarUserProfile.title = intent.getStringExtra(USERNAME)
         setSupportActionBar(toolbarUserProfile)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         AppPreferences.init(this)

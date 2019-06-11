@@ -79,5 +79,14 @@
     <string name="my_profile_role">Role</string>
     <!--My Profile-->
 
+    <!--New Channel-->
+    <string name="new_channel_toolbar">New Channel</string>
+    <string name="create_channel_button">CREATE CHANNEL</string>
+    <string name="new_channel_name_placeholder">Channel Name</string>
+    <string name="new_channel_description_placeholder">Description</string>
+    <string name="new_channel_welcome_message_placeholder">Welcome Message</string>
+    <string name="new_channel_visibility_placeholder">Visibility</string>
+    <!--New Channel-->
+
 
 </resources>
