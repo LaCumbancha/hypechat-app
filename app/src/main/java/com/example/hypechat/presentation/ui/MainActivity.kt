@@ -106,7 +106,9 @@ class MainActivity : AppCompatActivity() {
                 response?.let {
 
                     when (it.status){
-                        ServerStatus.ACTIVE.status -> navigateToLatestMessages()
+                        ServerStatus.ACTIVE.status -> { navigateToLatestMessages()
+                                                        AppPreferences.setUserId(it.user.id)
+                        }
                         ServerStatus.WRONG_CREDENTIALS.status -> loginFailed(it.message)
                     }
                 }

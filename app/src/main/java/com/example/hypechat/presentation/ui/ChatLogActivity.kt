@@ -28,17 +28,12 @@ class ChatLogActivity : AppCompatActivity() {
     companion object {
         val USER = "USER"
         val USERNAME = "USERNAME"
-        val RECEIVERID = "RECEIVERID"
         val SENDERID = "SENDERID"
     }
 
     private var user: UserResponse? = null
     private val auth = FirebaseAuth.getInstance()
-    private val db = FirebaseDatabase.getInstance()
-    private val fromId = auth.uid
-    private var selectedUserId: Int? = null
     private var senderId: Int? = null
-    private var receiverId: Int? = null
     private val chatLogAdapter = GroupAdapter<ViewHolder>()
     private val TAG = "ChatLog"
 
@@ -48,16 +43,14 @@ class ChatLogActivity : AppCompatActivity() {
 
         user = intent.getSerializableExtra(USER) as UserResponse?
         val username = intent.getStringExtra(USERNAME)
-        val receiver = intent.getIntExtra(RECEIVERID, 0)
         val sender = intent.getIntExtra(SENDERID, 0)
         user?.let {
             toolbarChatLog.title = it.username
-            receiverId = it.id
+            senderId = it.id
         }
-        if (username != null && receiver != 0 && sender != 0){
+        if (username != null && sender != 0){
             toolbarChatLog.title = username
             senderId = sender
-            receiverId = receiver
         }
         setSupportActionBar(toolbarChatLog)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -69,7 +62,7 @@ class ChatLogActivity : AppCompatActivity() {
     }
 
     private fun verifyUserIsLoggedIn(){
-        val auth = AppPreferences.getCookies()
+        val auth = AppPreferences.getToken()
         if (auth == null){
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -81,12 +74,8 @@ class ChatLogActivity : AppCompatActivity() {
 
         chatLogProgressBar.visibility = View.VISIBLE
         val teamId = AppPreferences.getTeamId()
-        val id = if (senderId != null){
-            senderId
-        } else {
-            receiverId
-        }
-        HypechatRepository().getMessagesFromChat(teamId, id!!){ response ->
+
+        HypechatRepository().getMessagesFromChat(teamId, senderId!!){ response ->
 
             response?.let {
 
@@ -108,16 +97,13 @@ class ChatLogActivity : AppCompatActivity() {
         val sortedMessages = messages.sortedBy { message ->
             LocalDateTime.parse(message.timestamp, DateTimeFormatter.RFC_1123_DATE_TIME)
         }
-        val id = if (senderId != null){
-            senderId
-        } else {
-            receiverId
-        }
+        val userId = AppPreferences.getUserId()
+
         for (message in sortedMessages){
-            if (message.fromId == id){
-                chatLogAdapter.add(ChatToItem(message.message))
-            } else {
+            if (message.sender.id == userId){
                 chatLogAdapter.add(ChatFromItem(message.message))
+            } else {
+                chatLogAdapter.add(ChatToItem(message.message))
             }
         }
         Log.d(TAG, "getMessagesFromChat:success")
@@ -173,13 +159,8 @@ class ChatLogActivity : AppCompatActivity() {
             chatLogEditText.text.clear()
             chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
             val teamId = AppPreferences.getTeamId()
-            val id = if (senderId != null){
-                senderId
-            } else {
-                receiverId
-            }
 
-            HypechatRepository().sendMessage(id!!, message, teamId){ response ->
+            HypechatRepository().sendMessage(senderId!!, message, teamId){ response ->
 
                 response?.let {
 

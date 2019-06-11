@@ -89,8 +89,7 @@ class LatestMessagesActivity : AppCompatActivity() {
             val row = item as LatestMessageRow
 
             intent.putExtra(ChatLogActivity.USERNAME, row.chat.chatName)
-            intent.putExtra(ChatLogActivity.SENDERID, row.chat.senderId)
-            intent.putExtra(ChatLogActivity.RECEIVERID, row.chat.receiverId)
+            intent.putExtra(ChatLogActivity.SENDERID, row.chat.chat_id)
             startActivity(intent)
         }
     }

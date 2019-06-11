@@ -49,17 +49,17 @@ class HypechatRepository {
         return retrofit?.create(serviceClass)
     }
 
-    fun loginUser(email: String, password: String, onSuccess: (user: ApiResponse?) -> Unit) {
+    fun loginUser(email: String, password: String, onSuccess: (user: LoginResponse?) -> Unit) {
 
         val body = LoginRequest(email, password)
         val call = client?.loginUser(body)
 
-        call?.enqueue(object : Callback<ApiResponse> {
-            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+        call?.enqueue(object : Callback<LoginResponse> {
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 Log.w("HypechatRepository: ", t)
             }
 
-            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 onSuccess(response.body())
             }
         })
@@ -166,7 +166,8 @@ class HypechatRepository {
 
     fun sendMessage(toId: Int, message: String, teamId: Int, onSuccess: (user: ApiResponse?) -> Unit) {
 
-        val body = MessageRequest(toId, teamId, message)
+        val type = "TEXT"
+        val body = MessageRequest(toId, teamId, message, type)
         val call = client?.sendMessage(body)
 
         call?.enqueue(object : Callback<ApiResponse> {

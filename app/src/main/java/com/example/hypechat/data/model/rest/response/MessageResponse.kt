@@ -4,9 +4,10 @@ import com.google.gson.annotations.SerializedName
 
 data class MessageResponse (
 
-    @SerializedName("seen") val seen : Boolean,
-    @SerializedName("text_content") val message : String,
+    @SerializedName("unseen") val seen : Boolean,
+    @SerializedName("content") val message : String,
+    @SerializedName("sender") val sender : UserResponse,
     @SerializedName("timestamp") val timestamp : String,
-    @SerializedName("user_id") val fromId : Int
+    @SerializedName("type") val type : String
 
 )

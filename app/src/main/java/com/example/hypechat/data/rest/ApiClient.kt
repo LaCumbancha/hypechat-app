@@ -11,7 +11,7 @@ interface ApiClient {
     fun registerUser(@Body body: RegisterRequest): Call<RegisterResponse>
 
     @POST("/users/login")
-    fun loginUser(@Body body: LoginRequest): Call<ApiResponse>
+    fun loginUser(@Body body: LoginRequest): Call<LoginResponse>
 
     @POST("/users/logout")
     fun logoutUser(): Call<ApiResponse>

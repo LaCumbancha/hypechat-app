@@ -42,7 +42,7 @@ class NewMessageActivity : AppCompatActivity() {
     }
 
     private fun verifyUserIsLoggedIn(){
-        val auth = AppPreferences.getCookies()
+        val auth = AppPreferences.getToken()
         if (auth == null){
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
