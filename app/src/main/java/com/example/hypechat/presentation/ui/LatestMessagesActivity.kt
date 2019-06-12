@@ -63,6 +63,7 @@ class LatestMessagesActivity : AppCompatActivity() {
         latestMessagesRecyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 
         verifyUserIsLoggedIn()
+        verifyUserTeam()
         initializeLatestMessages()
         setAdapterOnItemClickListener()
     }
@@ -80,6 +81,25 @@ class LatestMessagesActivity : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
+        }
+    }
+
+    private fun verifyUserTeam(){
+        val teamId = AppPreferences.getTeamId()
+
+        if (teamId == 0){
+            val builder = android.app.AlertDialog.Builder(this)
+            builder.setTitle("Warning")
+            builder.setMessage("You currently have no team selected, please choose one.")
+
+            builder.setPositiveButton("Ok"){ dialog, which ->
+                dialog.dismiss()
+                val intent = Intent(this, TeamsActivity::class.java)
+                startActivity(intent)
+            }
+
+            val dialog = builder.create()
+            dialog.show()
         }
     }
 
