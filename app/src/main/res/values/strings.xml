@@ -67,6 +67,16 @@
     <string name="new_team_location_placeholder">Location</string>
     <!--New Team-->
 
+    <!--Edit Team-->
+    <string name="edit_team_switch_button">SWITCH TO THIS TEAM</string>
+    <string name="edit_team_leave_button">LEAVE TEAM</string>
+    <string name="edit_team_invite_button">INVITE USER</string>
+    <string name="edit_team_delete_button">DELETE TEAM</string>
+    <string name="edit_team_edit_button">EDIT TEAM</string>
+    <string name="edit_team_save_button">SAVE CHANGES</string>
+    <string name="edit_team_cancel_button">CANCEL</string>
+    <!--Edit Team-->
+
     <!--My Profile-->
     <string name="my_profile_toolbar">My Profile</string>
     <string name="my_profile_edit_button">EDIT PROFILE</string>

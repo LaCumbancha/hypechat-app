@@ -1,6 +1,7 @@
 package com.example.hypechat.data.model.rest.response
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class TeamResponse (
 
@@ -11,4 +12,4 @@ data class TeamResponse (
     @SerializedName("team_name") val team_name : String,
     @SerializedName("role") val role : String,
     @SerializedName("welcome_message") val welcome_message : String?
-)
+): Serializable

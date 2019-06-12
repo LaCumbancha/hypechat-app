@@ -90,7 +90,7 @@ class LatestMessagesActivity : AppCompatActivity() {
         if (teamId == 0){
             val builder = android.app.AlertDialog.Builder(this)
             builder.setTitle("Warning")
-            builder.setMessage("You currently have no team selected, please choose one.")
+            builder.setMessage("You currently have no team selected, please create or choose one.")
 
             builder.setPositiveButton("Ok"){ dialog, which ->
                 dialog.dismiss()
