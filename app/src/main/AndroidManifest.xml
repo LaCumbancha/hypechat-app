@@ -16,8 +16,6 @@
             android:roundIcon="@mipmap/ic_launcher_hypechat"
             android:supportsRtl="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".presentation.ui.NewChannelActivity">
-        </activity>
 
         <provider
                 android:name="androidx.core.content.FileProvider"
@@ -35,6 +33,10 @@
             </intent-filter>
         </service>
 
+        <activity android:name=".presentation.ui.NewChannelActivity"
+                  android:parentActivityName=".presentation.ui.LatestMessagesActivity"
+                  android:screenOrientation="portrait">
+        </activity>
         <activity
                 android:name=".presentation.ui.UserProfileActivity"
                 android:parentActivityName=".presentation.ui.ChatLogActivity"
