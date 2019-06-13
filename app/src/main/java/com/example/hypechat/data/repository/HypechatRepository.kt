@@ -46,6 +46,8 @@ class HypechatRepository {
         return retrofit?.create(serviceClass)
     }
 
+    //USERS
+
     fun loginUser(email: String, password: String, onSuccess: (user: LoginResponse?) -> Unit) {
 
         val body = LoginRequest(email, password)
@@ -161,6 +163,8 @@ class HypechatRepository {
         })
     }
 
+    //MESSAGES
+
     fun getMessagesFromChat(teamId: Int, fromId: Int, onSuccess: (user: MessagesResponse?) -> Unit) {
 
         val call = client?.getMessagesFromChat(teamId, fromId)
@@ -208,6 +212,8 @@ class HypechatRepository {
         })
     }
 
+    //TEAMS
+
     fun getTeams(onSuccess: (teams: TeamsResponse?) -> Unit) {
 
         val call = client?.getTeams()
@@ -239,6 +245,8 @@ class HypechatRepository {
             }
         })
     }
+
+    //CHANNELS
 
     fun createChannel(teamId: Int, name: String, visibility: String, description: String?, welcomeMessage: String?,
                       onSuccess: (user: ChannelCreationResponse?) -> Unit) {

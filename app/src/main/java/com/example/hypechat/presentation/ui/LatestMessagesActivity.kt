@@ -179,14 +179,7 @@ class LatestMessagesActivity : AppCompatActivity() {
     fun openNew(view: View){
 
         if (isOpen) {
-            newMessageTextView.visibility = View.INVISIBLE
-            newChannelTextView.visibility = View.INVISIBLE
-            fabNewChannel.startAnimation(fab_close)
-            fabNewMessage.startAnimation(fab_close)
-            fabNew.startAnimation(fab_anticlock)
-            fabNewChannel.isClickable = false
-            fabNewMessage.isClickable =false
-            isOpen = false
+            closeNew()
 
         } else {
             newMessageTextView.visibility = View.VISIBLE
@@ -200,12 +193,25 @@ class LatestMessagesActivity : AppCompatActivity() {
         }
     }
 
+    private fun closeNew(){
+        newMessageTextView.visibility = View.INVISIBLE
+        newChannelTextView.visibility = View.INVISIBLE
+        fabNewChannel.startAnimation(fab_close)
+        fabNewMessage.startAnimation(fab_close)
+        fabNew.startAnimation(fab_anticlock)
+        fabNewChannel.isClickable = false
+        fabNewMessage.isClickable =false
+        isOpen = false
+    }
+
     fun newMessage(view: View){
+        closeNew()
         val intent = Intent(this, NewMessageActivity::class.java)
         startActivity(intent)
     }
 
     fun newChannel(view: View){
+        closeNew()
         val intent = Intent(this, NewChannelActivity::class.java)
         startActivity(intent)
     }
