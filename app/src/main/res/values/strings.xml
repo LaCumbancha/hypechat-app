@@ -33,7 +33,7 @@
     <!--Registration-->
 
     <!--Latest Messages-->
-    <string name="latest_messages_toolbar">Active Chats</string>
+    <string name="latest_messages_toolbar">Chats &amp; Channels</string>
     <string name="my_teams">Teams</string>
     <string name="my_profile">My profile</string>
     <string name="logout">Logout</string>

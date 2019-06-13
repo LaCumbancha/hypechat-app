@@ -7,6 +7,8 @@ import retrofit2.http.*
 
 interface ApiClient {
 
+    //USERS
+
     @POST("/users")
     fun registerUser(@Body body: RegisterRequest): Call<RegisterResponse>
 
@@ -21,6 +23,9 @@ interface ApiClient {
 
     @GET("teams/{team_id}/users/{user_id}/profile")
     fun getUserProfile(@Path("team_id") team_id: Int, @Path("user_id") userId: Int): Call<ProfileResponse>
+
+    @DELETE("teams/{team_id}/users/{user_id}")
+    fun deleteUser(@Path("team_id") team_id: Int, @Path("user_id") userId: Int): Call<ApiResponse>
 
     @GET("/teams/{team_id}/users/%")
     fun getUsers(@Path("team_id") team_id: Int): Call<UsersResponse>
@@ -44,8 +49,32 @@ interface ApiClient {
     @POST("/teams")
     fun createTeam(@Body body: TeamCreationRequest): Call<TeamCreationResponse>
 
-    @POST("/teams/{team_id}/invite") //meter el team id en el body
-    fun inviteUserToTeam(@Path("team_id") team_id: Int, @Body body: InvitationRequest): Call<ApiResponse>
+    @POST("/teams/invite")
+    fun inviteUserToTeam(@Body body: InvitationRequest): Call<ApiResponse>
+
+    @POST("/teams/join")
+    fun joinTeam(@Body body: JoinTeamRequest): Call<ApiResponse>
+
+    @PATCH("/teams/{team_id}/roles")
+    fun updateRoleTeam(@Path("team_id") team_id: Int, @Body body: UpdateRoleRequest): Call<ApiResponse>
+
+    @PATCH("/teams/{team_id}")
+    fun updateTeam(@Path("team_id") team_id: Int, @Body body: TeamCreationRequest): Call<TeamCreationResponse>
+
+    @DELETE("teams/{team_id}/leave")
+    fun leaveTeam(@Path("team_id") team_id: Int): Call<ApiResponse>
+
+    @DELETE("teams/{team_id}")
+    fun deleteTeam(@Path("team_id") team_id: Int): Call<ApiResponse>
+
+    @PUT("teams/forbidden-words")
+    fun addForbiddenWord(@Body body: ForbiddenWordsRequest): Call<ApiResponse>
+
+    @GET("teams/{team_id}/forbidden-words")
+    fun getForbiddenWords(@Path("team_id") team_id: Int): Call<ForbiddenWordResponse>
+
+    @DELETE("teams/{team_id}/forbidden-words/{word_id}")
+    fun deleteForbiddenWord(@Path("team_id") team_id: Int, @Path("word_id") word_id: Int): Call<ApiResponse>
 
     @GET("/users/teams")
     fun getTeams(): Call<TeamsResponse>
@@ -54,4 +83,22 @@ interface ApiClient {
 
     @POST("/teams/channels")
     fun createChannel(@Body body: ChannelCreationRequest): Call<ChannelCreationResponse>
+
+    @POST("/teams/channels/users")
+    fun addUserToChannel(@Body body: UserChannelRequest): Call<ApiResponse>
+
+    @PATCH("/teams/{team_id}/channels/{channel_id}")
+    fun updateTeam(@Path("team_id") team_id: Int, @Path("channel_id") channel_id: Int, @Body body: UpdateChannelRequest): Call<ChannelCreationResponse>
+
+    @GET("/teams/{team_id}/channel/{channel_id}/users")
+    fun getChannelUsers(@Path("team_id") team_id: Int, @Path("channel_id") channel_id: Int): Call<UsersResponse>
+
+    @DELETE("/teams/{team_id}/channels/{channel_id}/users/{user_id}")
+    fun deleteUserFromChannel(@Path("team_id") team_id: Int, @Path("channel_id") channel_id: Int, @Path("user_id") user_id: Int): Call<ApiResponse>
+
+    @DELETE("teams/{team_id}/channels/{channel_id}/leave")
+    fun leaveChannel(@Path("team_id") team_id: Int, @Path("channel_id") channel_id: Int): Call<ApiResponse>
+
+    @DELETE("teams/{team_id}/channels/{channel_id}")
+    fun deleteChannel(@Path("team_id") team_id: Int, @Path("channel_id") channel_id: Int): Call<ApiResponse>
 }
