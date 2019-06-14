@@ -66,10 +66,9 @@ class TeamsActivity : AppCompatActivity() {
 
     private fun setAdapterOnItemClickListener(){
         teamAdapter.setOnItemClickListener { item, view ->
-            val intent = Intent(this, LatestMessagesActivity::class.java)
+            val intent = Intent(this, EditTeamActivity::class.java)
             val row = item as TeamRow
-            intent.putExtra(LatestMessagesActivity.TEAM_ID, row.team.team_id)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent.putExtra(EditTeamActivity.TEAM, row.team)
             startActivity(intent)
         }
     }

@@ -246,6 +246,131 @@ class HypechatRepository {
         })
     }
 
+    fun leaveTeam(teamId: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val call = client?.leaveTeam(teamId)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun deleteTeam(teamId: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val call = client?.deleteTeam(teamId)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun deleteForbiddenWord(teamId: Int, wordId: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val call = client?.deleteForbiddenWord(teamId, wordId)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun inviteUserToTeam(teamId: Int, email: String, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val body = InvitationRequest(teamId, email)
+        val call = client?.inviteUserToTeam(body)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun joinTeam(teamId: Int, token: String, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val body = JoinTeamRequest(teamId, token)
+        val call = client?.joinTeam(body)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun updateTeam(teamId: Int, teamName: String, location: String?, description: String?, welcomeMessage: String?,
+                   profilePicUrl: String?, onSuccess: (user: TeamCreationResponse?) -> Unit) {
+
+        val body = TeamCreationRequest(teamName, location, description, welcomeMessage, profilePicUrl)
+        val call = client?.updateTeam(teamId, body)
+
+        call?.enqueue(object : Callback<TeamCreationResponse> {
+            override fun onFailure(call: Call<TeamCreationResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<TeamCreationResponse>, response: Response<TeamCreationResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun addForbiddenWord(teamId: Int, word: String, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val body = ForbiddenWordsRequest(teamId, word)
+        val call = client?.addForbiddenWord(body)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun getForbiddenWords(teamId: Int, onSuccess: (user: ForbiddenWordResponse?) -> Unit) {
+
+        val call = client?.getForbiddenWords(teamId)
+
+        call?.enqueue(object : Callback<ForbiddenWordResponse> {
+            override fun onFailure(call: Call<ForbiddenWordResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ForbiddenWordResponse>, response: Response<ForbiddenWordResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
     //CHANNELS
 
     fun createChannel(teamId: Int, name: String, visibility: String, description: String?, welcomeMessage: String?,
@@ -260,6 +385,99 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ChannelCreationResponse>, response: Response<ChannelCreationResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun updateChannel(teamId: Int, channel_id: Int, name: String, visibility: String, description: String?, welcomeMessage: String?,
+                      onSuccess: (user: ChannelCreationResponse?) -> Unit) {
+
+        val body = UpdateChannelRequest(name, visibility, description, welcomeMessage)
+        val call = client?.updateChannel(teamId, channel_id, body)
+
+        call?.enqueue(object : Callback<ChannelCreationResponse> {
+            override fun onFailure(call: Call<ChannelCreationResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ChannelCreationResponse>, response: Response<ChannelCreationResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun addUserToChannel(teamId: Int, user_invited_id: Int, channel_id: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val body = UserChannelRequest(teamId, user_invited_id, channel_id)
+        val call = client?.addUserToChannel(body)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun getChannelUsers(teamId: Int, channel_id: Int, onSuccess: (user: UsersResponse?) -> Unit) {
+
+        val call = client?.getChannelUsers(teamId, channel_id)
+
+        call?.enqueue(object : Callback<UsersResponse> {
+            override fun onFailure(call: Call<UsersResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<UsersResponse>, response: Response<UsersResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun deleteUserFromChannel(teamId: Int, user_id: Int, channel_id: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val call = client?.deleteUserFromChannel(teamId, channel_id, user_id)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun leaveChannel(teamId: Int, channel_id: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val call = client?.leaveChannel(teamId, channel_id)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun deleteChannel(teamId: Int, channel_id: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val call = client?.deleteChannel(teamId, channel_id)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
                 onSuccess(response.body())
             }
         })

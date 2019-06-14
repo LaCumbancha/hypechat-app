@@ -88,7 +88,7 @@ interface ApiClient {
     fun addUserToChannel(@Body body: UserChannelRequest): Call<ApiResponse>
 
     @PATCH("/teams/{team_id}/channels/{channel_id}")
-    fun updateTeam(@Path("team_id") team_id: Int, @Path("channel_id") channel_id: Int, @Body body: UpdateChannelRequest): Call<ChannelCreationResponse>
+    fun updateChannel(@Path("team_id") team_id: Int, @Path("channel_id") channel_id: Int, @Body body: UpdateChannelRequest): Call<ChannelCreationResponse>
 
     @GET("/teams/{team_id}/channel/{channel_id}/users")
     fun getChannelUsers(@Path("team_id") team_id: Int, @Path("channel_id") channel_id: Int): Call<UsersResponse>
