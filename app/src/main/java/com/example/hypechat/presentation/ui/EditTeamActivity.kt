@@ -328,17 +328,18 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
             response?.let {
 
                 when (it.status){
-                    ServerStatus.ADDED.status -> {
+                    ServerStatus.INVITED.status -> {
                         Toast.makeText(this, "Invitation sent", Toast.LENGTH_SHORT).show()
                         editTeamProgressBar.visibility = View.INVISIBLE
                         editTeamCardView.visibility = View.VISIBLE
                     }
+                    ServerStatus.ALREADY_INVITED.status -> errorOccurred(it.message)
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
                 }
             }
             if (response == null){
-                Log.w(TAG, "deleteTeam:failure")
+                Log.w(TAG, "inviteUserToTeam:failure")
                 errorOccurred(null)
                 editTeamProgressBar.visibility = View.INVISIBLE
                 editTeamCardView.visibility = View.VISIBLE

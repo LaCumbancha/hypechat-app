@@ -55,6 +55,9 @@
     <!--Teams-->
     <string name="teams_toolbar">Teams</string>
     <string name="no_teams">No teams found</string>
+    <string name="invite_token">Invite token</string>
+    <string name="new_team_fab_button">New Team</string>
+    <string name="join_team_fab_button">Join Team</string>
     <!--Teams-->
 
     <!--New Team-->

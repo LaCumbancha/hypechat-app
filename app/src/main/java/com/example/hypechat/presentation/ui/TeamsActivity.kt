@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.widget.Toast
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hypechat.R
@@ -13,15 +16,21 @@ import com.example.hypechat.data.model.TeamRow
 import com.example.hypechat.data.model.rest.response.TeamResponse
 import com.example.hypechat.data.repository.HypechatRepository
 import com.example.hypechat.data.rest.utils.ServerStatus
+import com.example.hypechat.presentation.utils.JoinTeamDialog
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.activity_teams.*
 
-class TeamsActivity : AppCompatActivity() {
+class TeamsActivity : AppCompatActivity(), JoinTeamDialog.TeamTokenListener {
 
     private val TAG = "Teams"
-    private val teamList = mutableListOf<TeamResponse>()
+    private var teamList = mutableListOf<TeamResponse>()
     private val teamAdapter = GroupAdapter<ViewHolder>()
+    private var fab_open: Animation? = null
+    private var fab_close: Animation? = null
+    private var fab_clock: Animation? = null
+    private var fab_anticlock: Animation? = null
+    private var isOpen = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +39,7 @@ class TeamsActivity : AppCompatActivity() {
         setSupportActionBar(toolbarTeams)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         AppPreferences.init(this)
+        loadAnimations()
 
         teamsRecyclerView.layoutManager = LinearLayoutManager(this)
         teamsRecyclerView.adapter = teamAdapter
@@ -40,8 +50,77 @@ class TeamsActivity : AppCompatActivity() {
     }
 
     fun newTeam(view: View){
+        closeNew()
         val intent = Intent(this, NewTeamActivity::class.java)
         startActivity(intent)
+    }
+
+    fun joinTeam(view: View){
+        closeNew()
+        val joinTeamDialog = JoinTeamDialog()
+        joinTeamDialog.show(supportFragmentManager, TAG)
+    }
+
+    override fun applyToken(token: String) {
+
+        teamsRecyclerView.visibility = View.INVISIBLE
+        teamsProgressBar.visibility = View.VISIBLE
+
+        HypechatRepository().joinTeam(token){ response ->
+
+            response?.let {
+
+                when (it.status){
+                    ServerStatus.ADDED.status -> {
+                        Toast.makeText(this, "Joined team successfully", Toast.LENGTH_SHORT).show()
+                        initializeTeams()
+                    }
+                    ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
+                    ServerStatus.ERROR.status -> errorOccurred(it.message)
+                }
+            }
+            if (response == null){
+                Log.w(TAG, "joinTeam:failure")
+                errorOccurred(null)
+                teamsProgressBar.visibility = View.INVISIBLE
+                teamsRecyclerView.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    fun openNew(view: View){
+
+        if (isOpen) {
+            closeNew()
+
+        } else {
+            newTeamTextView.visibility = View.VISIBLE
+            joinTeamTextView.visibility = View.VISIBLE
+            fabJoinTeam.startAnimation(fab_open)
+            fabNewTeam.startAnimation(fab_open)
+            fabNew.startAnimation(fab_clock)
+            fabJoinTeam.isClickable = true
+            fabNewTeam.isClickable = true
+            isOpen = true
+        }
+    }
+
+    private fun closeNew(){
+        newTeamTextView.visibility = View.INVISIBLE
+        joinTeamTextView.visibility = View.INVISIBLE
+        fabJoinTeam.startAnimation(fab_close)
+        fabNewTeam.startAnimation(fab_close)
+        fabNew.startAnimation(fab_anticlock)
+        fabJoinTeam.isClickable = false
+        fabNewTeam.isClickable =false
+        isOpen = false
+    }
+
+    private fun loadAnimations(){
+        fab_open = AnimationUtils.loadAnimation(this, R.anim.fab_open)
+        fab_close = AnimationUtils.loadAnimation(this, R.anim.fab_close)
+        fab_clock = AnimationUtils.loadAnimation(this, R.anim.fab_rotate_clock)
+        fab_anticlock = AnimationUtils.loadAnimation(this, R.anim.fab_rotate_anticlock)
     }
 
     private fun initializeTeams(){
@@ -86,6 +165,7 @@ class TeamsActivity : AppCompatActivity() {
             teamsRecyclerView.visibility = View.VISIBLE
             noTeamsImageView.visibility = View.INVISIBLE
             noTeamsTextView.visibility = View.INVISIBLE
+            teamList = mutableListOf<TeamResponse>()
             for (team in teams){
                 teamList.add(team)
             }
@@ -113,6 +193,26 @@ class TeamsActivity : AppCompatActivity() {
             initializeTeams()
         }
         builder.setNegativeButton("Cancel"){ dialog, which ->
+            dialog.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    private fun errorOccurred(error: String?){
+        teamsProgressBar.visibility = View.INVISIBLE
+        teamsRecyclerView.visibility = View.VISIBLE
+
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setTitle("Error")
+        var msg = "There was a problem during the process. Please, try again."
+        error?.let {
+            msg = it
+        }
+        builder.setMessage(msg)
+
+        builder.setPositiveButton("Ok"){ dialog, which ->
             dialog.dismiss()
         }
 

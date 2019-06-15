@@ -28,7 +28,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbarTeams"/>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabNewTeam"
+            android:id="@+id/fabNew"
             android:layout_width="56dp"
             android:layout_height="56dp"
             app:fabCustomSize="56dp"
@@ -41,7 +41,65 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent"
-            android:onClick="newTeam"/>
+            android:onClick="openNew"/>
+    <TextView
+            android:text="@string/new_team_fab_button"
+            android:background="@android:color/black"
+            android:textColor="@android:color/white"
+            android:padding="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/newTeamTextView"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toStartOf="@+id/fabNewTeam"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintTop_toTopOf="@+id/fabNewTeam"
+            app:layout_constraintBottom_toBottomOf="@+id/fabNewTeam"/>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:fabCustomSize="40dp"
+            android:clickable="true"
+            android:visibility="invisible"
+            android:scaleType="center"
+            android:layout_margin="16dp"
+            android:backgroundTint="@android:color/black"
+            app:srcCompat="@drawable/ic_new_team_white_24dp"
+            android:id="@+id/fabNewTeam"
+            android:onClick="newTeam"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/fabNew"
+            app:layout_constraintEnd_toEndOf="@+id/fabNew"
+            app:layout_constraintStart_toStartOf="@+id/fabNew"/>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:fabCustomSize="40dp"
+            android:clickable="true"
+            android:visibility="invisible"
+            android:scaleType="center"
+            android:backgroundTint="@android:color/black"
+            android:layout_margin="16dp"
+            app:srcCompat="@drawable/ic_group_white_24dp"
+            android:id="@+id/fabJoinTeam"
+            android:onClick="joinTeam"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/fabNewTeam"
+            app:layout_constraintEnd_toEndOf="@+id/fabNew"
+            app:layout_constraintStart_toStartOf="@+id/fabNew"/>
+    <TextView
+            android:text="@string/join_team_fab_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/black"
+            android:textColor="@android:color/white"
+            android:padding="4dp"
+            android:id="@+id/joinTeamTextView"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toStartOf="@+id/fabJoinTeam"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintTop_toTopOf="@+id/fabJoinTeam"
+            app:layout_constraintBottom_toBottomOf="@+id/fabJoinTeam"/>
     <ImageView
             style="@style/SearchNotFoundImageView"
             android:id="@+id/noTeamsImageView"

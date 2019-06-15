@@ -49,8 +49,8 @@ class MyProfileActivity : AppCompatActivity() {
 
                 when (it.status){
                     ServerStatus.ACTIVE.status -> setUserData(it.user)
-                    //ServerStatus.WRONG_TOKEN.status -> tokenFailed(it.message)
-                    //ServerStatus.TEAM_NOT_FOUND.status -> loadingTeamsFailed(it.message)
+                    ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
+                    ServerStatus.ERROR.status -> errorOccurred(it.message)
                 }
             }
             if (response == null){
@@ -164,5 +164,24 @@ class MyProfileActivity : AppCompatActivity() {
                 Log.w(TAG, "Failed to upload profile picture to Storage", it.cause)
                 //create(teamName, location, description, welcomeMessage, null)
             }
+    }
+
+    private fun errorOccurred(error: String?){
+        myProfileProgressBar.visibility = View.INVISIBLE
+
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setTitle("Error")
+        var msg = "There was a problem during the process. Please, try again."
+        error?.let {
+            msg = it
+        }
+        builder.setMessage(msg)
+
+        builder.setPositiveButton("Ok"){ dialog, which ->
+            dialog.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
     }
 }

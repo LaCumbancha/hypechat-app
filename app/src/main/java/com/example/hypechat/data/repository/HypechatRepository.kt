@@ -13,6 +13,13 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import android.widget.Toast
+import com.facebook.FacebookSdk.getApplicationContext
+import android.R.string
+import com.google.gson.GsonBuilder
+import com.google.gson.Gson
+import java.io.IOException
+
 
 class HypechatRepository {
 
@@ -23,6 +30,7 @@ class HypechatRepository {
     private var httpClient: OkHttpClient? = null
     private var retrofit: Retrofit? = null
     private var client : ApiClient? = null
+    private val errors = listOf(400, 401, 404, 500)
 
     init {
         httpClient = OkHttpClient.Builder()
@@ -302,14 +310,26 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
 
-    fun joinTeam(teamId: Int, token: String, onSuccess: (user: ApiResponse?) -> Unit) {
+    fun joinTeam(token: String, onSuccess: (user: ApiResponse?) -> Unit) {
 
-        val body = JoinTeamRequest(teamId, token)
+        val body = JoinTeamRequest(token)
         val call = client?.joinTeam(body)
 
         call?.enqueue(object : Callback<ApiResponse> {

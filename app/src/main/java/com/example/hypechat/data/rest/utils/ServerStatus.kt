@@ -17,5 +17,7 @@ enum class ServerStatus(val status: String) {
     LIST("LIST"),
     ROLE_MODIFIED("ROLE_MODIFIED"),
     UPDATED("UPDATED"),
-    REMOVED("REMOVED")
+    REMOVED("REMOVED"),
+    INVITED("INVITED"),
+    ALREADY_INVITED("ALREADY_INVITED")
 }
