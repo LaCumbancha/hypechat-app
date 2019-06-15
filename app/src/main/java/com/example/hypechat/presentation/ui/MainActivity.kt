@@ -106,8 +106,10 @@ class MainActivity : AppCompatActivity() {
                 response?.let {
 
                     when (it.status){
-                        ServerStatus.ACTIVE.status -> { navigateToLatestMessages()
-                                                        AppPreferences.setUserId(it.user.id)
+                        ServerStatus.ACTIVE.status -> {
+                            firebaseLogin(email, password)
+                            navigateToLatestMessages()
+                            AppPreferences.setUserId(it.user.id)
                         }
                         ServerStatus.WRONG_CREDENTIALS.status -> loginFailed(it.message)
                     }
@@ -118,6 +120,18 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun firebaseLogin(email: String, password: String){
+
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "Firebase:signInWithEmail:success")
+                } else {
+                    Log.w(TAG, "signInWithEmail:failure", task.exception)
+                }
+            }
     }
 
     private fun navigateToLatestMessages(){

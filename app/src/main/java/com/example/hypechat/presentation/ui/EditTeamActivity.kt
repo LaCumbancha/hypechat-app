@@ -225,19 +225,23 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
         val filename = UUID.randomUUID().toString()
         val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
 
-        ref.putFile(selectedPhotoUri!!)
-            .addOnSuccessListener {
-                Log.d(TAG, "Successfully uploaded team picture: ${it.metadata?.path}")
-                ref.downloadUrl.addOnSuccessListener { uri ->
-                    Log.d(TAG, "File location: $uri")
-                    val profilePicUrl = uri.toString()
-                    save(teamName, teamLocation, description, welcomeMessage, profilePicUrl)
+        if (selectedPhotoUri != null){
+            ref.putFile(selectedPhotoUri!!)
+                .addOnSuccessListener {
+                    Log.d(TAG, "Successfully uploaded team picture: ${it.metadata?.path}")
+                    ref.downloadUrl.addOnSuccessListener { uri ->
+                        Log.d(TAG, "File location: $uri")
+                        val profilePicUrl = uri.toString()
+                        save(teamName, teamLocation, description, welcomeMessage, profilePicUrl)
+                    }
                 }
-            }
-            .addOnFailureListener {
-                Log.w(TAG, "Failed to upload team picture to Storage", it.cause)
-                save(teamName, teamLocation, description, welcomeMessage, team!!.picture)
-            }
+                .addOnFailureListener {
+                    Log.w(TAG, "Failed to upload team picture to Storage", it.cause)
+                    save(teamName, teamLocation, description, welcomeMessage, team!!.picture)
+                }
+        } else {
+            save(teamName, teamLocation, description, welcomeMessage, team!!.picture)
+        }
     }
 
     fun deleteTeam(view: View){

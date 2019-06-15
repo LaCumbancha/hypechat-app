@@ -21,8 +21,10 @@ class TeamInvitationDialog: AppCompatDialogFragment() {
         builder.setView(view)
             .setTitle("Invitation")
             .setPositiveButton("Ok"){ dialog, which ->
-                val email = teamInvitationEditText.text.toString()
-                listener.applyEmail(email)
+                if (teamInvitationEditText != null){
+                    val email = teamInvitationEditText.text.toString()
+                    listener.applyEmail(email)
+                }
                 dialog.dismiss()
             }
             .setNegativeButton("Cancel"){ dialog, which ->
