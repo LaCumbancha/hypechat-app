@@ -254,6 +254,21 @@ class HypechatRepository {
         })
     }
 
+    fun getTeamChannels(teamId: Int, onSuccess: (teams: ChannelsResponse?) -> Unit) {
+
+        val call = client?.getTeamChannels(teamId)
+
+        call?.enqueue(object : Callback<ChannelsResponse> {
+            override fun onFailure(call: Call<ChannelsResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ChannelsResponse>, response: Response<ChannelsResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
     fun createTeam(teamName: String, location: String?, description: String?, welcomeMessage: String?,
                    profilePicUrl: String?, onSuccess: (user: TeamCreationResponse?) -> Unit) {
 
