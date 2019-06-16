@@ -19,6 +19,7 @@ import com.example.hypechat.data.repository.HypechatRepository
 import com.example.hypechat.data.rest.utils.ServerStatus
 import com.example.hypechat.data.rest.utils.UserRole
 import com.example.hypechat.presentation.utils.TeamInvitationDialog
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
@@ -85,6 +86,19 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
         }
     }
 
+    private fun validateField(field: TextInputLayout): Boolean {
+
+        val fieldStr = field.editText!!.text.toString().trim()
+
+        if (fieldStr.isEmpty()){
+            field.error = "The field can not be empty"
+            return false
+        } else {
+            field.error = null
+            return true
+        }
+    }
+
     fun switchTeam(view: View){
 
         val intent = Intent(this, LatestMessagesActivity::class.java)
@@ -131,24 +145,27 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
 
     fun saveChangesTeam(view: View){
 
-        editTeamCardView.visibility = View.INVISIBLE
-        editTeamProgressBar.visibility = View.VISIBLE
+        if (validateField(editTeamNameTextInputLayout)){
 
-        val teamName = editTeamNameTextInputLayout.editText!!.text.toString()
-        var description: String? = null
-        editTeamDescriptionTextInputLayout.editText?.let {
-            description = it.text.toString()
-        }
-        var welcomeMessage: String? = null
-        editTeamWelcomeMessageTextInputLayout.editText?.let {
-            welcomeMessage = it.text.toString()
-        }
-        var teamLocation: String? = null
-        editTeamLocationTextInputLayout.editText?.let {
-            teamLocation = it.text.toString()
-        }
+            editTeamCardView.visibility = View.INVISIBLE
+            editTeamProgressBar.visibility = View.VISIBLE
+            val teamName = editTeamNameTextInputLayout.editText!!.text.toString()
 
-        saveTeamPicture(teamName, teamLocation, description, welcomeMessage)
+            var description: String? = null
+            if (editTeamDescriptionTextInputLayout.editText!!.text.toString().isNotBlank()){
+                description = editTeamDescriptionTextInputLayout.editText!!.text.toString()
+            }
+            var welcomeMessage: String? = null
+            if (editTeamWelcomeMessageTextInputLayout.editText!!.text.toString().isNotBlank()){
+                welcomeMessage = editTeamWelcomeMessageTextInputLayout.editText!!.text.toString()
+            }
+            var teamLocation: String? = null
+            if (editTeamLocationTextInputLayout.editText!!.text.toString().isNotBlank()){
+                teamLocation = editTeamLocationTextInputLayout.editText!!.text.toString()
+            }
+
+            saveTeamPicture(teamName, teamLocation, description, welcomeMessage)
+        }
     }
 
     private fun save(teamName: String, teamLocation: String?, description: String?, welcomeMessage: String?, teamPicUrl: String?){
@@ -168,6 +185,7 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
                         Toast.makeText(this, "Team information updated", Toast.LENGTH_SHORT).show()
                         editTeamProgressBar.visibility = View.INVISIBLE
                         editTeamCardView.visibility = View.VISIBLE
+                        cancel()
                     }
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
@@ -386,5 +404,22 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
                 editTeamCardView.visibility = View.VISIBLE
             }
         }
+    }
+
+    private fun cancel(){
+
+        editTeamButton.visibility = View.VISIBLE
+        saveTeamButton.visibility = View.INVISIBLE
+        cancelTeamButton.visibility = View.INVISIBLE
+        editTeamPictureButton.alpha = 0f
+        editTeamPictureButton.isEnabled = false
+        editTeamNameTextInputLayout.editText!!.isFocusable = false
+        editTeamNameTextInputLayout.editText!!.isFocusableInTouchMode = false
+        editTeamDescriptionTextInputLayout.editText!!.isFocusable = false
+        editTeamDescriptionTextInputLayout.editText!!.isFocusableInTouchMode = false
+        editTeamWelcomeMessageTextInputLayout.editText!!.isFocusable = false
+        editTeamWelcomeMessageTextInputLayout.editText!!.isFocusableInTouchMode = false
+        editTeamLocationTextInputLayout.editText!!.isFocusable = false
+        editTeamLocationTextInputLayout.editText!!.isFocusableInTouchMode = false
     }
 }

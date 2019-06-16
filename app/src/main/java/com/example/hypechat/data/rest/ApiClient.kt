@@ -21,6 +21,9 @@ interface ApiClient {
     @GET("/users/profile")
     fun getMyProfile(): Call<ProfileResponse>
 
+    @PATCH("/users/profile")
+    fun updateMyProfile(@Body body: UpdateProfileRequest): Call<RegisterResponse>
+
     @GET("teams/{team_id}/users/{user_id}/profile")
     fun getUserProfile(@Path("team_id") team_id: Int, @Path("user_id") userId: Int): Call<ProfileResponse>
 
