@@ -460,6 +460,22 @@ class HypechatRepository {
         })
     }
 
+    fun joinChannel(teamId: Int, channel_id: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val body = JoinChannelRequest(teamId, channel_id)
+        val call = client?.joinChannel(body)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
     fun getChannelUsers(teamId: Int, channel_id: Int, onSuccess: (user: UsersResponse?) -> Unit) {
 
         val call = client?.getChannelUsers(teamId, channel_id)
