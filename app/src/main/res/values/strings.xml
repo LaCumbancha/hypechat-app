@@ -94,6 +94,10 @@
     <string name="add_user_to_channel_toolbar">Add User</string>
     <!--Add User To Channel-->
 
+    <!--View Channel Users-->
+    <string name="view_channel_user_toolbar">Channel Users</string>
+    <!--View Channel Users-->
+
     <!--My Profile-->
     <string name="my_profile_toolbar">My Profile</string>
     <string name="my_profile_edit_button">EDIT PROFILE</string>

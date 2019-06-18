@@ -15,66 +15,48 @@ import com.example.hypechat.data.repository.HypechatRepository
 import com.example.hypechat.data.rest.utils.ServerStatus
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.activity_add_user_to_channel.*
+import kotlinx.android.synthetic.main.activity_view_channel_users.*
 
-class AddUserToChannelActivity : AppCompatActivity() {
+class ViewChannelUsersActivity : AppCompatActivity() {
 
     companion object {
         val CHANNELID = "CHANNELID"
+        val CREATORID = "CREATORID"
     }
 
     private val adapter = GroupAdapter<ViewHolder>()
     private val TAG = "AddUserToChannel"
     private var channelId: Int = -1
+    private var creatorId: Int = -1
     private var arrayList = ArrayList<UserItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_user_to_channel)
+        setContentView(R.layout.activity_view_channel_users)
 
-        setSupportActionBar(toolbarAddUserToChannel)
+        setSupportActionBar(toolbarViewUsersChannel)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         AppPreferences.init(this)
 
         channelId = intent.getIntExtra(CHANNELID, 0)
+        creatorId = intent.getIntExtra(CREATORID, 0)
 
-        addUserRecyclerView.layoutManager = LinearLayoutManager(this)
-        addUserRecyclerView.adapter = adapter
+        viewUsersRecyclerView.layoutManager = LinearLayoutManager(this)
+        viewUsersRecyclerView.adapter = adapter
 
-        getTeamUsers()
+        getUsers()
     }
 
-    private fun getTeamUsers(){
+    private fun getUsers(){
 
-        addUserProgressBar.visibility = View.VISIBLE
-        val teamId = AppPreferences.getTeamId()
-
-        HypechatRepository().getUsers(teamId){ response ->
-            response?.let {
-
-                when (it.status){
-                    ServerStatus.LIST.status -> getChannelUsers(it.users)
-                    ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
-                    ServerStatus.ERROR.status -> errorOccurred(it.message)
-                }
-            }
-            if (response == null){
-                Log.w(TAG, "getUsers:failure")
-                addUserProgressBar.visibility = View.INVISIBLE
-            }
-        }
-    }
-
-    private fun getChannelUsers(teamUsersList: List<UserResponse>){
-
-        addUserProgressBar.visibility = View.VISIBLE
+        viewUsersProgressBar.visibility = View.VISIBLE
         val teamId = AppPreferences.getTeamId()
 
         HypechatRepository().getChannelUsers(teamId, channelId){ response ->
             response?.let {
 
                 when (it.status){
-                    ServerStatus.LIST.status -> loadUsers(teamUsersList, it.users)
+                    ServerStatus.LIST.status -> loadUsers(it.users)
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
                 }
@@ -82,38 +64,37 @@ class AddUserToChannelActivity : AppCompatActivity() {
             if (response == null){
                 Log.w(TAG, "getChannelUsers:failure")
                 errorOccurred(null)
-                addUserProgressBar.visibility = View.INVISIBLE
+                viewUsersProgressBar.visibility = View.INVISIBLE
             }
         }
     }
 
-    private fun <T, U> List<T>.intersect(uList: List<U>, filterPredicate : (T, U) -> Boolean) = filterNot { m -> uList.any { filterPredicate(m, it)} }
+    private fun loadUsers(channelUsersList: List<UserResponse>){
 
-    private fun loadUsers(teamUsersList: List<UserResponse>, channelUsersList: List<UserResponse>){
+        val userId = AppPreferences.getUserId()
 
-        val filteredList = teamUsersList.intersect(channelUsersList) { a, b ->
-            a.id == b.id
-        }
-        for (user in filteredList){
+        for (user in channelUsersList){
             arrayList.add(UserItem(user))
         }
         adapter.addAll(arrayList)
-        adapter.setOnItemClickListener { item, view ->
-            val userItem = item as UserItem
-            addUser(userItem.user)
+        if (userId == creatorId){
+            adapter.setOnItemClickListener { item, view ->
+                val userItem = item as UserItem
+                deleteUser(userItem.user)
+            }
         }
-        addUserProgressBar.visibility = View.INVISIBLE
+        viewUsersProgressBar.visibility = View.INVISIBLE
     }
 
-    private fun addUser(user: UserResponse){
+    private fun deleteUser(user: UserResponse){
 
         val builder = android.app.AlertDialog.Builder(this)
-        builder.setTitle("Add")
-        builder.setMessage("Are you sure you want to add ${user.username} to the channel?")
+        builder.setTitle("Remove")
+        builder.setMessage("Are you sure you want to remove ${user.username} from the channel?")
 
         builder.setPositiveButton("Yes"){ dialog, which ->
             dialog.dismiss()
-            add(user.id)
+            remove(user.id)
         }
         builder.setNegativeButton("No"){ dialog, which ->
             dialog.dismiss()
@@ -123,38 +104,38 @@ class AddUserToChannelActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun add(userId: Int){
+    private fun remove(userId: Int){
 
-        addUserProgressBar.visibility = View.VISIBLE
+        viewUsersProgressBar.visibility = View.VISIBLE
         val teamId = AppPreferences.getTeamId()
 
-        HypechatRepository().addUserToChannel(teamId, userId, channelId){ response ->
+        HypechatRepository().deleteUserFromChannel(teamId, userId, channelId){ response ->
 
             response?.let {
 
                 when (it.status){
-                    ServerStatus.ADDED.status -> {
-                        addUserProgressBar.visibility = View.INVISIBLE
-                        Toast.makeText(this, "User added", Toast.LENGTH_SHORT).show()
+                    ServerStatus.REMOVED.status -> {
+                        viewUsersProgressBar.visibility = View.INVISIBLE
+                        Toast.makeText(this, "User removed", Toast.LENGTH_SHORT).show()
                         adapter.removeAll(arrayList)
                         arrayList.clear()
-                        getTeamUsers()
+                        getUsers()
                     }
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
                 }
             }
             if (response == null){
-                Log.w(TAG, "addUserToChannel:failure")
+                Log.w(TAG, "deleteUserFromChannel:failure")
                 errorOccurred(null)
-                addUserProgressBar.visibility = View.INVISIBLE
+                viewUsersProgressBar.visibility = View.INVISIBLE
             }
         }
     }
 
     private fun errorOccurred(error: String?){
 
-        addUserProgressBar.visibility = View.INVISIBLE
+        viewUsersProgressBar.visibility = View.INVISIBLE
 
         val builder = android.app.AlertDialog.Builder(this)
         builder.setTitle("Error")
