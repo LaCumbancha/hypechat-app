@@ -90,6 +90,10 @@
     <string name="edit_channel_leave_button">LEAVE CHANNEL</string>
     <!--Edit Channel-->
 
+    <!--Add User To Channel-->
+    <string name="add_user_to_channel_toolbar">Add User</string>
+    <!--Add User To Channel-->
+
     <!--My Profile-->
     <string name="my_profile_toolbar">My Profile</string>
     <string name="my_profile_edit_button">EDIT PROFILE</string>

@@ -159,6 +159,12 @@ class EditChannelActivity : AppCompatActivity() {
         setInitSpinner()
     }
 
+    fun addUser(view: View){
+        val intent = Intent(this, AddUserToChannelActivity::class.java)
+        intent.putExtra(AddUserToChannelActivity.CHANNELID, channel!!.id)
+        startActivity(intent)
+    }
+
     fun joinChannel(view: View){
 
         editChannelCardView.visibility = View.INVISIBLE

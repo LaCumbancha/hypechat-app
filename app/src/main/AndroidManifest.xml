@@ -33,9 +33,15 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".presentation.ui.EditChannelActivity"
-                  android:parentActivityName=".presentation.ui.LatestMessagesActivity"
+
+        <activity android:name=".presentation.ui.AddUserToChannelActivity"
+                  android:parentActivityName=".presentation.ui.EditChannelActivity"
                   android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".presentation.ui.EditChannelActivity"
+                android:parentActivityName=".presentation.ui.LatestMessagesActivity"
+                android:screenOrientation="portrait">
         </activity>
         <activity
                 android:name=".presentation.ui.EditTeamActivity"
