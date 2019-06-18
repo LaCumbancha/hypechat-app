@@ -99,7 +99,7 @@ interface ApiClient {
     @PATCH("/teams/{team_id}/channels/{channel_id}")
     fun updateChannel(@Path("team_id") team_id: Int, @Path("channel_id") channel_id: Int, @Body body: UpdateChannelRequest): Call<ChannelCreationResponse>
 
-    @GET("/teams/{team_id}/channel/{channel_id}/users")
+    @GET("/teams/{team_id}/channels/{channel_id}/users")
     fun getChannelUsers(@Path("team_id") team_id: Int, @Path("channel_id") channel_id: Int): Call<UsersResponse>
 
     @DELETE("/teams/{team_id}/channels/{channel_id}/users/{user_id}")

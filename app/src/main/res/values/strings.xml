@@ -80,6 +80,16 @@
     <string name="edit_team_cancel_button">CANCEL</string>
     <!--Edit Team-->
 
+    <!--Edit Channel-->
+    <string name="edit_channel_invite_button">ADD USER</string>
+    <string name="edit_channel_join_button">JOIN CHANNEL</string>
+    <string name="edit_channel_edit_button">EDIT CHANNEL</string>
+    <string name="edit_channel_view_users_button">VIEW USERS</string>
+    <string name="edit_channel_delete_button">DELETE CHANNEL</string>
+    <string name="edit_channel_delete_user_button">REMOVE USER</string>
+    <string name="edit_channel_leave_button">LEAVE CHANNEL</string>
+    <!--Edit Channel-->
+
     <!--My Profile-->
     <string name="my_profile_toolbar">My Profile</string>
     <string name="my_profile_edit_button">EDIT PROFILE</string>

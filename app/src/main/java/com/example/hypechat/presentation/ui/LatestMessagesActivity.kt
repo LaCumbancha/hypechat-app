@@ -121,7 +121,10 @@ class LatestMessagesActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 R.layout.channel_row -> {
-
+                    val intent = Intent(this, EditChannelActivity::class.java)
+                    val row = item as ChannelRow
+                    intent.putExtra(EditChannelActivity.CHANNEL, row.channel)
+                    startActivity(intent)
                 }
                 else -> throw IllegalArgumentException("Invalid view type")
             }
