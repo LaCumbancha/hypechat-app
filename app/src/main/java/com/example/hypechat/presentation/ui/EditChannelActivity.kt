@@ -91,13 +91,15 @@ class EditChannelActivity : AppCompatActivity() {
     private fun checkIfUserIsInChannel(){
 
         editChannelProgressBar.visibility = View.VISIBLE
+        val teamId = AppPreferences.getTeamId()
 
-        HypechatRepository().getChannelUsers(AppPreferences.getTeamId(), channel!!.id){ response ->
+        HypechatRepository().getChannelUsers(teamId, channel!!.id){ response ->
 
             response?.let {
 
                 when (it.status){
-                    ServerStatus.LIST.status -> setButtons(it.users)
+                    ServerStatus.LIST.status -> setButtonsIsInChannel()
+                    ServerStatus.NOT_ENOUGH_PERMISSIONS.status -> setButtonsIsNotInChannel()
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
                 }
@@ -111,21 +113,23 @@ class EditChannelActivity : AppCompatActivity() {
         }
     }
 
-    private fun setButtons(users: List<UserResponse>){
+    private fun setButtonsIsInChannel(){
 
         editChannelProgressBar.visibility = View.INVISIBLE
         editChannelCardView.visibility = View.VISIBLE
-        val userIsInChannel = users.any { x -> x.id == AppPreferences.getUserId() }
+        //val userIsInChannel = users.any { x -> x.id == AppPreferences.getUserId() }
+        leaveChannelButton.visibility = View.VISIBLE
+    }
 
-        if (userIsInChannel){
-            leaveChannelButton.visibility = View.VISIBLE
-        } else {
-            joinChannelButton.visibility = View.VISIBLE
-        }
+    private fun setButtonsIsNotInChannel(){
 
-        if (!userIsInChannel && channel!!.visibility == ChannelVisibility.PRIVATE.visibility){
+        editChannelProgressBar.visibility = View.INVISIBLE
+        editChannelCardView.visibility = View.VISIBLE
+        joinChannelButton.visibility = View.VISIBLE
+        viewUsersButton.visibility = View.INVISIBLE
+
+        if (channel!!.visibility == ChannelVisibility.PRIVATE.visibility){
             joinChannelButton.visibility = View.INVISIBLE
-            viewUsersButton.visibility = View.INVISIBLE
         }
     }
 
@@ -182,7 +186,7 @@ class EditChannelActivity : AppCompatActivity() {
             response?.let {
 
                 when (it.status){
-                    ServerStatus.ADDED.status -> {
+                    ServerStatus.JOINED.status -> {
                         editChannelProgressBar.visibility = View.INVISIBLE
                         Toast.makeText(this, "Joined channel successfully", Toast.LENGTH_SHORT).show()
                         val intent = Intent(this, LatestMessagesActivity::class.java)

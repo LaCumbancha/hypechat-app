@@ -30,7 +30,7 @@ class HypechatRepository {
     private var httpClient: OkHttpClient? = null
     private var retrofit: Retrofit? = null
     private var client : ApiClient? = null
-    private val errors = listOf(400, 401, 404, 500)
+    private val errors = listOf(400, 401, 403, 404, 500)
 
     init {
         httpClient = OkHttpClient.Builder()
@@ -501,7 +501,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<UsersResponse>, response: Response<UsersResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: UsersResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), UsersResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }

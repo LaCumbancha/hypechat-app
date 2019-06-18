@@ -19,5 +19,6 @@ enum class ServerStatus(val status: String) {
     UPDATED("UPDATED"),
     REMOVED("REMOVED"),
     INVITED("INVITED"),
-    ALREADY_INVITED("ALREADY_INVITED")
+    ALREADY_INVITED("ALREADY_INVITED"),
+    JOINED("JOINED")
 }
