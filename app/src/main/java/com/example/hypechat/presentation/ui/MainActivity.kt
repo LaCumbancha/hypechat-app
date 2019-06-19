@@ -110,6 +110,7 @@ class MainActivity : AppCompatActivity() {
                             firebaseLogin(email, password)
                             navigateToLatestMessages()
                             AppPreferences.setUserId(it.user.id)
+                            AppPreferences.setUserName(it.user.username)
                         }
                         ServerStatus.WRONG_CREDENTIALS.status -> loginFailed(it.message)
                     }

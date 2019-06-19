@@ -56,7 +56,7 @@ class EditChannelActivity : AppCompatActivity() {
             }
             setInitSpinner()
 
-            if (channel.creatorId == AppPreferences.getUserId()){
+            if (channel.creator.id == AppPreferences.getUserId()){
                 addUserButton.visibility = View.VISIBLE
                 deleteChannelButton.visibility = View.VISIBLE
                 editChannelButton.visibility = View.VISIBLE
@@ -172,7 +172,7 @@ class EditChannelActivity : AppCompatActivity() {
     fun viewUsers(view: View){
         val intent = Intent(this, ViewChannelUsersActivity::class.java)
         intent.putExtra(ViewChannelUsersActivity.CHANNELID, channel!!.id)
-        intent.putExtra(ViewChannelUsersActivity.CREATORID, channel!!.creatorId)
+        intent.putExtra(ViewChannelUsersActivity.CREATORID, channel!!.creator.id)
         startActivity(intent)
     }
 

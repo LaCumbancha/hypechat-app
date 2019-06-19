@@ -138,9 +138,9 @@ class ChatLogActivity : AppCompatActivity() {
 
         for (message in sortedMessages){
             if (message.sender.id == userId){
-                chatLogAdapter.add(ChatFromItem(message.message))
+                chatLogAdapter.add(ChatFromItem(message.message, message.sender.username))
             } else {
-                chatLogAdapter.add(ChatToItem(message.message))
+                chatLogAdapter.add(ChatToItem(message.message, message.sender.username))
             }
         }
         Log.d(TAG, "getMessagesFromChat:success")
@@ -189,10 +189,11 @@ class ChatLogActivity : AppCompatActivity() {
     fun sendChatMessage(view: View){
 
         val message = chatLogEditText.text.toString()
+        val username = AppPreferences.getUserName()
 
         if (message != ""){
 
-            chatLogAdapter.add(ChatFromItem(message))
+            chatLogAdapter.add(ChatFromItem(message, username!!))
             chatLogEditText.text.clear()
             chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
             val teamId = AppPreferences.getTeamId()

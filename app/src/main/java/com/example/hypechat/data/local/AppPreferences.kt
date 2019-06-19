@@ -11,6 +11,7 @@ object AppPreferences {
     val AUTH_TOKEN = "auth_token"
     val TEAM_ID = "team_id"
     val USER_ID = "user_id"
+    val USERNAME = "username"
     val PREF_COOKIES = "cookies"
 
     fun init(context: Context) {
@@ -54,6 +55,16 @@ object AppPreferences {
 
     fun getUserId(): Int {
         return preferences.getInt(USER_ID, -1)
+    }
+
+    fun setUserName(username: String) {
+        preferences.edit {
+            it.putString(USERNAME, username)
+        }
+    }
+
+    fun getUserName(): String? {
+        return preferences.getString(USERNAME, null)
     }
 
     fun setTeamId(teamId: Int) {
