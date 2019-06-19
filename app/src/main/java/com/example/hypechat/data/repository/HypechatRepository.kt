@@ -72,6 +72,22 @@ class HypechatRepository {
         })
     }
 
+    fun facebookLoginUser(token: String, onSuccess: (user: LoginResponse?) -> Unit) {
+
+        val body = FacebookLoginRequest(token)
+        val call = client?.facebookLoginUser(body)
+
+        call?.enqueue(object : Callback<LoginResponse> {
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
     fun registerUser(username:String, email: String, password: String, firstName:String?,
                      lastName: String?, profilePic: String? , onSuccess: (user: RegisterResponse?) -> Unit) {
 

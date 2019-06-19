@@ -15,6 +15,9 @@ interface ApiClient {
     @POST("/users/login")
     fun loginUser(@Body body: LoginRequest): Call<LoginResponse>
 
+    @POST("/users/login")
+    fun facebookLoginUser(@Body body: FacebookLoginRequest): Call<LoginResponse>
+
     @POST("/users/logout")
     fun logoutUser(): Call<ApiResponse>
 

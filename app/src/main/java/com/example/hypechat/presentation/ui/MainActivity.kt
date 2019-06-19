@@ -67,10 +67,8 @@ class MainActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     Log.d(TAG, "signInWithCredential:success")
-                    //saveUser(auth.currentUser)
-                    val intent = Intent(this, LatestMessagesActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
+                    val currentToken = AccessToken.getCurrentAccessToken().token
+                    facebookLogin(currentToken)
                 } else {
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
                     val message = task.exception.toString()
@@ -78,6 +76,28 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Authentication failed: ${message.substring(index + 1)}", Toast.LENGTH_SHORT).show()
                 }
             }
+    }
+
+    private fun facebookLogin(token: String){
+
+        HypechatRepository().facebookLoginUser(token){ response ->
+
+            response?.let {
+
+                when (it.status){
+                    ServerStatus.ACTIVE.status -> {
+                        navigateToLatestMessages()
+                        AppPreferences.setUserId(it.user.id)
+                        AppPreferences.setUserName(it.user.first_name!!)
+                    }
+                    ServerStatus.WRONG_CREDENTIALS.status -> loginFailed(it.message)
+                }
+            }
+            if (response == null){
+                Log.w(TAG, "facebookLoginUser:failure")
+                errorOccurred()
+            }
+        }
     }
 
     private fun validateField(field: TextInputLayout): Boolean {
