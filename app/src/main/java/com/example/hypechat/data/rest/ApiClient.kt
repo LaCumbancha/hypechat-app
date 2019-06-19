@@ -27,9 +27,6 @@ interface ApiClient {
     @GET("teams/{team_id}/users/{user_id}/profile")
     fun getUserProfile(@Path("team_id") team_id: Int, @Path("user_id") userId: Int): Call<ProfileResponse>
 
-    @DELETE("teams/{team_id}/users/{user_id}")
-    fun deleteUser(@Path("team_id") team_id: Int, @Path("user_id") userId: Int): Call<ApiResponse>
-
     @GET("/teams/{team_id}/users/%")
     fun getUsers(@Path("team_id") team_id: Int): Call<UsersResponse>
 
@@ -69,6 +66,9 @@ interface ApiClient {
 
     @DELETE("teams/{team_id}")
     fun deleteTeam(@Path("team_id") team_id: Int): Call<ApiResponse>
+
+    @DELETE("teams/{team_id}/users/{user_id}")
+    fun removeUserFromTeam(@Path("team_id") team_id: Int, @Path("user_id") userId: Int): Call<ApiResponse>
 
     @PUT("teams/forbidden-words")
     fun addForbiddenWord(@Body body: ForbiddenWordsRequest): Call<ApiResponse>

@@ -316,6 +316,21 @@ class HypechatRepository {
         })
     }
 
+    fun removeUserFromTeam(teamId: Int, userId: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val call = client?.removeUserFromTeam(teamId, userId)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
     fun deleteForbiddenWord(teamId: Int, wordId: Int, onSuccess: (user: ApiResponse?) -> Unit) {
 
         val call = client?.deleteForbiddenWord(teamId, wordId)

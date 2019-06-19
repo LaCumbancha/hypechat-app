@@ -80,6 +80,7 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
                 inviteTeamButton.visibility = View.VISIBLE
                 deleteTeamButton.visibility = View.VISIBLE
                 editTeamButton.visibility = View.VISIBLE
+                removeTeamUserButton.visibility = View.VISIBLE
             } else {
                 leaveTeamButton.visibility = View.VISIBLE
             }
@@ -106,6 +107,12 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
             intent.putExtra(LatestMessagesActivity.TEAM_ID, it.team_id)
         }
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+    }
+
+    fun removeTeamUser(view: View){
+
+        val intent = Intent(this, RemoveTeamUserActivity::class.java)
         startActivity(intent)
     }
 

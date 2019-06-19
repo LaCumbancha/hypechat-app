@@ -172,6 +172,18 @@
                         android:layout_marginTop="8dp"
                         app:layout_constraintTop_toBottomOf="@+id/leaveTeamButton"/>
                 <Button
+                        android:text="@string/edit_channel_remove_user_button"
+                        style="@style/AppTheme.RoundedCornerMaterialButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:onClick="removeTeamUser"
+                        android:id="@+id/removeTeamUserButton"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintTop_toBottomOf="@+id/inviteTeamButton"/>
+                <Button
                         android:text="@string/edit_team_delete_button"
                         style="@style/AppTheme.RoundedCornerMaterialButton"
                         android:layout_width="0dp"
@@ -182,7 +194,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         android:layout_marginTop="8dp"
-                        app:layout_constraintTop_toBottomOf="@+id/inviteTeamButton"/>
+                        app:layout_constraintTop_toBottomOf="@+id/removeTeamUserButton"/>
                 <Button
                         android:text="@string/edit_team_edit_button"
                         style="@style/AppTheme.RoundedCornerMaterialButton"

@@ -86,6 +86,7 @@
     <string name="edit_channel_edit_button">EDIT CHANNEL</string>
     <string name="edit_channel_view_users_button">VIEW USERS</string>
     <string name="edit_channel_delete_button">DELETE CHANNEL</string>
+    <string name="edit_channel_remove_user_button">REMOVE USER</string>
     <string name="edit_channel_delete_user_button">REMOVE USER</string>
     <string name="edit_channel_leave_button">LEAVE CHANNEL</string>
     <!--Edit Channel-->
@@ -118,6 +119,10 @@
     <string name="new_channel_welcome_message_placeholder">Welcome Message</string>
     <string name="new_channel_visibility_placeholder">Visibility</string>
     <!--New Channel-->
+
+    <!--Remove Team User-->
+    <string name="remove_team_user_toolbar">Remove User</string>
+    <!--Remove Team User-->
 
 
 </resources>
