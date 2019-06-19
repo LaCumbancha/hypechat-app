@@ -9,6 +9,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.example.hypechat.R
 import com.example.hypechat.data.local.AppPreferences
+import com.example.hypechat.data.model.rest.response.ChannelResponse
 import com.example.hypechat.data.repository.HypechatRepository
 import com.example.hypechat.data.rest.utils.ServerStatus
 import com.google.android.material.textfield.TextInputLayout
@@ -72,7 +73,7 @@ class NewChannelActivity : AppCompatActivity() {
                 response?.let {
 
                     when (it.status){
-                        ServerStatus.CREATED.status -> navigateToLatestMessages()
+                        ServerStatus.CREATED.status -> sendWelcomeMessage(it.channel)
                         ServerStatus.ALREADY_REGISTERED.status -> errorOccurred(it.message)
                         ServerStatus.ERROR.status -> errorOccurred(it.message)
                     }
@@ -85,9 +86,36 @@ class NewChannelActivity : AppCompatActivity() {
         }
     }
 
-    private fun navigateToLatestMessages(){
+    private fun sendWelcomeMessage(channel: ChannelResponse){
 
         Log.d(TAG, "createChannel:success")
+        val teamId = AppPreferences.getTeamId()
+        var welcomeMessage = "Hello World"
+        channel.message?.let {
+            welcomeMessage = it
+        }
+
+        HypechatRepository().sendMessage(channel.channelId, welcomeMessage, teamId){ response ->
+
+            response?.let {
+
+                when (it.status){
+                    ServerStatus.SENT.status -> navigateToLatestMessages()
+                    ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
+                    ServerStatus.USER_NOT_FOUND.status -> errorOccurred(it.message)
+                    ServerStatus.ERROR.status -> errorOccurred(it.message)
+                }
+            }
+            if (response == null){
+                Log.w(TAG, "sendMessage failed")
+                errorOccurred(null)
+            }
+        }
+    }
+
+    private fun navigateToLatestMessages(){
+
+        Log.d(TAG, "sendMessage:success")
         val intent = Intent(this, LatestMessagesActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)

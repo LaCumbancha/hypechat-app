@@ -175,7 +175,8 @@ class LatestMessagesActivity : AppCompatActivity() {
 
     private fun initializeChats(chats: List<ChatResponse>){
 
-        val sortedChats = chats.sortedByDescending { chat ->
+        val filterChats = chats.distinctBy { it.chat_id }
+        val sortedChats = filterChats.sortedByDescending { chat ->
             LocalDateTime.parse(chat.timestamp, DateTimeFormatter.RFC_1123_DATE_TIME)
         }
         for (chat in sortedChats){

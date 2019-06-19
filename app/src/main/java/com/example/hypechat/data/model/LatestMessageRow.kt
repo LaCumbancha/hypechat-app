@@ -1,5 +1,6 @@
 package com.example.hypechat.data.model
 
+import android.graphics.Typeface
 import android.view.View
 import com.example.hypechat.R
 import com.example.hypechat.data.model.rest.response.ChatResponse
@@ -28,6 +29,8 @@ class LatestMessageRow(val chat: ChatResponse): Item<ViewHolder>() {
         if (chat.unseen){
             viewHolder.itemView.notificationLatestMessageRowtextView.text = chat.offset.toString()
             viewHolder.itemView.notificationLatestMessageRowtextView.visibility = View.VISIBLE
+            val boldTypeface = Typeface.defaultFromStyle(Typeface.BOLD)
+            viewHolder.itemView.latestMessageRowTextView.typeface = boldTypeface
         }
 
         viewHolder.itemView.fullnameLatestMessageRowTextView.text = chat.chatName
