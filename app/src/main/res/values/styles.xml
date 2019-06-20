@@ -61,6 +61,14 @@
         <item name="android:backgroundTint">#3b5998</item>
     </style>
 
+    <style name="InvisibleProgress">
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="FullyTranslucent" parent="android:Theme.Translucent.NoTitleBar">
+        <item name="android:progressBarStyle">@style/InvisibleProgress</item>
+    </style>
+
     <style name="CustomTextView">
         <item name="android:textColor">@android:color/black</item>
         <item name="android:textAppearance">@android:style/TextAppearance.Holo</item>

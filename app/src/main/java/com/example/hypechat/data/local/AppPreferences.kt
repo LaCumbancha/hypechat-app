@@ -9,10 +9,10 @@ object AppPreferences {
     private lateinit var preferences: SharedPreferences
 
     val AUTH_TOKEN = "auth_token"
+    val FACEBOOK_TOKEN = "facebook_token"
     val TEAM_ID = "team_id"
     val USER_ID = "user_id"
     val USERNAME = "username"
-    val PREF_COOKIES = "cookies"
 
     fun init(context: Context) {
         preferences = context.getSharedPreferences(
@@ -47,6 +47,16 @@ object AppPreferences {
         return preferences.getString(AUTH_TOKEN, null)
     }
 
+    fun setFacebookToken(token: String) {
+        preferences.edit {
+            it.putString(FACEBOOK_TOKEN, token)
+        }
+    }
+
+    fun getFacebookToken(): String? {
+        return preferences.getString(FACEBOOK_TOKEN, null)
+    }
+
     fun setUserId(userId: Int) {
         preferences.edit {
             it.putInt(USER_ID, userId)
@@ -75,16 +85,6 @@ object AppPreferences {
 
     fun getTeamId(): Int {
         return preferences.getInt(TEAM_ID, 0)
-    }
-
-    fun setCookies(cookies: HashSet<String>) {
-        preferences.edit {
-            it.putStringSet(PREF_COOKIES, cookies)
-        }
-    }
-
-    fun getCookies(): HashSet<String>? {
-        return preferences.getStringSet(PREF_COOKIES, null) as HashSet<String>?
     }
 
 //    var language: String?

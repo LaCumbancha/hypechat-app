@@ -21,6 +21,7 @@ import com.example.hypechat.data.model.rest.response.ChannelResponse
 import com.example.hypechat.data.model.rest.response.ChatResponse
 import com.example.hypechat.data.repository.HypechatRepository
 import com.example.hypechat.data.rest.utils.ServerStatus
+import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.xwray.groupie.ExpandableGroup
@@ -312,7 +313,12 @@ class LatestMessagesActivity : AppCompatActivity() {
 
             response?.let {
                 when (it.status){
-                    ServerStatus.LOGGED_OUT.status -> navigateToMain()
+                    ServerStatus.LOGGED_OUT.status -> {
+                        AppPreferences.getFacebookToken()?.let {
+                            LoginManager.getInstance().logOut()
+                        }
+                        navigateToMain()
+                    }
                     ServerStatus.WRONG_TOKEN.status -> tokenFailed(it.message)
                 }
 

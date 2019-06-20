@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun loginWithFacebook(view: View){
+        facebookLoadingScreen()
         loginFacebookButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(loginResult: LoginResult) {
                 Log.d(TAG, "facebook:onSuccess:$loginResult")
@@ -50,11 +51,13 @@ class MainActivity : AppCompatActivity() {
             override fun onCancel() {
                 Log.d(TAG, "facebook:onCancel")
                 Toast.makeText(this@MainActivity, "facebook:onCancel", Toast.LENGTH_SHORT).show()
+                showScreen()
             }
 
             override fun onError(error: FacebookException) {
                 Log.d(TAG, "facebook:onError", error)
                 Toast.makeText(this@MainActivity, "facebook:onError: $error", Toast.LENGTH_SHORT).show()
+                showScreen()
             }
         })
     }
@@ -68,6 +71,7 @@ class MainActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     Log.d(TAG, "signInWithCredential:success")
                     val currentToken = AccessToken.getCurrentAccessToken().token
+                    AppPreferences.setFacebookToken(currentToken)
                     facebookLogin(currentToken)
                 } else {
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
@@ -192,7 +196,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun loadingScreen(view: View){
+    private fun facebookLoadingScreen(){
         mainProgressBar.visibility = View.VISIBLE
         emailTextInputLayout.visibility = View.INVISIBLE
         passwordTextInputLayout.visibility = View.INVISIBLE
@@ -201,6 +205,10 @@ class MainActivity : AppCompatActivity() {
         troubleLoggingTextView.visibility = View.INVISIBLE
         notYetRegisteredTextView.visibility = View.INVISIBLE
         registerButton.visibility = View.INVISIBLE
+    }
+
+    private fun loadingScreen(view: View){
+        facebookLoadingScreen()
         view.hideKeyboard()
     }
 
