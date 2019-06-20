@@ -2,6 +2,7 @@ package com.example.hypechat.data.rest.utils
 
 enum class ServerStatus(val status: String) {
     WRONG_CREDENTIALS("WRONG_CREDENTIALS"),
+    OK("OK"),
     ACTIVE("ACTIVE"),
     ALREADY_REGISTERED("ALREADY_REGISTERED"),
     LOGGED_OUT("LOGGED_OUT"),

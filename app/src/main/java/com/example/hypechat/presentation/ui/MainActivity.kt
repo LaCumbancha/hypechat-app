@@ -117,6 +117,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun recoverPassword(view: View){
+
+        val intent = Intent(this, RecoverPasswordActivity::class.java)
+        startActivity(intent)
+    }
+
     fun loginUser(view: View){
 
         if (validateField(emailTextInputLayout) && validateField(passwordTextInputLayout)){

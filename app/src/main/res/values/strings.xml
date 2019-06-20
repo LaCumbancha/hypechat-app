@@ -124,5 +124,18 @@
     <string name="remove_team_user_toolbar">Remove User</string>
     <!--Remove Team User-->
 
+    <!--Recover Password-->
+    <string name="recover_password_toolbar">Recover Password</string>
+    <string name="get_recovery_token_button">GET RECOVERY TOKEN</string>
+    <string name="recovery_token">Recovery token</string>
+    <string name="enter_token_button">ENTER TOKEN</string>
+    <!--Recover Password-->
+
+    <!--Update Password-->
+    <string name="update_password_toolbar">Update Password</string>
+    <string name="update_password_button">UPDATE PASSWORD</string>
+    <string name="new_password_placeholder">New Password</string>
+    <!--Update Password-->
+
 
 </resources>

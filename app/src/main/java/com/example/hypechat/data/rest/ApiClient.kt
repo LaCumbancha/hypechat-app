@@ -18,6 +18,12 @@ interface ApiClient {
     @POST("/users/login")
     fun facebookLoginUser(@Body body: FacebookLoginRequest): Call<LoginResponse>
 
+    @POST("/users/profile/password/recover")
+    fun recoverPassword(@Body body: RecoverPasswordRequest): Call<ApiResponse>
+
+    @POST("/users/profile/password/regenerate")
+    fun regeneratePassword(@Body body: RegeneratePasswordRequest): Call<LoginResponse>
+
     @POST("/users/logout")
     fun logoutUser(): Call<ApiResponse>
 
@@ -26,6 +32,9 @@ interface ApiClient {
 
     @PATCH("/users/profile")
     fun updateMyProfile(@Body body: UpdateProfileRequest): Call<RegisterResponse>
+
+    @PATCH("/users/profile")
+    fun updatePassword(@Body body: UpdatePasswordRequest): Call<RegisterResponse>
 
     @GET("teams/{team_id}/users/{user_id}/profile")
     fun getUserProfile(@Path("team_id") team_id: Int, @Path("user_id") userId: Int): Call<ProfileResponse>

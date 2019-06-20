@@ -112,6 +112,38 @@ class HypechatRepository {
         })
     }
 
+    fun recoverPassword(email: String, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val body = RecoverPasswordRequest(email)
+        val call = client?.recoverPassword(body)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun regeneratePassword(email: String, token: String, onSuccess: (user: LoginResponse?) -> Unit) {
+
+        val body = RegeneratePasswordRequest(email, token)
+        val call = client?.regeneratePassword(body)
+
+        call?.enqueue(object : Callback<LoginResponse> {
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
     fun logoutUser(onSuccess: (user: ApiResponse?) -> Unit) {
 
         val call = client?.logoutUser()
@@ -147,6 +179,22 @@ class HypechatRepository {
 
         val body = UpdateProfileRequest(username, email, firstName, lastName, profilePic)
         val call = client?.updateMyProfile(body)
+
+        call?.enqueue(object : Callback<RegisterResponse> {
+            override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun updatePassword(password: String, onSuccess: (user: RegisterResponse?) -> Unit) {
+
+        val body = UpdatePasswordRequest(password)
+        val call = client?.updatePassword(body)
 
         call?.enqueue(object : Callback<RegisterResponse> {
             override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
