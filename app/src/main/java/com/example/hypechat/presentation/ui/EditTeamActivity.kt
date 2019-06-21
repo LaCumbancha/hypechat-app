@@ -76,14 +76,26 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
                 editTeamPictureButton.alpha = 0f
             }
 
-            if (team.role == UserRole.CREATOR.role){
-                inviteTeamButton.visibility = View.VISIBLE
-                deleteTeamButton.visibility = View.VISIBLE
-                editTeamButton.visibility = View.VISIBLE
-                removeTeamUserButton.visibility = View.VISIBLE
-                teamForbiddenWordsButton.visibility = View.VISIBLE
-            } else {
-                leaveTeamButton.visibility = View.VISIBLE
+            checkIfUserIsSwitchInCurrentTeam()
+        }
+    }
+
+    private fun checkIfUserIsSwitchInCurrentTeam(){
+
+        val teamId = AppPreferences.getTeamId()
+
+        team?.let { team ->
+
+            if (team.team_id == teamId){
+                if (team.role == UserRole.CREATOR.role){
+                    inviteTeamButton.visibility = View.VISIBLE
+                    deleteTeamButton.visibility = View.VISIBLE
+                    editTeamButton.visibility = View.VISIBLE
+                    removeTeamUserButton.visibility = View.VISIBLE
+                    teamForbiddenWordsButton.visibility = View.VISIBLE
+                } else {
+                    leaveTeamButton.visibility = View.VISIBLE
+                }
             }
         }
     }
