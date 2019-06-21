@@ -25,19 +25,29 @@
             android:ems="10"
             style="@style/ChatLogEditText"
             android:id="@+id/chatLogEditText"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="4dp"
+            app:layout_constraintStart_toEndOf="@+id/chatLogAddButton"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintEnd_toStartOf="@+id/chatLogSendButton"
+            android:layout_height="50dp"/>
+    <Button
+            android:id="@+id/chatLogAddButton"
+            style="@style/ChatLogAddButton"
+            android:layout_marginBottom="4dp"
+            android:onClick="pickImageFromDevice"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toStartOf="@+id/chatLogSendButton" android:layout_height="50dp"/>
+            android:layout_marginStart="4dp"/>
     <Button
             android:id="@+id/chatLogSendButton"
             style="@style/ChatLogSendButton"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="8dp" android:onClick="sendChatMessage"/>
+            android:layout_marginEnd="4dp"
+            android:onClick="sendChatMessage"/>
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/chatLogRecyclerView"
             android:layout_width="0dp"

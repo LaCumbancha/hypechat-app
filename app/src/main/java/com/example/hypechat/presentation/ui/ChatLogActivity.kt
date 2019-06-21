@@ -1,9 +1,14 @@
 package com.example.hypechat.presentation.ui
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.database.Cursor
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -20,11 +25,13 @@ import com.example.hypechat.data.repository.HypechatRepository
 import com.example.hypechat.data.rest.utils.ServerStatus
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.activity_chat_log.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 class ChatLogActivity : AppCompatActivity() {
 
@@ -41,6 +48,10 @@ class ChatLogActivity : AppCompatActivity() {
     private var userName: String? = null
     private val chatLogAdapter = GroupAdapter<ViewHolder>()
     private val TAG = "ChatLog"
+    private val REQUEST_CODE_ASK_PERMISSIONS = 123
+    private val REQUEST_IMAGE_PICK = 1
+    private var currentPhotoPath: String = ""
+    private var selectedPhotoUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,14 +110,6 @@ class ChatLogActivity : AppCompatActivity() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode == Activity.RESULT_OK && data != null){
-            senderId = data.getIntExtra(UserProfileActivity.USERID, 0)
-        }
-    }
-
     private fun initializeChatLog(){
 
         chatLogProgressBar.visibility = View.VISIBLE
@@ -118,7 +121,7 @@ class ChatLogActivity : AppCompatActivity() {
 
                 when (it.status){
                     ServerStatus.LIST.status -> initializeChat(it.messages)
-                    ServerStatus.WRONG_TOKEN.status -> tokenFailed(it.message)
+                    ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.CHAT_NOT_FOUND.status -> loadingChatFailed(it.message)
                 }
             }
@@ -168,18 +171,19 @@ class ChatLogActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun tokenFailed(msg: String){
-
+    private fun errorOccurred(error: String?){
         chatLogProgressBar.visibility = View.INVISIBLE
-        Log.w(TAG, msg)
 
         val builder = android.app.AlertDialog.Builder(this)
         builder.setTitle("Error")
+        var msg = "There was a problem during the process. Please, try again."
+        error?.let {
+            msg = it
+        }
         builder.setMessage(msg)
 
         builder.setPositiveButton("Ok"){ dialog, which ->
             dialog.dismiss()
-            verifyUserIsLoggedIn()
         }
 
         val dialog = builder.create()
@@ -204,7 +208,7 @@ class ChatLogActivity : AppCompatActivity() {
 
                     when (it.status){
                         ServerStatus.SENT.status -> Log.d(TAG, "sendMessage: ${it.status}")
-                        ServerStatus.WRONG_TOKEN.status -> tokenFailed(it.message)
+                        ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                         ServerStatus.USER_NOT_FOUND.status -> sendMessageFailed(it.message)
                         ServerStatus.ERROR.status -> sendMessageFailed(it.message)
                         else -> Toast.makeText(this, "sendMessage: ${it.status}", Toast.LENGTH_SHORT).show()
@@ -232,5 +236,70 @@ class ChatLogActivity : AppCompatActivity() {
 
         val dialog = builder.create()
         dialog.show()
+    }
+
+    fun pickImageFromDevice(view: View) {
+        val hasReadExternalStoragePermission = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (hasReadExternalStoragePermission != PackageManager.PERMISSION_GRANTED){
+            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE_ASK_PERMISSIONS)
+            return
+        }
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        startActivityForResult(intent, REQUEST_IMAGE_PICK)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK && data != null){
+            if (requestCode == REQUEST_IMAGE_PICK){
+                Log.d(TAG, "Photo was selected")
+                selectedPhotoUri = data.data
+                currentPhotoPath = getRealPathFromUri(selectedPhotoUri!!)
+                //val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, selectedPhotoUri)
+                //myProfileImageView.setImageBitmap(bitmap)
+                savePicture()
+            } else {
+
+                senderId = data.getIntExtra(UserProfileActivity.USERID, 0)
+            }
+        }
+    }
+
+    private fun getRealPathFromUri(contentUri: Uri): String {
+        var cursor: Cursor? = null
+        try {
+            val proj = arrayOf(MediaStore.Images.Media.DATA)
+            cursor = contentResolver.query(contentUri, proj, null, null, null)
+            assert(cursor != null)
+            val columnIndex = cursor!!.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+            cursor.moveToFirst()
+            return cursor.getString(columnIndex)
+        } finally {
+            cursor?.close()
+        }
+    }
+
+    private fun savePicture(){
+
+        val filename = UUID.randomUUID().toString()
+        val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
+
+        if (selectedPhotoUri != null){
+            ref.putFile(selectedPhotoUri!!)
+                .addOnSuccessListener {
+                    Log.d(TAG, "Successfully uploaded chat log picture: ${it.metadata?.path}")
+                    ref.downloadUrl.addOnSuccessListener { uri ->
+                        Log.d(TAG, "File location: $uri")
+                        val profilePicUrl = uri.toString()
+                        //send(profilePicUrl)
+                    }
+                }
+                .addOnFailureListener {
+                    Log.w(TAG, "Failed to upload chat log picture to Storage", it.cause)
+                    errorOccurred(it.cause.toString())
+                }
+        }
     }
 }

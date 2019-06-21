@@ -108,6 +108,10 @@
         <item name="android:layout_height">@dimen/chat_log_size</item>
     </style>
 
+    <style name="ChatLogAddButton" parent="ChatLogSendButton">
+        <item name="android:background">@drawable/ic_add_white_24dp</item>
+    </style>
+
     <style name="ChatLogEditText">
         <item name="android:background">@drawable/rounded_textview</item>
         <item name="android:backgroundTint">@android:color/white</item>
