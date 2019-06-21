@@ -81,6 +81,7 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
                 deleteTeamButton.visibility = View.VISIBLE
                 editTeamButton.visibility = View.VISIBLE
                 removeTeamUserButton.visibility = View.VISIBLE
+                teamForbiddenWordsButton.visibility = View.VISIBLE
             } else {
                 leaveTeamButton.visibility = View.VISIBLE
             }
@@ -98,6 +99,12 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
             field.error = null
             return true
         }
+    }
+
+    fun viewForbiddenWords(view: View){
+
+        val intent = Intent(this, ForbiddenWordsActivity::class.java)
+        startActivity(intent)
     }
 
     fun switchTeam(view: View){

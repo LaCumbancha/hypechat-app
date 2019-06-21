@@ -34,6 +34,10 @@
             </intent-filter>
         </service>
 
+        <activity android:name=".presentation.ui.ForbiddenWordsActivity"
+                  android:parentActivityName=".presentation.ui.EditTeamActivity"
+                  android:screenOrientation="portrait">
+        </activity>
         <activity
                 android:name=".presentation.ui.RemoveTeamUserActivity"
                 android:parentActivityName=".presentation.ui.EditTeamActivity"
@@ -89,9 +93,10 @@
                 android:parentActivityName=".presentation.ui.LatestMessagesActivity"
                 android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".presentation.ui.UpdatePasswordActivity"
-                  android:parentActivityName=".presentation.ui.RecoverPasswordActivity"
-                  android:screenOrientation="portrait">
+        <activity
+                android:name=".presentation.ui.UpdatePasswordActivity"
+                android:parentActivityName=".presentation.ui.RecoverPasswordActivity"
+                android:screenOrientation="portrait">
         </activity>
         <activity
                 android:name=".presentation.ui.RecoverPasswordActivity"

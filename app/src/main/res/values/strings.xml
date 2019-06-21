@@ -73,6 +73,7 @@
     <!--Edit Team-->
     <string name="edit_team_switch_button">SWITCH TO THIS TEAM</string>
     <string name="edit_team_leave_button">LEAVE TEAM</string>
+    <string name="edit_team_forbidden_words_button">FORBIDDEN WORDS</string>
     <string name="edit_team_invite_button">INVITE USER</string>
     <string name="edit_team_delete_button">DELETE TEAM</string>
     <string name="edit_team_edit_button">EDIT TEAM</string>
@@ -136,6 +137,11 @@
     <string name="update_password_button">UPDATE PASSWORD</string>
     <string name="new_password_placeholder">New Password</string>
     <!--Update Password-->
+
+    <!--Forbidden Words -->
+    <string name="forbidden_words_toolbar">Forbidden Words</string>
+    <string name="forbidden_words_placeholder">Word</string>
+    <!--Forbidden Words -->
 
 
 </resources>
