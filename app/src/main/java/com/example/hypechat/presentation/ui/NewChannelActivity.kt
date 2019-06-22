@@ -95,8 +95,9 @@ class NewChannelActivity : AppCompatActivity() {
         channel.message?.let {
             welcomeMessage = it
         }
+        val list = listOf<Int>()
 
-        HypechatRepository().sendMessage(channel.channelId, welcomeMessage, MessageType.TEXT.type, teamId){ response ->
+        HypechatRepository().sendMessage(channel.channelId, welcomeMessage, MessageType.TEXT.type, teamId, list){ response ->
 
             response?.let {
 

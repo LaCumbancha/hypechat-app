@@ -94,6 +94,9 @@ interface ApiClient {
     @GET("/users/teams")
     fun getTeams(): Call<TeamsResponse>
 
+    @GET("/teams/{team_id}/bots")
+    fun getTeamBots(@Path("team_id") team_id: Int): Call<TeamBotsResponse>
+
     @GET("/teams/{team_id}/channels")
     fun getTeamChannels(@Path("team_id") team_id: Int): Call<ChannelsResponse>
 

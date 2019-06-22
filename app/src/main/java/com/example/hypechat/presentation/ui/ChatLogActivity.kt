@@ -21,20 +21,23 @@ import com.example.hypechat.data.model.ChatFromItem
 import com.example.hypechat.data.model.ChatImageFromItem
 import com.example.hypechat.data.model.ChatImageToItem
 import com.example.hypechat.data.model.ChatToItem
+import com.example.hypechat.data.model.rest.response.BotResponse
 import com.example.hypechat.data.model.rest.response.MessageResponse
 import com.example.hypechat.data.model.rest.response.UserResponse
 import com.example.hypechat.data.repository.HypechatRepository
 import com.example.hypechat.data.rest.utils.MessageType
 import com.example.hypechat.data.rest.utils.ServerStatus
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import com.hendraanggrian.appcompat.socialview.Mention
+import com.hendraanggrian.appcompat.widget.MentionArrayAdapter
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.activity_chat_log.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.collections.ArrayList
 
 class ChatLogActivity : AppCompatActivity() {
 
@@ -50,11 +53,15 @@ class ChatLogActivity : AppCompatActivity() {
     private var senderId: Int? = null
     private var userName: String? = null
     private val chatLogAdapter = GroupAdapter<ViewHolder>()
+    private lateinit var mentionAdapter: MentionArrayAdapter<Mention>
     private val TAG = "ChatLog"
     private val REQUEST_CODE_ASK_PERMISSIONS = 123
     private val REQUEST_IMAGE_PICK = 1
     private var currentPhotoPath: String = ""
     private var selectedPhotoUri: Uri? = null
+    private var mentionList = ArrayList<Mention>()
+    private var userChannelList = ArrayList<UserResponse>()
+    private var botChannelList = ArrayList<BotResponse>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,6 +86,8 @@ class ChatLogActivity : AppCompatActivity() {
 
         chatLogRecyclerView.layoutManager = LinearLayoutManager(this)
         chatLogRecyclerView.adapter = chatLogAdapter
+        mentionAdapter = MentionArrayAdapter(this)
+        chatLogEditText.mentionAdapter = mentionAdapter
         initializeChatLog()
     }
 
@@ -104,6 +113,65 @@ class ChatLogActivity : AppCompatActivity() {
         }
     }
 
+    private fun getBots(){
+
+        val teamId = AppPreferences.getTeamId()
+
+        HypechatRepository().getTeamBots(teamId){ response ->
+
+            response?.let {
+
+                when (it.status){
+                    ServerStatus.LIST.status -> loadBots(it.bots)
+                    ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
+                    ServerStatus.CHAT_NOT_FOUND.status -> loadingChatFailed(it.message)
+                }
+            }
+            if (response == null){
+                Log.w(TAG, "getTeamBots:failure")
+            }
+        }
+    }
+
+    private fun getChannelUsers(){
+
+        val teamId = AppPreferences.getTeamId()
+
+        HypechatRepository().getChannelUsers(teamId, senderId!!){ response ->
+
+            response?.let {
+
+                when (it.status){
+                    ServerStatus.LIST.status -> loadUsers(it.users)
+                    ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
+                    ServerStatus.CHAT_NOT_FOUND.status -> loadingChatFailed(it.message)
+                }
+            }
+            if (response == null){
+                Log.w(TAG, "getChannelUsers:failure")
+            }
+        }
+    }
+
+    private fun loadBots(botList: List<BotResponse>){
+
+        botChannelList.addAll(botList)
+        for (bot in botList){
+            mentionList.add(Mention(bot.name))
+        }
+        mentionAdapter.addAll(mentionList)
+    }
+
+    private fun loadUsers(channelUsersList: List<UserResponse>){
+
+        userChannelList.addAll(channelUsersList)
+        for (user in channelUsersList){
+            mentionList.add(Mention(user.username, null, user.profile_pic))
+        }
+        mentionList.add(Mention("all"))
+        mentionAdapter.addAll(mentionList)
+    }
+
     private fun initializeChatLog(){
 
         chatLogProgressBar.visibility = View.VISIBLE
@@ -114,12 +182,9 @@ class ChatLogActivity : AppCompatActivity() {
             response?.let {
 
                 when (it.status){
-                    ServerStatus.LIST.status -> initializeChat(it.messages)
+                    ServerStatus.LIST.status -> initializeChat(it.messages, it.chat_type)
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.CHAT_NOT_FOUND.status -> loadingChatFailed(it.message)
-                }
-                if (it.chat_type == "DIRECT"){
-                    initializeChat(it.messages)
                 }
             }
             if (response == null){
@@ -129,8 +194,12 @@ class ChatLogActivity : AppCompatActivity() {
         }
     }
 
-    private fun initializeChat(messages: List<MessageResponse>){
+    private fun initializeChat(messages: List<MessageResponse>, chatType: String){
 
+        if (chatType == "CHANNEL"){
+            getChannelUsers()
+            getBots()
+        }
         val sortedMessages = messages.sortedBy { message ->
             LocalDateTime.parse(message.timestamp, DateTimeFormatter.RFC_1123_DATE_TIME)
         }
@@ -194,32 +263,54 @@ class ChatLogActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    private fun <T, U> List<T>.intersect(uList: List<U>, filterPredicate : (T, U) -> Boolean) = filter { m -> uList.any { filterPredicate(m, it)} }
+
     fun sendChatMessage(view: View){
 
         val message = chatLogEditText.text.toString()
         val username = AppPreferences.getUserName()
+        val mentions = arrayListOf<Int>()
 
         if (message != ""){
 
+            val mentionList = chatLogEditText.mentions
+            if (mentionList.isNotEmpty()){
+                if (mentionList.contains("all")){
+                    mentions.add(senderId!!)
+                }
+                val userFilteredList = userChannelList.intersect(mentionList) { a, b ->
+                    a.username == b
+                }
+                for (user in userFilteredList){
+                    mentions.add(user.id)
+                }
+                val botFilteredList = botChannelList.intersect(mentionList) { a, b ->
+                    a.name == b
+                }
+                for (bot in botFilteredList){
+                    mentions.add(bot.id)
+                }
+            }
             chatLogAdapter.add(ChatFromItem(message, username!!))
-            chatLogEditText.text.clear()
+            chatLogEditText.text?.clear()
             chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
-            send(message, MessageType.TEXT.type)
+            send(message, MessageType.TEXT.type, mentions.toList())
         }
     }
 
     private fun sendPicture(pictureUrl: String){
 
         val username = AppPreferences.getUserName()
+        val list = listOf<Int>()
         chatLogAdapter.add(ChatImageFromItem(pictureUrl, username!!))
         chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
-        send(pictureUrl, MessageType.IMAGE.type)
+        send(pictureUrl, MessageType.IMAGE.type, list)
     }
 
-    private fun send(message: String, messageType: String){
+    private fun send(message: String, messageType: String, mentions: List<Int>){
         val teamId = AppPreferences.getTeamId()
 
-        HypechatRepository().sendMessage(senderId!!, message, messageType, teamId){ response ->
+        HypechatRepository().sendMessage(senderId!!, message, messageType, teamId, mentions){ response ->
 
             response?.let {
 

@@ -18,7 +18,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:elevation="4dp"/>
-    <EditText
+    <!--<EditText
             android:layout_width="0dp"
             android:inputType="textPersonName"
             android:hint="@string/type_a_message_hint"
@@ -31,7 +31,24 @@
             app:layout_constraintStart_toEndOf="@+id/chatLogAddButton"
             android:layout_marginEnd="4dp"
             app:layout_constraintEnd_toStartOf="@+id/chatLogSendButton"
-            android:layout_height="50dp"/>
+            android:layout_height="50dp"/>-->
+    <com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
+            android:layout_width="0dp"
+            android:inputType="textMultiLine"
+            android:hint="@string/type_a_message_hint"
+            android:ems="10"
+            style="@style/ChatLogEditText"
+            android:id="@+id/chatLogEditText"
+            android:layout_marginBottom="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="4dp"
+            app:layout_constraintStart_toEndOf="@+id/chatLogAddButton"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintEnd_toStartOf="@+id/chatLogSendButton"
+            android:layout_height="50dp"
+            app:socialFlags="hashtag|mention"
+            app:hashtagColor="@android:color/holo_blue_dark"
+            app:mentionColor="@android:color/holo_red_dark"/>
     <Button
             android:id="@+id/chatLogAddButton"
             style="@style/ChatLogAddButton"

@@ -29,6 +29,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/latestMessageRowTextView"
             style="@style/LatestMessageRowTextView"
+            android:maxLength="30"
             app:layout_constraintStart_toEndOf="@+id/userLatestMessageRowImageView"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/fullnameLatestMessageRowTextView"

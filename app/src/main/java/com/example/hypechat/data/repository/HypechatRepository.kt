@@ -269,9 +269,9 @@ class HypechatRepository {
         })
     }
 
-    fun sendMessage(toId: Int, message: String, type: String, teamId: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+    fun sendMessage(toId: Int, message: String, type: String, teamId: Int, mentions: List<Int>, onSuccess: (user: ApiResponse?) -> Unit) {
 
-        val body = MessageRequest(toId, teamId, message, type)
+        val body = MessageRequest(toId, teamId, message, type, mentions)
         val call = client?.sendMessage(body)
 
         call?.enqueue(object : Callback<ApiResponse> {
@@ -312,6 +312,21 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<TeamsResponse>, response: Response<TeamsResponse>) {
+                onSuccess(response.body())
+            }
+        })
+    }
+
+    fun getTeamBots(teamId: Int, onSuccess: (teams: TeamBotsResponse?) -> Unit) {
+
+        val call = client?.getTeamBots(teamId)
+
+        call?.enqueue(object : Callback<TeamBotsResponse> {
+            override fun onFailure(call: Call<TeamBotsResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<TeamBotsResponse>, response: Response<TeamBotsResponse>) {
                 onSuccess(response.body())
             }
         })
