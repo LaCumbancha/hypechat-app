@@ -18,10 +18,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hypechat.R
 import com.example.hypechat.data.local.AppPreferences
 import com.example.hypechat.data.model.ChatFromItem
+import com.example.hypechat.data.model.ChatImageFromItem
+import com.example.hypechat.data.model.ChatImageToItem
 import com.example.hypechat.data.model.ChatToItem
 import com.example.hypechat.data.model.rest.response.MessageResponse
 import com.example.hypechat.data.model.rest.response.UserResponse
 import com.example.hypechat.data.repository.HypechatRepository
+import com.example.hypechat.data.rest.utils.MessageType
 import com.example.hypechat.data.rest.utils.ServerStatus
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -79,15 +82,6 @@ class ChatLogActivity : AppCompatActivity() {
         initializeChatLog()
     }
 
-    private fun verifyUserIsLoggedIn(){
-        val auth = AppPreferences.getToken()
-        if (auth == null){
-            val intent = Intent(this, MainActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
-        }
-    }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_chat_log, menu)
         return true
@@ -124,6 +118,9 @@ class ChatLogActivity : AppCompatActivity() {
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.CHAT_NOT_FOUND.status -> loadingChatFailed(it.message)
                 }
+                if (it.chat_type == "DIRECT"){
+                    initializeChat(it.messages)
+                }
             }
             if (response == null){
                 Log.w(TAG, "getMessagesFromChat:failure")
@@ -141,11 +138,18 @@ class ChatLogActivity : AppCompatActivity() {
 
         for (message in sortedMessages){
             if (message.sender.id == userId){
-                chatLogAdapter.add(ChatFromItem(message.message, message.sender.username))
+                when (message.type){
+                    MessageType.TEXT.type -> chatLogAdapter.add(ChatFromItem(message.message, message.sender.username))
+                    MessageType.IMAGE.type -> chatLogAdapter.add(ChatImageFromItem(message.message, message.sender.username))
+                }
             } else {
-                chatLogAdapter.add(ChatToItem(message.message, message.sender.username))
+                when (message.type){
+                    MessageType.TEXT.type -> chatLogAdapter.add(ChatToItem(message.message, message.sender.username))
+                    MessageType.IMAGE.type -> chatLogAdapter.add(ChatImageToItem(message.message, message.sender.username))
+                }
             }
         }
+        chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
         Log.d(TAG, "getMessagesFromChat:success")
         chatLogProgressBar.visibility = View.INVISIBLE
     }
@@ -200,24 +204,36 @@ class ChatLogActivity : AppCompatActivity() {
             chatLogAdapter.add(ChatFromItem(message, username!!))
             chatLogEditText.text.clear()
             chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
-            val teamId = AppPreferences.getTeamId()
+            send(message, MessageType.TEXT.type)
+        }
+    }
 
-            HypechatRepository().sendMessage(senderId!!, message, teamId){ response ->
+    private fun sendPicture(pictureUrl: String){
 
-                response?.let {
+        val username = AppPreferences.getUserName()
+        chatLogAdapter.add(ChatImageFromItem(pictureUrl, username!!))
+        chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
+        send(pictureUrl, MessageType.IMAGE.type)
+    }
 
-                    when (it.status){
-                        ServerStatus.SENT.status -> Log.d(TAG, "sendMessage: ${it.status}")
-                        ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
-                        ServerStatus.USER_NOT_FOUND.status -> sendMessageFailed(it.message)
-                        ServerStatus.ERROR.status -> sendMessageFailed(it.message)
-                        else -> Toast.makeText(this, "sendMessage: ${it.status}", Toast.LENGTH_SHORT).show()
-                    }
+    private fun send(message: String, messageType: String){
+        val teamId = AppPreferences.getTeamId()
+
+        HypechatRepository().sendMessage(senderId!!, message, messageType, teamId){ response ->
+
+            response?.let {
+
+                when (it.status){
+                    ServerStatus.SENT.status -> Log.d(TAG, "sendMessage: ${it.status}")
+                    ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
+                    ServerStatus.USER_NOT_FOUND.status -> sendMessageFailed(it.message)
+                    ServerStatus.ERROR.status -> sendMessageFailed(it.message)
+                    else -> Toast.makeText(this, "sendMessage: ${it.status}", Toast.LENGTH_SHORT).show()
                 }
-                if (response == null){
-                    Toast.makeText(this, "sendMessage failed", Toast.LENGTH_SHORT).show()
-                    Log.w(TAG, "sendMessage failed")
-                }
+            }
+            if (response == null){
+                Toast.makeText(this, "sendMessage failed", Toast.LENGTH_SHORT).show()
+                Log.w(TAG, "sendMessage failed")
             }
         }
     }
@@ -292,8 +308,8 @@ class ChatLogActivity : AppCompatActivity() {
                     Log.d(TAG, "Successfully uploaded chat log picture: ${it.metadata?.path}")
                     ref.downloadUrl.addOnSuccessListener { uri ->
                         Log.d(TAG, "File location: $uri")
-                        val profilePicUrl = uri.toString()
-                        //send(profilePicUrl)
+                        val pictureUrl = uri.toString()
+                        sendPicture(pictureUrl)
                     }
                 }
                 .addOnFailureListener {

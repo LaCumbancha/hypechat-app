@@ -4,6 +4,7 @@ import android.graphics.Typeface
 import android.view.View
 import com.example.hypechat.R
 import com.example.hypechat.data.model.rest.response.ChatResponse
+import com.example.hypechat.data.rest.utils.MessageType
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
@@ -19,7 +20,10 @@ class LatestMessageRow(val chat: ChatResponse): Item<ViewHolder>() {
 
     override fun bind(viewHolder: ViewHolder, position: Int) {
 
-        viewHolder.itemView.latestMessageRowTextView.text = chat.content
+        when (chat.type){
+            MessageType.TEXT.type -> viewHolder.itemView.latestMessageRowTextView.text = chat.content
+            MessageType.IMAGE.type -> viewHolder.itemView.latestMessageRowTextView.text = MessageType.IMAGE.type
+        }
 
         val date = LocalDateTime.parse(chat.timestamp, DateTimeFormatter.RFC_1123_DATE_TIME)
         val format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")

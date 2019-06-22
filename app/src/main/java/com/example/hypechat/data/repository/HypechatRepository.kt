@@ -269,9 +269,8 @@ class HypechatRepository {
         })
     }
 
-    fun sendMessage(toId: Int, message: String, teamId: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+    fun sendMessage(toId: Int, message: String, type: String, teamId: Int, onSuccess: (user: ApiResponse?) -> Unit) {
 
-        val type = "TEXT"
         val body = MessageRequest(toId, teamId, message, type)
         val call = client?.sendMessage(body)
 

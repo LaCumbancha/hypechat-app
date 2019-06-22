@@ -11,6 +11,7 @@ import com.example.hypechat.R
 import com.example.hypechat.data.local.AppPreferences
 import com.example.hypechat.data.model.rest.response.ChannelResponse
 import com.example.hypechat.data.repository.HypechatRepository
+import com.example.hypechat.data.rest.utils.MessageType
 import com.example.hypechat.data.rest.utils.ServerStatus
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.activity_new_channel.*
@@ -95,7 +96,7 @@ class NewChannelActivity : AppCompatActivity() {
             welcomeMessage = it
         }
 
-        HypechatRepository().sendMessage(channel.channelId, welcomeMessage, teamId){ response ->
+        HypechatRepository().sendMessage(channel.channelId, welcomeMessage, MessageType.TEXT.type, teamId){ response ->
 
             response?.let {
 
