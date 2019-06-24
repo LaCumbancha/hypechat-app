@@ -169,7 +169,7 @@ class TeamsActivity : AppCompatActivity(), JoinTeamDialog.TeamTokenListener {
             for (team in teams){
                 teamList.add(team)
             }
-            Log.d(TAG, "getChatsPreviews:success")
+            Log.d(TAG, "getTeams:success")
             refreshTeamsRecyclerView()
             teamsProgressBar.visibility = View.INVISIBLE
         } else {

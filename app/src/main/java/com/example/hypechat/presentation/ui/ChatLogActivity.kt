@@ -8,12 +8,14 @@ import android.database.Cursor
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hypechat.R
 import com.example.hypechat.data.local.AppPreferences
@@ -62,6 +64,14 @@ class ChatLogActivity : AppCompatActivity() {
     private var mentionList = ArrayList<Mention>()
     private var userChannelList = ArrayList<UserResponse>()
     private var botChannelList = ArrayList<BotResponse>()
+    private var isListening = false
+    private val handler = Handler()
+    private val refresh = object : Runnable {
+        override fun run() {
+            initializeChatLog()
+            handler.postDelayed(this, 8000)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,6 +98,7 @@ class ChatLogActivity : AppCompatActivity() {
         chatLogRecyclerView.adapter = chatLogAdapter
         mentionAdapter = MentionArrayAdapter(this)
         chatLogEditText.mentionAdapter = mentionAdapter
+
         initializeChatLog()
     }
 
@@ -174,7 +185,10 @@ class ChatLogActivity : AppCompatActivity() {
 
     private fun initializeChatLog(){
 
-        chatLogProgressBar.visibility = View.VISIBLE
+        if (!isListening){
+            chatLogProgressBar.visibility = View.VISIBLE
+        }
+
         val teamId = AppPreferences.getTeamId()
 
         HypechatRepository().getMessagesFromChat(teamId, senderId!!){ response ->
@@ -189,13 +203,13 @@ class ChatLogActivity : AppCompatActivity() {
             }
             if (response == null){
                 Log.w(TAG, "getMessagesFromChat:failure")
-                chatLogProgressBar.visibility = View.INVISIBLE
             }
         }
     }
 
     private fun initializeChat(messages: List<MessageResponse>, chatType: String){
 
+        chatLogAdapter.clear()
         if (chatType == "CHANNEL"){
             getChannelUsers()
             getBots()
@@ -221,6 +235,10 @@ class ChatLogActivity : AppCompatActivity() {
         chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
         Log.d(TAG, "getMessagesFromChat:success")
         chatLogProgressBar.visibility = View.INVISIBLE
+        if (!isListening){
+            handler.post(refresh)
+            isListening = true
+        }
     }
 
     private fun loadingChatFailed(msg: String){
@@ -228,7 +246,7 @@ class ChatLogActivity : AppCompatActivity() {
         chatLogProgressBar.visibility = View.INVISIBLE
         Log.w(TAG, msg)
 
-        val builder = android.app.AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this)
         builder.setTitle("Error")
         builder.setMessage(msg)
 
@@ -245,9 +263,10 @@ class ChatLogActivity : AppCompatActivity() {
     }
 
     private fun errorOccurred(error: String?){
+
         chatLogProgressBar.visibility = View.INVISIBLE
 
-        val builder = android.app.AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this)
         builder.setTitle("Error")
         var msg = "There was a problem during the process. Please, try again."
         error?.let {
@@ -333,7 +352,7 @@ class ChatLogActivity : AppCompatActivity() {
 
         Log.w(TAG, msg)
 
-        val builder = android.app.AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this)
         builder.setTitle("Error")
         builder.setMessage("$msg Please, try again.")
 
@@ -364,8 +383,6 @@ class ChatLogActivity : AppCompatActivity() {
                 Log.d(TAG, "Photo was selected")
                 selectedPhotoUri = data.data
                 currentPhotoPath = getRealPathFromUri(selectedPhotoUri!!)
-                //val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, selectedPhotoUri)
-                //myProfileImageView.setImageBitmap(bitmap)
                 savePicture()
             } else {
 
@@ -405,8 +422,24 @@ class ChatLogActivity : AppCompatActivity() {
                 }
                 .addOnFailureListener {
                     Log.w(TAG, "Failed to upload chat log picture to Storage", it.cause)
-                    errorOccurred(it.cause.toString())
+                    //errorOccurred(it.cause.toString())
                 }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "In the onStop() event")
+        handler.removeCallbacks(refresh)
+        isListening = false
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "In the onResume() event")
+        if (!isListening){
+            handler.post(refresh)
+            isListening = true
         }
     }
 }
