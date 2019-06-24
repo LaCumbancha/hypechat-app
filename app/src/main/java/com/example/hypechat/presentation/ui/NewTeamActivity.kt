@@ -18,6 +18,7 @@ import com.example.hypechat.data.repository.HypechatRepository
 import com.example.hypechat.data.rest.utils.ServerStatus
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_new_team.*
 import java.util.*
@@ -161,6 +162,20 @@ class NewTeamActivity : AppCompatActivity() {
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
         newTeamProgressBar.visibility = View.INVISIBLE
+        subscribeToFcm()
+    }
+
+    private fun subscribeToFcm(){
+
+        val teamId = AppPreferences.getTeamId()
+        FirebaseMessaging.getInstance().subscribeToTopic(teamId.toString())
+            .addOnCompleteListener { task ->
+                var msg = "Subscribed to $teamId Successfully"
+                if (!task.isSuccessful) {
+                    msg = "Subscribe to $teamId failed"
+                }
+                Log.d(TAG, msg)
+            }
     }
 
     private fun loadingScreen(){

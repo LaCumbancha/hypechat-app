@@ -42,19 +42,22 @@ class MessagingService : FirebaseMessagingService() {
 
         remoteMessage?.data?.let {
             Log.d(TAG, "Message data payload: $it")
-            sendNotification(it)
+            //sendNotification(it)
         }
 
         // Check if message contains a notification payload.
         remoteMessage?.notification?.let {
             Log.d(TAG, "Message Notification Body: " + it.body)
+            sendNotification(it)
         }
     }
+    //data: MutableMap<String, String>
+    private fun sendNotification(notification: RemoteMessage.Notification ){
 
-    private fun sendNotification(data: MutableMap<String, String>){
-
-        val title = data["title"]
-        val body = data["body"]
+        //val title = data["title"]
+        //val body = data["body"]
+        val title = notification.title
+        val body = notification.body
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val NOTIFICATION_CHANNEL_ID = "hypechat"

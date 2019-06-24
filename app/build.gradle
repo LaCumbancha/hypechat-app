@@ -45,10 +45,12 @@ dependencies {
     implementation "com.hendraanggrian.appcompat:socialview:0.2"
     implementation "com.hendraanggrian.appcompat:socialview-commons:0.2"
 
+    implementation 'com.google.gms:google-services:4.2.0'
     implementation 'com.google.firebase:firebase-core:17.0.0'
     implementation 'com.google.firebase:firebase-auth:18.0.0'
     implementation 'com.google.firebase:firebase-storage:18.0.0'
     implementation 'com.google.firebase:firebase-database:18.0.0'
+    implementation 'com.google.firebase:firebase-messaging:19.0.1'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'com.xwray:groupie:2.3.0'
     implementation 'com.squareup.picasso:picasso:2.71828'

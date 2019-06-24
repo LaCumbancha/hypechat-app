@@ -14,6 +14,7 @@ import com.example.hypechat.data.repository.HypechatRepository
 import com.example.hypechat.data.rest.utils.MessageType
 import com.example.hypechat.data.rest.utils.ServerStatus
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_new_channel.*
 
 class NewChannelActivity : AppCompatActivity() {
@@ -50,6 +51,18 @@ class NewChannelActivity : AppCompatActivity() {
         }
     }
 
+    private fun subscribeToFcm(channelId: Int){
+
+        FirebaseMessaging.getInstance().subscribeToTopic(channelId.toString())
+            .addOnCompleteListener { task ->
+                var msg = "Subscribed to $channelId Successfully"
+                if (!task.isSuccessful) {
+                    msg = "Subscribe to $channelId failed"
+                }
+                Log.d(TAG, msg)
+            }
+    }
+
     fun createChannel(view: View){
 
         if (validateField(newChannelNameTextInputLayout)){
@@ -74,7 +87,10 @@ class NewChannelActivity : AppCompatActivity() {
                 response?.let {
 
                     when (it.status){
-                        ServerStatus.CREATED.status -> sendWelcomeMessage(it.channel)
+                        ServerStatus.CREATED.status -> {
+                            subscribeToFcm(it.channel.channelId)
+                            sendWelcomeMessage(it.channel)
+                        }
                         ServerStatus.ALREADY_REGISTERED.status -> errorOccurred(it.message)
                         ServerStatus.ERROR.status -> errorOccurred(it.message)
                     }

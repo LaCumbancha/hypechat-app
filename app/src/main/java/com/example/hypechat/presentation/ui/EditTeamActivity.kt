@@ -21,6 +21,7 @@ import com.example.hypechat.data.rest.utils.UserRole
 import com.example.hypechat.presentation.utils.TeamInvitationDialog
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_edit_team.*
@@ -124,6 +125,7 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
         val intent = Intent(this, LatestMessagesActivity::class.java)
         team?.let {
             intent.putExtra(LatestMessagesActivity.TEAM_ID, it.team_id)
+            subscribeToFcm(it.team_id)
         }
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
@@ -316,7 +318,10 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
             response?.let {
 
                 when (it.status){
-                    ServerStatus.REMOVED.status -> navigateToTeams()
+                    ServerStatus.REMOVED.status -> {
+                        unsubscribeToFcm(team!!.team_id)
+                        navigateToTeams()
+                    }
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
                 }
@@ -392,6 +397,30 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
         }
     }
 
+    private fun unsubscribeToFcm(teamId: Int){
+
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(teamId.toString())
+            .addOnCompleteListener { task ->
+                var msg = "Unsubscribed from $teamId Successfully"
+                if (!task.isSuccessful) {
+                    msg = "Unsubscribe from $teamId failed"
+                }
+                Log.d(TAG, msg)
+            }
+    }
+
+    private fun subscribeToFcm(teamId: Int){
+
+        FirebaseMessaging.getInstance().subscribeToTopic(teamId.toString())
+            .addOnCompleteListener { task ->
+                var msg = "Subscribed to $teamId Successfully"
+                if (!task.isSuccessful) {
+                    msg = "Subscribe to $teamId failed"
+                }
+                Log.d(TAG, msg)
+            }
+    }
+
     fun leaveTeam(view: View){
 
         val builder = android.app.AlertDialog.Builder(this)
@@ -419,7 +448,10 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
             response?.let {
 
                 when (it.status){
-                    ServerStatus.REMOVED.status -> navigateToTeams()
+                    ServerStatus.REMOVED.status -> {
+                        unsubscribeToFcm(team!!.team_id)
+                        navigateToTeams()
+                    }
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
                 }

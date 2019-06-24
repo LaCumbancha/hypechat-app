@@ -15,6 +15,7 @@ import com.example.hypechat.data.repository.HypechatRepository
 import com.example.hypechat.data.rest.utils.ChannelVisibility
 import com.example.hypechat.data.rest.utils.ServerStatus
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_edit_channel.*
 
 class EditChannelActivity : AppCompatActivity() {
@@ -117,7 +118,6 @@ class EditChannelActivity : AppCompatActivity() {
 
         editChannelProgressBar.visibility = View.INVISIBLE
         editChannelCardView.visibility = View.VISIBLE
-        //val userIsInChannel = users.any { x -> x.id == AppPreferences.getUserId() }
         leaveChannelButton.visibility = View.VISIBLE
     }
 
@@ -188,6 +188,7 @@ class EditChannelActivity : AppCompatActivity() {
                 when (it.status){
                     ServerStatus.JOINED.status -> {
                         editChannelProgressBar.visibility = View.INVISIBLE
+                        subscribeToFcm()
                         Toast.makeText(this, "Joined channel successfully", Toast.LENGTH_SHORT).show()
                         val intent = Intent(this, LatestMessagesActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -236,6 +237,7 @@ class EditChannelActivity : AppCompatActivity() {
                 when (it.status){
                     ServerStatus.REMOVED.status -> {
                         editChannelProgressBar.visibility = View.INVISIBLE
+                        unsubscribeToFcm()
                         val intent = Intent(this, LatestMessagesActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
                         startActivity(intent)
@@ -334,6 +336,7 @@ class EditChannelActivity : AppCompatActivity() {
                 when (it.status){
                     ServerStatus.REMOVED.status -> {
                         editChannelProgressBar.visibility = View.INVISIBLE
+                        unsubscribeToFcm()
                         val intent = Intent(this, LatestMessagesActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
                         startActivity(intent)
@@ -382,5 +385,29 @@ class EditChannelActivity : AppCompatActivity() {
         editChannelWelcomeMessageTextInputLayout.editText!!.isFocusable = false
         editChannelWelcomeMessageTextInputLayout.editText!!.isFocusableInTouchMode = false
         setInitSpinner()
+    }
+
+    private fun unsubscribeToFcm(){
+
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(channel!!.id.toString())
+            .addOnCompleteListener { task ->
+                var msg = "Unsubscribed from ${channel!!.id} Successfully"
+                if (!task.isSuccessful) {
+                    msg = "Unsubscribe from ${channel!!.id} failed"
+                }
+                Log.d(TAG, msg)
+            }
+    }
+
+    private fun subscribeToFcm(){
+
+        FirebaseMessaging.getInstance().subscribeToTopic(channel!!.id.toString())
+            .addOnCompleteListener { task ->
+                var msg = "Subscribed to ${channel!!.id} Successfully"
+                if (!task.isSuccessful) {
+                    msg = "Subscribe to ${channel!!.id} failed"
+                }
+                Log.d(TAG, msg)
+            }
     }
 }
