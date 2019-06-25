@@ -16,10 +16,11 @@
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp"
             app:layout_constraintEnd_toEndOf="@+id/chatToTextView"/>
-    <TextView
+    <EditText
             android:text="@string/this_is_a_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
             android:textColor="@android:color/black"
             android:id="@+id/chatToTextView"
             style="@style/ChatLogToRowTextView"

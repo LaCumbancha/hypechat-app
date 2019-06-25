@@ -8,21 +8,22 @@ import android.database.Cursor
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hypechat.R
 import com.example.hypechat.data.local.AppPreferences
-import com.example.hypechat.data.model.ChatFromItem
-import com.example.hypechat.data.model.ChatImageFromItem
-import com.example.hypechat.data.model.ChatImageToItem
-import com.example.hypechat.data.model.ChatToItem
+import com.example.hypechat.data.model.*
 import com.example.hypechat.data.model.rest.response.BotResponse
 import com.example.hypechat.data.model.rest.response.MessageResponse
 import com.example.hypechat.data.model.rest.response.UserResponse
@@ -59,8 +60,9 @@ class ChatLogActivity : AppCompatActivity() {
     private val TAG = "ChatLog"
     private val REQUEST_CODE_ASK_PERMISSIONS = 123
     private val REQUEST_IMAGE_PICK = 1
-    private var currentPhotoPath: String = ""
-    private var selectedPhotoUri: Uri? = null
+    private val REQUEST_FILE_PICK = 2
+    private var currentFilePath: String = ""
+    private var selectedFileUri: Uri? = null
     private var mentionList = ArrayList<Mention>()
     private var userChannelList = ArrayList<UserResponse>()
     private var botChannelList = ArrayList<BotResponse>()
@@ -72,6 +74,10 @@ class ChatLogActivity : AppCompatActivity() {
             handler.postDelayed(this, 8000)
         }
     }
+    private var isOpen = false
+    private var fab_open: Animation? = null
+    private var fab_close: Animation? = null
+    private var chat_type: String = "CHAT"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,6 +99,7 @@ class ChatLogActivity : AppCompatActivity() {
         setSupportActionBar(toolbarChatLog)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         AppPreferences.init(this)
+        loadAnimations()
 
         chatLogRecyclerView.layoutManager = LinearLayoutManager(this)
         chatLogRecyclerView.adapter = chatLogAdapter
@@ -100,6 +107,11 @@ class ChatLogActivity : AppCompatActivity() {
         chatLogEditText.mentionAdapter = mentionAdapter
 
         initializeChatLog()
+    }
+
+    private fun loadAnimations(){
+        fab_open = AnimationUtils.loadAnimation(this, R.anim.fab_open)
+        fab_close = AnimationUtils.loadAnimation(this, R.anim.fab_close)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -110,10 +122,12 @@ class ChatLogActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
 
         R.id.action_view_profile -> {
-            val intent = Intent(this, UserProfileActivity::class.java)
-            intent.putExtra(UserProfileActivity.USERID, senderId!!)
-            intent.putExtra(UserProfileActivity.USERNAME, userName!!)
-            startActivityForResult(intent, USERPROFILE)
+            if (chat_type != "CHANNEL"){
+                val intent = Intent(this, UserProfileActivity::class.java)
+                intent.putExtra(UserProfileActivity.USERID, senderId!!)
+                intent.putExtra(UserProfileActivity.USERNAME, userName!!)
+                startActivityForResult(intent, USERPROFILE)
+            }
             true
         }
 
@@ -166,6 +180,7 @@ class ChatLogActivity : AppCompatActivity() {
 
     private fun loadBots(botList: List<BotResponse>){
 
+        botChannelList.clear()
         botChannelList.addAll(botList)
         for (bot in botList){
             mentionList.add(Mention(bot.name))
@@ -210,7 +225,10 @@ class ChatLogActivity : AppCompatActivity() {
     private fun initializeChat(messages: List<MessageResponse>, chatType: String){
 
         chatLogAdapter.clear()
+        chat_type = chatType
         if (chatType == "CHANNEL"){
+            mentionAdapter.clear()
+            mentionList.clear()
             getChannelUsers()
             getBots()
         }
@@ -224,18 +242,21 @@ class ChatLogActivity : AppCompatActivity() {
                 when (message.type){
                     MessageType.TEXT.type -> chatLogAdapter.add(ChatFromItem(message.message, message.sender.username))
                     MessageType.IMAGE.type -> chatLogAdapter.add(ChatImageFromItem(message.message, message.sender.username))
+                    MessageType.FILE.type -> chatLogAdapter.add(ChatFileFromItem(message.message, message.sender.username))
                 }
             } else {
                 when (message.type){
                     MessageType.TEXT.type -> chatLogAdapter.add(ChatToItem(message.message, message.sender.username))
                     MessageType.IMAGE.type -> chatLogAdapter.add(ChatImageToItem(message.message, message.sender.username))
+                    MessageType.FILE.type -> chatLogAdapter.add(ChatFileToItem(message.message, message.sender.username))
                 }
             }
         }
-        chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
+        //chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
         Log.d(TAG, "getMessagesFromChat:success")
         chatLogProgressBar.visibility = View.INVISIBLE
         if (!isListening){
+            chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
             handler.post(refresh)
             isListening = true
         }
@@ -326,6 +347,15 @@ class ChatLogActivity : AppCompatActivity() {
         send(pictureUrl, MessageType.IMAGE.type, list)
     }
 
+    private fun sendFile(fileUrl: String){
+
+        val username = AppPreferences.getUserName()
+        val list = listOf<Int>()
+        chatLogAdapter.add(ChatFileFromItem(fileUrl, username!!))
+        chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
+        send(fileUrl, MessageType.FILE.type, list)
+    }
+
     private fun send(message: String, messageType: String, mentions: List<Int>){
         val teamId = AppPreferences.getTeamId()
 
@@ -364,12 +394,47 @@ class ChatLogActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    fun openAdd(view: View){
+
+        if (isOpen) {
+            closeAdd()
+
+        } else {
+            fabImageChatLog.startAnimation(fab_open)
+            fabFileChatLog.startAnimation(fab_open)
+            fabFileChatLog.isClickable = true
+            fabImageChatLog.isClickable = true
+            isOpen = true
+        }
+    }
+
+    private fun closeAdd(){
+        fabImageChatLog.startAnimation(fab_close)
+        fabFileChatLog.startAnimation(fab_close)
+        fabImageChatLog.isClickable = false
+        fabFileChatLog.isClickable =false
+        isOpen = false
+    }
+
+    fun pickFileFromDevice(view: View) {
+        val hasReadExternalStoragePermission = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (hasReadExternalStoragePermission != PackageManager.PERMISSION_GRANTED){
+            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE_ASK_PERMISSIONS)
+            return
+        }
+        closeAdd()
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "file/*"
+        startActivityForResult(intent, REQUEST_FILE_PICK)
+    }
+
     fun pickImageFromDevice(view: View) {
         val hasReadExternalStoragePermission = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
         if (hasReadExternalStoragePermission != PackageManager.PERMISSION_GRANTED){
             requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE_ASK_PERMISSIONS)
             return
         }
+        closeAdd()
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         startActivityForResult(intent, REQUEST_IMAGE_PICK)
@@ -379,14 +444,22 @@ class ChatLogActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == Activity.RESULT_OK && data != null){
-            if (requestCode == REQUEST_IMAGE_PICK){
-                Log.d(TAG, "Photo was selected")
-                selectedPhotoUri = data.data
-                currentPhotoPath = getRealPathFromUri(selectedPhotoUri!!)
-                savePicture()
-            } else {
+            when (requestCode) {
+                REQUEST_IMAGE_PICK -> {
 
-                senderId = data.getIntExtra(UserProfileActivity.USERID, 0)
+                    Log.d(TAG, "Photo was selected")
+                    selectedFileUri = data.data
+                    currentFilePath = getRealPathFromUri(selectedFileUri!!)
+                    saveFile(true)
+                }
+                REQUEST_FILE_PICK -> {
+
+                    Log.d(TAG, "File was selected")
+                    selectedFileUri = data.data
+                    currentFilePath = getRealPathFileFromUri(selectedFileUri!!)
+                    saveFile(false)
+                }
+                else -> senderId = data.getIntExtra(UserProfileActivity.USERID, 0)
             }
         }
     }
@@ -405,23 +478,35 @@ class ChatLogActivity : AppCompatActivity() {
         }
     }
 
-    private fun savePicture(){
+    private fun getRealPathFileFromUri(contentUri: Uri): String{
+        val  docId = DocumentsContract.getDocumentId(contentUri)
+        val split = docId.split(":")
+        //val type = split[0]
+
+        return "${Environment.getExternalStorageDirectory()}/${split[1]}"
+    }
+
+    private fun saveFile(isPicture: Boolean){
 
         val filename = UUID.randomUUID().toString()
-        val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
+        val ref = FirebaseStorage.getInstance().getReference("/files/$filename")
 
-        if (selectedPhotoUri != null){
-            ref.putFile(selectedPhotoUri!!)
+        if (selectedFileUri != null){
+            ref.putFile(selectedFileUri!!)
                 .addOnSuccessListener {
-                    Log.d(TAG, "Successfully uploaded chat log picture: ${it.metadata?.path}")
+                    Log.d(TAG, "Successfully uploaded chat log file: ${it.metadata?.path}")
                     ref.downloadUrl.addOnSuccessListener { uri ->
                         Log.d(TAG, "File location: $uri")
-                        val pictureUrl = uri.toString()
-                        sendPicture(pictureUrl)
+                        val fileUrl = uri.toString()
+                        if (isPicture){
+                            sendPicture(fileUrl)
+                        } else {
+                            sendFile(fileUrl)
+                        }
                     }
                 }
                 .addOnFailureListener {
-                    Log.w(TAG, "Failed to upload chat log picture to Storage", it.cause)
+                    Log.w(TAG, "Failed to upload chat log file to Storage", it.cause)
                     //errorOccurred(it.cause.toString())
                 }
         }

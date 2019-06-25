@@ -12,7 +12,7 @@ class ChatFromItem(val message: String, val username: String): Item<ViewHolder>(
     }
 
     override fun bind(viewHolder: ViewHolder, position: Int) {
-        viewHolder.itemView.chatFromTextView.text = message
+        viewHolder.itemView.chatFromTextView.setText(message)
         viewHolder.itemView.userNameChatFromTextView.text = username
     }
 }

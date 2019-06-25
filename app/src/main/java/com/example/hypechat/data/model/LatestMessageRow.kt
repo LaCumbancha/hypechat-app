@@ -23,6 +23,7 @@ class LatestMessageRow(val chat: ChatResponse): Item<ViewHolder>() {
         when (chat.type){
             MessageType.TEXT.type -> viewHolder.itemView.latestMessageRowTextView.text = chat.content
             MessageType.IMAGE.type -> viewHolder.itemView.latestMessageRowTextView.text = MessageType.IMAGE.type
+            MessageType.FILE.type -> viewHolder.itemView.latestMessageRowTextView.text = MessageType.FILE.type
         }
 
         val date = LocalDateTime.parse(chat.timestamp, DateTimeFormatter.RFC_1123_DATE_TIME)
