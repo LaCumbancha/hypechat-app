@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hypechat.R
 import com.example.hypechat.data.local.AppPreferences
 import com.example.hypechat.data.model.*
+import com.example.hypechat.data.model.rest.ChatSnippetToItem
 import com.example.hypechat.data.model.rest.response.BotResponse
 import com.example.hypechat.data.model.rest.response.MessageResponse
 import com.example.hypechat.data.model.rest.response.UserResponse
@@ -243,12 +244,14 @@ class ChatLogActivity : AppCompatActivity() {
                     MessageType.TEXT.type -> chatLogAdapter.add(ChatFromItem(message.message, message.sender.username))
                     MessageType.IMAGE.type -> chatLogAdapter.add(ChatImageFromItem(message.message, message.sender.username))
                     MessageType.FILE.type -> chatLogAdapter.add(ChatFileFromItem(message.message, message.sender.username))
+                    MessageType.SNIPPET.type -> chatLogAdapter.add(ChatSnippetFromItem(message.message, message.sender.username))
                 }
             } else {
                 when (message.type){
                     MessageType.TEXT.type -> chatLogAdapter.add(ChatToItem(message.message, message.sender.username))
                     MessageType.IMAGE.type -> chatLogAdapter.add(ChatImageToItem(message.message, message.sender.username))
                     MessageType.FILE.type -> chatLogAdapter.add(ChatFileToItem(message.message, message.sender.username))
+                    MessageType.SNIPPET.type -> chatLogAdapter.add(ChatSnippetToItem(message.message, message.sender.username))
                 }
             }
         }
@@ -300,42 +303,60 @@ class ChatLogActivity : AppCompatActivity() {
         }
 
         val dialog = builder.create()
-        dialog.show()
+        if(!this.isFinishing){
+            dialog.show()
+        }
     }
 
     private fun <T, U> List<T>.intersect(uList: List<U>, filterPredicate : (T, U) -> Boolean) = filter { m -> uList.any { filterPredicate(m, it)} }
 
     fun sendChatMessage(view: View){
 
-        val message = chatLogEditText.text.toString()
+        var message = chatLogEditText.text.toString()
         val username = AppPreferences.getUserName()
         val mentions = arrayListOf<Int>()
 
         if (message != ""){
 
-            val mentionList = chatLogEditText.mentions
-            if (mentionList.isNotEmpty()){
-                if (mentionList.contains("all")){
-                    mentions.add(senderId!!)
+            if (message.startsWith("```") && message.endsWith("```")){
+                message = message.replace("```", "")
+                sendSnippet(message)
+            } else{
+
+                val mentionList = chatLogEditText.mentions
+                if (mentionList.isNotEmpty()){
+                    if (mentionList.contains("all")){
+                        mentions.add(senderId!!)
+                    }
+                    val userFilteredList = userChannelList.intersect(mentionList) { a, b ->
+                        a.username == b
+                    }
+                    for (user in userFilteredList){
+                        mentions.add(user.id)
+                    }
+                    val botFilteredList = botChannelList.intersect(mentionList) { a, b ->
+                        a.name == b
+                    }
+                    for (bot in botFilteredList){
+                        mentions.add(bot.id)
+                    }
                 }
-                val userFilteredList = userChannelList.intersect(mentionList) { a, b ->
-                    a.username == b
-                }
-                for (user in userFilteredList){
-                    mentions.add(user.id)
-                }
-                val botFilteredList = botChannelList.intersect(mentionList) { a, b ->
-                    a.name == b
-                }
-                for (bot in botFilteredList){
-                    mentions.add(bot.id)
-                }
+                chatLogAdapter.add(ChatFromItem(message, username!!))
+                chatLogEditText.text?.clear()
+                chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
+                send(message, MessageType.TEXT.type, mentions.toList())
             }
-            chatLogAdapter.add(ChatFromItem(message, username!!))
-            chatLogEditText.text?.clear()
-            chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
-            send(message, MessageType.TEXT.type, mentions.toList())
         }
+    }
+
+    private fun sendSnippet(msg: String){
+
+        val username = AppPreferences.getUserName()
+        val list = listOf<Int>()
+        chatLogAdapter.add(ChatSnippetFromItem(msg, username!!))
+        chatLogEditText.text?.clear()
+        chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
+        send(msg, MessageType.SNIPPET.type, list)
     }
 
     private fun sendPicture(pictureUrl: String){

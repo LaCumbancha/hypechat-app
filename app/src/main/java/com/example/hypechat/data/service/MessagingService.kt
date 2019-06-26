@@ -40,22 +40,20 @@ class MessagingService : FirebaseMessagingService() {
 
         Log.d(TAG, "From: " + remoteMessage?.from)
 
-        remoteMessage?.data?.let {
-            Log.d(TAG, "Message data payload: $it")
-            //sendNotification(it)
-        }
+        remoteMessage?.let { rm ->
+            Log.d(TAG, "Message data payload: ${rm.data}")
+            Log.d(TAG, "Message Notification Body: " + rm.notification?.body)
 
-        // Check if message contains a notification payload.
-        remoteMessage?.notification?.let {
-            Log.d(TAG, "Message Notification Body: " + it.body)
-            sendNotification(it)
+            rm.notification?.let {
+                sendNotification(it, rm.data)
+            }
         }
     }
     //data: MutableMap<String, String>
-    private fun sendNotification(notification: RemoteMessage.Notification ){
+    private fun sendNotification(notification: RemoteMessage.Notification, playload: Map<String, String>){
 
         //val title = data["title"]
-        //val body = data["body"]
+        val sender = playload["sender"]
         val title = notification.title
         val body = notification.body
 
