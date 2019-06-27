@@ -50,7 +50,7 @@ class ViewUserTeamsActivity : AppCompatActivity() {
     private fun initializeList(teams: List<TeamResponse>){
 
         for (team in teams){
-            teamStatList.add(TeamStatRow(team.t_name, team.messages))
+            teamStatList.add(TeamStatRow(team.t_name, team.role, team.messages))
         }
         adapter.addAll(teamStatList)
     }

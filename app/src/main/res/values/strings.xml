@@ -145,7 +145,8 @@
 
     <!--User Profile -->
     <string name="user_profile_view_teams">VIEW TEAMS</string>
-    <string name="user_profile_view_teams_team_header">Teams</string>
+    <string name="user_profile_view_teams_team_header">Team</string>
+    <string name="user_profile_view_teams_role_header">Role</string>
     <string name="user_profile_view_teams_message_header">Sent messages</string>
     <!--User Profile -->
 

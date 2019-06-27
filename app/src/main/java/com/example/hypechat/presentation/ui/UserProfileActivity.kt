@@ -70,7 +70,6 @@ class UserProfileActivity : AppCompatActivity() {
         firstNameTextInputLayout.editText!!.setText(user.first_name)
         lastNameTextInputLayout.editText!!.setText(user.last_name)
         userNameTextInputLayout.editText!!.setText(user.username)
-        roleTextInputLayout.editText!!.setText(user.role)
         Picasso.get().load(user.profile_pic)
             .placeholder(R.drawable.placeholder)
             .error(R.drawable.profile_placeholder)

@@ -25,7 +25,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/teamsHeaderTextView"/>
+            app:layout_constraintTop_toBottomOf="@+id/teamsRoleTextView"/>
     <TextView
             android:text="@string/user_profile_view_teams_team_header"
             android:layout_width="0dp"
@@ -34,9 +34,19 @@
             android:textAlignment="center"
             android:textSize="18sp"
             app:layout_constraintTop_toBottomOf="@+id/toolbarViewUserTeams"
+            app:layout_constraintEnd_toStartOf="@id/teamsRoleTextView"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="@+id/messageHeaderTextView"
-            app:layout_constraintEnd_toStartOf="@+id/messageHeaderTextView"/>
+    />
+    <TextView
+            android:text="@string/user_profile_view_teams_role_header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/teamsRoleTextView"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            app:layout_constraintStart_toEndOf="@+id/teamsHeaderTextView"
+            app:layout_constraintEnd_toStartOf="@+id/messageHeaderTextView"
+            app:layout_constraintTop_toBottomOf="@+id/toolbarViewUserTeams"/>
     <TextView
             android:text="@string/user_profile_view_teams_message_header"
             android:layout_width="0dp"
@@ -45,8 +55,7 @@
             android:textAlignment="center"
             android:textSize="18sp"
             app:layout_constraintTop_toBottomOf="@+id/toolbarViewUserTeams"
-            app:layout_constraintStart_toEndOf="@id/teamsHeaderTextView"
-            app:layout_constraintBottom_toBottomOf="@id/teamsHeaderTextView"
+            app:layout_constraintStart_toEndOf="@id/teamsRoleTextView"
             app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

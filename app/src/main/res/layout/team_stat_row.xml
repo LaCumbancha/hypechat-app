@@ -14,8 +14,19 @@
             android:textSize="16sp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="@+id/messageStatTextView"
-            app:layout_constraintEnd_toStartOf="@+id/messageStatTextView"/>
+            app:layout_constraintBottom_toBottomOf="@+id/roleStatTextView"
+            app:layout_constraintEnd_toStartOf="@+id/roleStatTextView"/>
+    <TextView
+            android:text="@string/user_profile_view_teams_role_header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/roleStatTextView"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/teamsStatTextView"
+            app:layout_constraintEnd_toStartOf="@+id/messageStatTextView"
+            app:layout_constraintBottom_toBottomOf="@id/messageStatTextView"/>
     <TextView
             android:text="@string/user_profile_view_teams_message_header"
             android:layout_width="0dp"
@@ -24,8 +35,8 @@
             android:textAlignment="center"
             android:textSize="16sp"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/teamsStatTextView"
-            app:layout_constraintBottom_toBottomOf="@id/teamsStatTextView"
+            app:layout_constraintStart_toEndOf="@id/roleStatTextView"
+            app:layout_constraintBottom_toBottomOf="@id/roleStatTextView"
             app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
