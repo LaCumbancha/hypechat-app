@@ -24,7 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hypechat.R
 import com.example.hypechat.data.local.AppPreferences
 import com.example.hypechat.data.model.*
-import com.example.hypechat.data.model.rest.ChatSnippetToItem
+import com.example.hypechat.data.model.ChatSnippetToItem
 import com.example.hypechat.data.model.rest.response.BotResponse
 import com.example.hypechat.data.model.rest.response.MessageResponse
 import com.example.hypechat.data.model.rest.response.UserResponse
@@ -72,7 +72,7 @@ class ChatLogActivity : AppCompatActivity() {
     private val refresh = object : Runnable {
         override fun run() {
             initializeChatLog()
-            handler.postDelayed(this, 8000)
+            handler.postDelayed(this, 5000)
         }
     }
     private var isOpen = false
@@ -86,13 +86,13 @@ class ChatLogActivity : AppCompatActivity() {
 
         user = intent.getSerializableExtra(USER) as UserResponse?
         val username = intent.getStringExtra(USERNAME)
-        val sender = intent.getIntExtra(SENDERID, 0)
+        val sender = intent.getIntExtra(SENDERID, -1)
         user?.let {
             toolbarChatLog.title = it.username
             userName = it.username
             senderId = it.id
         }
-        if (username != null && sender != 0){
+        if (username != null && sender != -1){
             toolbarChatLog.title = username
             userName = username
             senderId = sender
@@ -181,6 +181,7 @@ class ChatLogActivity : AppCompatActivity() {
 
     private fun loadBots(botList: List<BotResponse>){
 
+        Log.w(TAG, "getTeamBots:success")
         botChannelList.clear()
         botChannelList.addAll(botList)
         for (bot in botList){
@@ -191,12 +192,14 @@ class ChatLogActivity : AppCompatActivity() {
 
     private fun loadUsers(channelUsersList: List<UserResponse>){
 
+        Log.w(TAG, "getChannelUsers:success")
         userChannelList.addAll(channelUsersList)
         for (user in channelUsersList){
             mentionList.add(Mention(user.username, null, user.profile_pic))
         }
         mentionList.add(Mention("all"))
         mentionAdapter.addAll(mentionList)
+        Log.w(TAG, "mentionList:$mentionList")
     }
 
     private fun initializeChatLog(){
@@ -227,7 +230,7 @@ class ChatLogActivity : AppCompatActivity() {
 
         chatLogAdapter.clear()
         chat_type = chatType
-        if (chatType == "CHANNEL"){
+        if (chatType == "CHANNEL" && !isListening){
             mentionAdapter.clear()
             mentionList.clear()
             getChannelUsers()
@@ -248,10 +251,21 @@ class ChatLogActivity : AppCompatActivity() {
                 }
             } else {
                 when (message.type){
-                    MessageType.TEXT.type -> chatLogAdapter.add(ChatToItem(message.message, message.sender.username))
+                    MessageType.TEXT.type -> {
+                        if (message.sender.type == "BOT"){
+                            chatLogAdapter.add(ChatToItem(message.message, message.sender.name!!))
+                        } else {
+                            chatLogAdapter.add(ChatToItem(message.message, message.sender.username))
+                        }
+                    }
                     MessageType.IMAGE.type -> chatLogAdapter.add(ChatImageToItem(message.message, message.sender.username))
                     MessageType.FILE.type -> chatLogAdapter.add(ChatFileToItem(message.message, message.sender.username))
-                    MessageType.SNIPPET.type -> chatLogAdapter.add(ChatSnippetToItem(message.message, message.sender.username))
+                    MessageType.SNIPPET.type -> chatLogAdapter.add(
+                        ChatSnippetToItem(
+                            message.message,
+                            message.sender.username
+                        )
+                    )
                 }
             }
         }
@@ -312,15 +326,15 @@ class ChatLogActivity : AppCompatActivity() {
 
     fun sendChatMessage(view: View){
 
-        var message = chatLogEditText.text.toString()
+        val message = chatLogEditText.text.toString()
         val username = AppPreferences.getUserName()
         val mentions = arrayListOf<Int>()
 
         if (message != ""){
 
             if (message.startsWith("```") && message.endsWith("```")){
-                message = message.replace("```", "")
-                sendSnippet(message)
+                val snippet = message.replace("```", "")
+                sendSnippet(snippet)
             } else{
 
                 val mentionList = chatLogEditText.mentions
@@ -341,7 +355,7 @@ class ChatLogActivity : AppCompatActivity() {
                         mentions.add(bot.id)
                     }
                 }
-                chatLogAdapter.add(ChatFromItem(message, username!!))
+                //chatLogAdapter.add(ChatFromItem(message, username!!))
                 chatLogEditText.text?.clear()
                 chatLogRecyclerView.scrollToPosition(chatLogAdapter.itemCount - 1)
                 send(message, MessageType.TEXT.type, mentions.toList())
@@ -543,9 +557,9 @@ class ChatLogActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "In the onResume() event")
-        if (!isListening){
+        /*if (!isListening){
             handler.post(refresh)
             isListening = true
-        }
+        }*/
     }
 }

@@ -1,4 +1,4 @@
-package com.example.hypechat.data.model.rest
+package com.example.hypechat.data.model
 
 import com.example.hypechat.R
 import com.xwray.groupie.Item

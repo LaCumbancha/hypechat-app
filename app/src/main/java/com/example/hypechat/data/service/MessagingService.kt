@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.example.hypechat.R
+import com.example.hypechat.data.local.AppPreferences
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
@@ -45,15 +46,17 @@ class MessagingService : FirebaseMessagingService() {
             Log.d(TAG, "Message Notification Body: " + rm.notification?.body)
 
             rm.notification?.let {
-                sendNotification(it, rm.data)
+                val senderId = rm.data["sender_id"]
+                if (AppPreferences.getUserId() != senderId?.toInt()){
+                    sendNotification(it)
+                }
             }
         }
     }
     //data: MutableMap<String, String>
-    private fun sendNotification(notification: RemoteMessage.Notification, playload: Map<String, String>){
+    private fun sendNotification(notification: RemoteMessage.Notification){
 
         //val title = data["title"]
-        val sender = playload["sender"]
         val title = notification.title
         val body = notification.body
 
