@@ -40,9 +40,17 @@ class LatestMessageRow(val chat: ChatResponse): Item<ViewHolder>() {
         }
 
         viewHolder.itemView.fullnameLatestMessageRowTextView.text = chat.chatName
-        Picasso.get().load(chat.chatPicture)
-            .placeholder(R.drawable.placeholder)
-            .error(R.drawable.profile_placeholder)
-            .into(viewHolder.itemView.userLatestMessageRowImageView)
+
+        if (chat.chatPicture != null){
+            Picasso.get().load(chat.chatPicture)
+                .placeholder(R.drawable.placeholder)
+                .error(R.mipmap.ic_launcher_hypechat)
+                .into(viewHolder.itemView.userLatestMessageRowImageView)
+        } else {
+            Picasso.get().load(R.mipmap.ic_launcher_hypechat)
+                .placeholder(R.drawable.placeholder)
+                .into(viewHolder.itemView.userLatestMessageRowImageView)
+        }
+
     }
 }

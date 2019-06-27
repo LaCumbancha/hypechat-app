@@ -10,7 +10,7 @@
             style="@style/LatestMessageRowImageView"
             android:id="@+id/channelRowImageView"
             app:civ_border_width="1dp"
-            android:src="@drawable/ic_action_hypechat"
+            android:src="@mipmap/ic_launcher_hypechat"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>

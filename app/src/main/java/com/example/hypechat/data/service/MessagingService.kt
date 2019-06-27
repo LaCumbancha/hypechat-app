@@ -53,10 +53,9 @@ class MessagingService : FirebaseMessagingService() {
             }
         }
     }
-    //data: MutableMap<String, String>
+
     private fun sendNotification(notification: RemoteMessage.Notification){
 
-        //val title = data["title"]
         val title = notification.title
         val body = notification.body
 

@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 class ChatResponse (
 
     @SerializedName("chat_name") val chatName : String,
-    @SerializedName("chat_picture") val chatPicture : String,
+    @SerializedName("chat_picture") val chatPicture : String?,
     @SerializedName("content") val content : String,
     @SerializedName("offset") val offset : Int,
     @SerializedName("chat_id") val chat_id : Int,
