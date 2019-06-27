@@ -55,6 +55,7 @@ class MyProfileActivity : AppCompatActivity() {
                     ServerStatus.ACTIVE.status -> setUserData(it.user)
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){
@@ -209,6 +210,7 @@ class MyProfileActivity : AppCompatActivity() {
                     }
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){

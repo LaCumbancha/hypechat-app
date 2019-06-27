@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.example.hypechat.R
 import com.example.hypechat.data.local.AppPreferences
 import com.example.hypechat.data.repository.HypechatRepository
@@ -95,11 +96,12 @@ class MainActivity : AppCompatActivity() {
                         AppPreferences.setUserName(it.user.first_name!!)
                     }
                     ServerStatus.WRONG_CREDENTIALS.status -> loginFailed(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){
                 Log.w(TAG, "facebookLoginUser:failure")
-                errorOccurred()
+                errorOccurred(null)
             }
         }
     }
@@ -143,11 +145,12 @@ class MainActivity : AppCompatActivity() {
                             AppPreferences.setUserName(it.user.username)
                         }
                         ServerStatus.WRONG_CREDENTIALS.status -> loginFailed(it.message)
+                        else -> errorOccurred(it.message)
                     }
                 }
                 if (response == null){
                     Log.w(TAG, "loginUser:failure")
-                    errorOccurred()
+                    errorOccurred(null)
                 }
             }
         }
@@ -235,19 +238,25 @@ class MainActivity : AppCompatActivity() {
         inm.hideSoftInputFromWindow(windowToken, 0)
     }
 
-    private fun errorOccurred(){
+    private fun errorOccurred(error: String?){
 
         showScreen()
 
-        val builder = android.app.AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this)
         builder.setTitle("Error")
-        builder.setMessage("There was a problem during the login process. Please, try again.")
+        var msg = "There was a problem during the process. Please, try again."
+        error?.let {
+            msg = it
+        }
+        builder.setMessage(msg)
 
         builder.setPositiveButton("Ok"){ dialog, which ->
             dialog.dismiss()
         }
 
         val dialog = builder.create()
-        dialog.show()
+        if(!this.isFinishing){
+            dialog.show()
+        }
     }
 }

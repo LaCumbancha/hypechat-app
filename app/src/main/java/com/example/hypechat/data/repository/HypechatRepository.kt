@@ -67,7 +67,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: LoginResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), LoginResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -83,7 +95,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: LoginResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), LoginResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -107,7 +131,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: RegisterResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), RegisterResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -123,7 +159,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -139,7 +187,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: LoginResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), LoginResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -154,7 +214,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -169,7 +241,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ProfileResponse>, response: Response<ProfileResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ProfileResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ProfileResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -186,7 +270,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: RegisterResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), RegisterResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -202,7 +298,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: RegisterResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), RegisterResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -217,7 +325,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ProfileResponse>, response: Response<ProfileResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ProfileResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ProfileResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -232,7 +352,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<UsersResponse>, response: Response<UsersResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: UsersResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), UsersResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -247,7 +379,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<UsersResponse>, response: Response<UsersResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: UsersResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), UsersResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -264,7 +408,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<MessagesResponse>, response: Response<MessagesResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: MessagesResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), MessagesResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -280,7 +436,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -295,7 +463,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ChatsResponse>, response: Response<ChatsResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ChatsResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ChatsResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -312,7 +492,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<TeamsResponse>, response: Response<TeamsResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: TeamsResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), TeamsResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -327,7 +519,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<TeamBotsResponse>, response: Response<TeamBotsResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: TeamBotsResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), TeamBotsResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -342,7 +546,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ChannelsResponse>, response: Response<ChannelsResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ChannelsResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ChannelsResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -359,7 +575,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<TeamCreationResponse>, response: Response<TeamCreationResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: TeamCreationResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), TeamCreationResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -374,7 +602,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -389,7 +629,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -404,7 +656,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -419,7 +683,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -463,7 +739,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -480,7 +768,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<TeamCreationResponse>, response: Response<TeamCreationResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: TeamCreationResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), TeamCreationResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -496,7 +796,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -511,7 +823,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ForbiddenWordResponse>, response: Response<ForbiddenWordResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ForbiddenWordResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ForbiddenWordResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -530,7 +854,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ChannelCreationResponse>, response: Response<ChannelCreationResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ChannelCreationResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ChannelCreationResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -547,7 +883,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ChannelCreationResponse>, response: Response<ChannelCreationResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ChannelCreationResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ChannelCreationResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -563,7 +911,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -579,7 +939,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -621,7 +993,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -636,7 +1020,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -651,7 +1047,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }

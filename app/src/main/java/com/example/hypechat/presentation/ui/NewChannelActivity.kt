@@ -93,6 +93,7 @@ class NewChannelActivity : AppCompatActivity() {
                         }
                         ServerStatus.ALREADY_REGISTERED.status -> errorOccurred(it.message)
                         ServerStatus.ERROR.status -> errorOccurred(it.message)
+                        else -> errorOccurred(it.message)
                     }
                 }
                 if (response == null){
@@ -122,6 +123,7 @@ class NewChannelActivity : AppCompatActivity() {
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.USER_NOT_FOUND.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){

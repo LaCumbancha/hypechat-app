@@ -151,6 +151,7 @@ class ChatLogActivity : AppCompatActivity() {
                     ServerStatus.LIST.status -> loadBots(it.bots)
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.CHAT_NOT_FOUND.status -> loadingChatFailed(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){
@@ -171,6 +172,7 @@ class ChatLogActivity : AppCompatActivity() {
                     ServerStatus.LIST.status -> loadUsers(it.users)
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.CHAT_NOT_FOUND.status -> loadingChatFailed(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){
@@ -199,7 +201,6 @@ class ChatLogActivity : AppCompatActivity() {
         }
         mentionList.add(Mention("all"))
         mentionAdapter.addAll(mentionList)
-        Log.w(TAG, "mentionList:$mentionList")
     }
 
     private fun initializeChatLog(){
@@ -218,6 +219,7 @@ class ChatLogActivity : AppCompatActivity() {
                     ServerStatus.LIST.status -> initializeChat(it.messages, it.chat_type)
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.CHAT_NOT_FOUND.status -> loadingChatFailed(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){

@@ -145,6 +145,7 @@ class NewTeamActivity : AppCompatActivity() {
                     ServerStatus.ALREADY_REGISTERED.status -> creationFailed(it.message)
                     ServerStatus.WRONG_TOKEN.status -> creationFailed(it.message)
                     ServerStatus.ERROR.status -> creationFailed(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){

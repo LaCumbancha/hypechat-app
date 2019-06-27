@@ -59,6 +59,7 @@ class ViewChannelUsersActivity : AppCompatActivity() {
                     ServerStatus.LIST.status -> loadUsers(it.users)
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){
@@ -123,6 +124,7 @@ class ViewChannelUsersActivity : AppCompatActivity() {
                     }
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){

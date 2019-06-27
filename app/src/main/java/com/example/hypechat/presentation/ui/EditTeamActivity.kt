@@ -217,6 +217,7 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
                     }
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){
@@ -324,6 +325,7 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
                     }
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){
@@ -386,6 +388,7 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
                     ServerStatus.ALREADY_INVITED.status -> errorOccurred(it.message)
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){
@@ -454,6 +457,7 @@ class EditTeamActivity : AppCompatActivity(), TeamInvitationDialog.TeamInvitatio
                     }
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){

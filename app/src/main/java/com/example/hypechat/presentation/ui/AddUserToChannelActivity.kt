@@ -56,6 +56,7 @@ class AddUserToChannelActivity : AppCompatActivity() {
                     ServerStatus.LIST.status -> getChannelUsers(it.users)
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){
@@ -77,6 +78,7 @@ class AddUserToChannelActivity : AppCompatActivity() {
                     ServerStatus.LIST.status -> loadUsers(teamUsersList, it.users)
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){
@@ -142,6 +144,7 @@ class AddUserToChannelActivity : AppCompatActivity() {
                     }
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){

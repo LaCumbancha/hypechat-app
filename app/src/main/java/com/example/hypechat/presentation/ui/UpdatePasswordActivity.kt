@@ -73,6 +73,7 @@ class UpdatePasswordActivity : AppCompatActivity() {
                         ServerStatus.ACTIVE.status -> firebaseLogin(password)
                         ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                         ServerStatus.ERROR.status -> errorOccurred(it.message)
+                        else -> errorOccurred(it.message)
                     }
                 }
                 if (response == null){

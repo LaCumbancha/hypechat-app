@@ -183,6 +183,7 @@ class LatestMessagesActivity : AppCompatActivity() {
                      ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                      ServerStatus.CHAT_NOT_FOUND.status -> errorOccurred(it.message)
                      ServerStatus.ERROR.status -> errorOccurred(it.message)
+                     else -> errorOccurred(it.message)
                  }
              }
             if (response == null){
@@ -228,6 +229,7 @@ class LatestMessagesActivity : AppCompatActivity() {
                     ServerStatus.LIST.status -> initializeChannels(it.channels)
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){
@@ -322,6 +324,7 @@ class LatestMessagesActivity : AppCompatActivity() {
                     }
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
 
             }

@@ -78,6 +78,7 @@ class RecoverPasswordActivity : AppCompatActivity(), RegeneratePasswordDialog.Re
                         ServerStatus.OK.status -> sendPasswordResetEmail(email)
                         ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                         ServerStatus.ERROR.status -> errorOccurred(it.message)
+                        else -> errorOccurred(it.message)
                     }
                 }
                 if (response == null){
@@ -125,6 +126,7 @@ class RecoverPasswordActivity : AppCompatActivity(), RegeneratePasswordDialog.Re
                     ServerStatus.ACTIVE.status -> navigateToUpdatePassword(it.user)
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){

@@ -77,6 +77,7 @@ class TeamsActivity : AppCompatActivity(), JoinTeamDialog.TeamTokenListener {
                     }
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){
@@ -134,6 +135,7 @@ class TeamsActivity : AppCompatActivity(), JoinTeamDialog.TeamTokenListener {
                     ServerStatus.LIST.status -> setTeams(it.teams)
                     //ServerStatus.WRONG_TOKEN.status -> tokenFailed(it.message)
                     ServerStatus.TEAM_NOT_FOUND.status -> loadingTeamsFailed(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){

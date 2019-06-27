@@ -144,6 +144,7 @@ class RegistrationActivity : AppCompatActivity() {
                 when (it.status){
                     ServerStatus.ACTIVE.status -> navigateToLatestMessages(it.user.id)
                     ServerStatus.ALREADY_REGISTERED.status -> registrationFailed(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){

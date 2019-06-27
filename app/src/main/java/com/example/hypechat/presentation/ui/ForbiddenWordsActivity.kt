@@ -54,6 +54,7 @@ class ForbiddenWordsActivity : AppCompatActivity(), AddForbiddenWordDialog.Forbi
                     ServerStatus.LIST.status -> initializeList(it.words)
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.CHAT_NOT_FOUND.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){
@@ -119,6 +120,7 @@ class ForbiddenWordsActivity : AppCompatActivity(), AddForbiddenWordDialog.Forbi
                     }
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){
@@ -154,6 +156,7 @@ class ForbiddenWordsActivity : AppCompatActivity(), AddForbiddenWordDialog.Forbi
                     }
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
                     ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){
