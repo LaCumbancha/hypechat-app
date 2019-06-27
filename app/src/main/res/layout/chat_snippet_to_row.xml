@@ -25,7 +25,7 @@
             android:inputType="textMultiLine"
             android:textColor="@android:color/black"
             android:id="@+id/chatSnippetToTextView"
-            android:fontFamily="@font/snippet"
+            android:fontFamily="@font/consolas"
             android:backgroundTint="@android:color/darker_gray"
             style="@style/ChatLogToRowTextView"
             app:layout_constraintStart_toStartOf="parent"

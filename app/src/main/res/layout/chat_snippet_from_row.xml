@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
-            android:fontFamily="@font/snippet"
+            android:fontFamily="@font/consolas"
             android:id="@+id/chatSnippetFromTextView"
             style="@style/ChatLogFromRowTextView"
             android:backgroundTint="@android:color/darker_gray"
