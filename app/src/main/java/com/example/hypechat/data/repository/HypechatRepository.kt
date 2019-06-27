@@ -30,7 +30,7 @@ class HypechatRepository {
     private var httpClient: OkHttpClient? = null
     private var retrofit: Retrofit? = null
     private var client : ApiClient? = null
-    private val errors = listOf(400, 401, 403, 404, 500)
+    private val errors = listOf(400, 401, 403, 404, 408, 500)
 
     init {
         httpClient = OkHttpClient.Builder()

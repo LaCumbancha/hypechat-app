@@ -4,5 +4,6 @@ enum class UserRole(val role: String) {
 
     MEMBER("MEMBER"),
     MODERATOR("MODERATOR"),
-    CREATOR("CREATOR")
+    CREATOR("CREATOR"),
+    ADMIN("ADMIN")
 }

@@ -18,9 +18,16 @@ class TeamRow (val team: TeamResponse): Item<ViewHolder>() {
         viewHolder.itemView.teamRowLocationTextView.text = team.location
 
         viewHolder.itemView.teamNameRowTextView.text = team.team_name
-        Picasso.get().load(team.picture)
-            .placeholder(R.drawable.placeholder)
-            .error(R.drawable.profile_placeholder)
-            .into(viewHolder.itemView.teamRowImageView)
+
+        if (team.picture != null){
+            Picasso.get().load(team.picture)
+                .placeholder(R.drawable.placeholder)
+                .error(R.mipmap.ic_launcher_hypechat)
+                .into(viewHolder.itemView.teamRowImageView)
+        } else {
+            Picasso.get().load(R.mipmap.ic_launcher_hypechat)
+                .placeholder(R.drawable.placeholder)
+                .into(viewHolder.itemView.teamRowImageView)
+        }
     }
 }

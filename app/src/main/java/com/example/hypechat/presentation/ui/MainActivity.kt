@@ -13,6 +13,7 @@ import com.example.hypechat.R
 import com.example.hypechat.data.local.AppPreferences
 import com.example.hypechat.data.repository.HypechatRepository
 import com.example.hypechat.data.rest.utils.ServerStatus
+import com.example.hypechat.data.rest.utils.UserRole
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -139,10 +140,14 @@ class MainActivity : AppCompatActivity() {
 
                     when (it.status){
                         ServerStatus.ACTIVE.status -> {
-                            firebaseLogin(email, password)
-                            navigateToLatestMessages()
-                            AppPreferences.setUserId(it.user.id)
-                            AppPreferences.setUserName(it.user.username)
+                            if (it.user.role != UserRole.ADMIN.role){
+                                firebaseLogin(email, password)
+                                navigateToLatestMessages()
+                                AppPreferences.setUserId(it.user.id)
+                                AppPreferences.setUserName(it.user.username)
+                            } else {
+                                errorOccurred(it.message)
+                            }
                         }
                         ServerStatus.WRONG_CREDENTIALS.status -> loginFailed(it.message)
                         else -> errorOccurred(it.message)

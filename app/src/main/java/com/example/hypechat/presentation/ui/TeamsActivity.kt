@@ -72,7 +72,8 @@ class TeamsActivity : AppCompatActivity(), JoinTeamDialog.TeamTokenListener {
 
                 when (it.status){
                     ServerStatus.ADDED.status -> {
-                        Toast.makeText(this, "Joined team successfully", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
+                        Log.w(TAG, "joinTeam:success")
                         initializeTeams()
                     }
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
