@@ -218,8 +218,7 @@ class ChatLogActivity : AppCompatActivity() {
                 when (it.status){
                     ServerStatus.LIST.status -> initializeChat(it.messages, it.chat_type)
                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
-                    ServerStatus.CHAT_NOT_FOUND.status -> loadingChatFailed(it.message)
-                    else -> errorOccurred(it.message)
+                    ServerStatus.CHAT_NOT_FOUND.status -> {chatLogProgressBar.visibility = View.INVISIBLE}
                 }
             }
             if (response == null){

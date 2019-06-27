@@ -143,5 +143,10 @@
     <string name="forbidden_words_placeholder">Word</string>
     <!--Forbidden Words -->
 
+    <!--User Profile -->
+    <string name="user_profile_view_teams">VIEW TEAMS</string>
+    <string name="user_profile_view_teams_team_header">Teams</string>
+    <string name="user_profile_view_teams_message_header">Sent messages</string>
+    <!--User Profile -->
 
 </resources>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".presentation.ui.ViewUserTeamsActivity">
+
+    <androidx.appcompat.widget.Toolbar
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:theme="@style/CustomToolbar"
+            android:background="@drawable/gradient_background"
+            android:minHeight="?attr/actionBarSize"
+            android:id="@+id/toolbarViewUserTeams"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:elevation="4dp"/>
+    <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/viewUserTeamsRecyclerView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/teamsHeaderTextView"/>
+    <TextView
+            android:text="@string/user_profile_view_teams_team_header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/teamsHeaderTextView"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            app:layout_constraintTop_toBottomOf="@+id/toolbarViewUserTeams"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/messageHeaderTextView"
+            app:layout_constraintEnd_toStartOf="@+id/messageHeaderTextView"/>
+    <TextView
+            android:text="@string/user_profile_view_teams_message_header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/messageHeaderTextView"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            app:layout_constraintTop_toBottomOf="@+id/toolbarViewUserTeams"
+            app:layout_constraintStart_toEndOf="@id/teamsHeaderTextView"
+            app:layout_constraintBottom_toBottomOf="@id/teamsHeaderTextView"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

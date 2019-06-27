@@ -125,6 +125,17 @@
                             android:hint="@string/my_profile_role"
                             android:inputType="text"/>
                 </com.google.android.material.textfield.TextInputLayout>
+                <Button
+                        android:text="@string/user_profile_view_teams"
+                        style="@style/AppTheme.RoundedCornerMaterialButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/myProfileCancelButton"
+                        android:onClick="viewTeams"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginTop="20dp"
+                        app:layout_constraintTop_toBottomOf="@+id/roleTextInputLayout"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
     </androidx.core.widget.NestedScrollView>

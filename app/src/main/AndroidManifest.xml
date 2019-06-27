@@ -34,9 +34,14 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".presentation.ui.ForbiddenWordsActivity"
-                  android:parentActivityName=".presentation.ui.EditTeamActivity"
+        <activity android:name=".presentation.ui.ViewUserTeamsActivity"
+                  android:parentActivityName=".presentation.ui.UserProfileActivity"
                   android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".presentation.ui.ForbiddenWordsActivity"
+                android:parentActivityName=".presentation.ui.EditTeamActivity"
+                android:screenOrientation="portrait">
         </activity>
         <activity
                 android:name=".presentation.ui.RemoveTeamUserActivity"

@@ -25,6 +25,7 @@ class UserProfileActivity : AppCompatActivity() {
 
     private val TAG = "User Profile"
     private var userId: Int? = null
+    private var userResponse: UserResponse? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +64,7 @@ class UserProfileActivity : AppCompatActivity() {
 
     private fun setUserData(user: UserResponse){
 
+        userResponse = user
         userProfileCardView.visibility = View.VISIBLE
         userProfileProgressBar.visibility = View.INVISIBLE
         firstNameTextInputLayout.editText!!.setText(user.first_name)
@@ -73,6 +75,15 @@ class UserProfileActivity : AppCompatActivity() {
             .placeholder(R.drawable.placeholder)
             .error(R.drawable.profile_placeholder)
             .into(userProfileImageView)
+    }
+
+    fun viewTeams(view: View){
+
+        val intent = Intent(view.context, ViewUserTeamsActivity::class.java)
+        userResponse?.let {
+            intent.putExtra(ViewUserTeamsActivity.USER, it)
+        }
+        startActivity(intent)
     }
 
     override fun onBackPressed() {
