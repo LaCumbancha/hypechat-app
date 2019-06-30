@@ -10,7 +10,7 @@
     <androidx.appcompat.widget.Toolbar
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:theme="@style/CustomToolbar"
+            android:theme="@style/ToolbarWithItems"
             android:background="@drawable/gradient_background"
             android:minHeight="?attr/actionBarSize"
             android:id="@+id/toolbarChatLog"
@@ -18,26 +18,39 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:elevation="4dp"/>
-    <EditText
+    <com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
             android:layout_width="0dp"
-            android:inputType="textPersonName"
+            android:inputType="textMultiLine"
             android:hint="@string/type_a_message_hint"
             android:ems="10"
             style="@style/ChatLogEditText"
             android:id="@+id/chatLogEditText"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="4dp"
+            app:layout_constraintStart_toEndOf="@+id/chatLogAddButton"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintEnd_toStartOf="@+id/chatLogSendButton"
+            android:layout_height="50dp"
+            app:socialFlags="hashtag|mention"
+            app:hashtagColor="@android:color/holo_blue_dark"
+            app:mentionColor="@android:color/holo_red_dark"/>
+    <Button
+            android:id="@+id/chatLogAddButton"
+            style="@style/ChatLogAddButton"
+            android:layout_marginBottom="4dp"
+            android:onClick="openAdd"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toStartOf="@+id/chatLogSendButton" android:layout_height="50dp"/>
+            android:layout_marginStart="4dp"/>
     <Button
             android:id="@+id/chatLogSendButton"
             style="@style/ChatLogSendButton"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="8dp" android:onClick="sendChatMessage"/>
+            android:layout_marginEnd="4dp"
+            android:onClick="sendChatMessage"/>
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/chatLogRecyclerView"
             android:layout_width="0dp"
@@ -54,5 +67,37 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:fabCustomSize="40dp"
+            android:clickable="true"
+            android:scaleType="center"
+            android:layout_margin="16dp"
+            android:backgroundTint="@android:color/black"
+            app:srcCompat="@drawable/ic_image_white_24dp"
+            android:visibility="invisible"
+            android:onClick="pickImageFromDevice"
+            android:id="@+id/fabImageChatLog"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/chatLogAddButton"
+            app:layout_constraintStart_toStartOf="@+id/chatLogAddButton"
+            app:layout_constraintEnd_toEndOf="@+id/chatLogAddButton"/>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:fabCustomSize="40dp"
+            android:clickable="true"
+            android:scaleType="center"
+            android:layout_margin="16dp"
+            android:backgroundTint="@android:color/black"
+            app:srcCompat="@drawable/ic_file_white_24dp"
+            android:visibility="invisible"
+            android:onClick="pickFileFromDevice"
+            android:id="@+id/fabFileChatLog"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/fabImageChatLog"
+            app:layout_constraintStart_toStartOf="@+id/chatLogAddButton"
+            app:layout_constraintEnd_toEndOf="@+id/chatLogAddButton"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

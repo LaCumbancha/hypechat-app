@@ -8,10 +8,12 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.example.hypechat.R
 import com.example.hypechat.data.local.AppPreferences
 import com.example.hypechat.data.repository.HypechatRepository
 import com.example.hypechat.data.rest.utils.ServerStatus
+import com.example.hypechat.data.rest.utils.UserRole
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -41,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun loginWithFacebook(view: View){
+        facebookLoadingScreen()
         loginFacebookButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(loginResult: LoginResult) {
                 Log.d(TAG, "facebook:onSuccess:$loginResult")
@@ -50,11 +53,13 @@ class MainActivity : AppCompatActivity() {
             override fun onCancel() {
                 Log.d(TAG, "facebook:onCancel")
                 Toast.makeText(this@MainActivity, "facebook:onCancel", Toast.LENGTH_SHORT).show()
+                showScreen()
             }
 
             override fun onError(error: FacebookException) {
                 Log.d(TAG, "facebook:onError", error)
                 Toast.makeText(this@MainActivity, "facebook:onError: $error", Toast.LENGTH_SHORT).show()
+                showScreen()
             }
         })
     }
@@ -67,10 +72,9 @@ class MainActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     Log.d(TAG, "signInWithCredential:success")
-                    //saveUser(auth.currentUser)
-                    val intent = Intent(this, LatestMessagesActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
+                    val currentToken = AccessToken.getCurrentAccessToken().token
+                    AppPreferences.setFacebookToken(currentToken)
+                    facebookLogin(currentToken)
                 } else {
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
                     val message = task.exception.toString()
@@ -78,6 +82,29 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Authentication failed: ${message.substring(index + 1)}", Toast.LENGTH_SHORT).show()
                 }
             }
+    }
+
+    private fun facebookLogin(token: String){
+
+        HypechatRepository().facebookLoginUser(token){ response ->
+
+            response?.let {
+
+                when (it.status){
+                    ServerStatus.ACTIVE.status -> {
+                        navigateToLatestMessages()
+                        AppPreferences.setUserId(it.user.id)
+                        AppPreferences.setUserName(it.user.first_name!!)
+                    }
+                    ServerStatus.WRONG_CREDENTIALS.status -> loginFailed(it.message)
+                    else -> errorOccurred(it.message)
+                }
+            }
+            if (response == null){
+                Log.w(TAG, "facebookLoginUser:failure")
+                errorOccurred(null)
+            }
+        }
     }
 
     private fun validateField(field: TextInputLayout): Boolean {
@@ -93,6 +120,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun recoverPassword(view: View){
+
+        val intent = Intent(this, RecoverPasswordActivity::class.java)
+        startActivity(intent)
+    }
+
     fun loginUser(view: View){
 
         if (validateField(emailTextInputLayout) && validateField(passwordTextInputLayout)){
@@ -106,16 +139,38 @@ class MainActivity : AppCompatActivity() {
                 response?.let {
 
                     when (it.status){
-                        ServerStatus.ACTIVE.status -> navigateToLatestMessages()
+                        ServerStatus.ACTIVE.status -> {
+                            if (it.user.role != UserRole.ADMIN.role){
+                                firebaseLogin(email, password)
+                                navigateToLatestMessages()
+                                AppPreferences.setUserId(it.user.id)
+                                AppPreferences.setUserName(it.user.username)
+                            } else {
+                                errorOccurred(it.message)
+                            }
+                        }
                         ServerStatus.WRONG_CREDENTIALS.status -> loginFailed(it.message)
+                        else -> errorOccurred(it.message)
                     }
                 }
                 if (response == null){
                     Log.w(TAG, "loginUser:failure")
-                    errorOccurred()
+                    errorOccurred(null)
                 }
             }
         }
+    }
+
+    private fun firebaseLogin(email: String, password: String){
+
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "Firebase:signInWithEmail:success")
+                } else {
+                    Log.w(TAG, "signInWithEmail:failure", task.exception)
+                }
+            }
     }
 
     private fun navigateToLatestMessages(){
@@ -155,7 +210,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun loadingScreen(view: View){
+    private fun facebookLoadingScreen(){
         mainProgressBar.visibility = View.VISIBLE
         emailTextInputLayout.visibility = View.INVISIBLE
         passwordTextInputLayout.visibility = View.INVISIBLE
@@ -164,6 +219,10 @@ class MainActivity : AppCompatActivity() {
         troubleLoggingTextView.visibility = View.INVISIBLE
         notYetRegisteredTextView.visibility = View.INVISIBLE
         registerButton.visibility = View.INVISIBLE
+    }
+
+    private fun loadingScreen(view: View){
+        facebookLoadingScreen()
         view.hideKeyboard()
     }
 
@@ -184,19 +243,25 @@ class MainActivity : AppCompatActivity() {
         inm.hideSoftInputFromWindow(windowToken, 0)
     }
 
-    private fun errorOccurred(){
+    private fun errorOccurred(error: String?){
 
         showScreen()
 
-        val builder = android.app.AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this)
         builder.setTitle("Error")
-        builder.setMessage("There was a problem during the login process. Please, try again.")
+        var msg = "There was a problem during the process. Please, try again."
+        error?.let {
+            msg = it
+        }
+        builder.setMessage(msg)
 
         builder.setPositiveButton("Ok"){ dialog, which ->
             dialog.dismiss()
         }
 
         val dialog = builder.create()
-        dialog.show()
+        if(!this.isFinishing){
+            dialog.show()
+        }
     }
 }

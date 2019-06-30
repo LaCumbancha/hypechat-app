@@ -1,10 +1,7 @@
 package com.example.hypechat.data.repository
 
 import android.util.Log
-import com.example.hypechat.data.model.rest.request.LoginRequest
-import com.example.hypechat.data.model.rest.request.MessageRequest
-import com.example.hypechat.data.model.rest.request.RegisterRequest
-import com.example.hypechat.data.model.rest.request.TeamCreationRequest
+import com.example.hypechat.data.model.rest.request.*
 import com.example.hypechat.data.model.rest.response.*
 import com.example.hypechat.data.rest.ApiClient
 import com.example.hypechat.data.rest.utils.AddTokenInterceptor
@@ -16,6 +13,13 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import android.widget.Toast
+import com.facebook.FacebookSdk.getApplicationContext
+import android.R.string
+import com.google.gson.GsonBuilder
+import com.google.gson.Gson
+import java.io.IOException
+
 
 class HypechatRepository {
 
@@ -26,6 +30,7 @@ class HypechatRepository {
     private var httpClient: OkHttpClient? = null
     private var retrofit: Retrofit? = null
     private var client : ApiClient? = null
+    private val errors = listOf(400, 401, 403, 404, 408, 500)
 
     init {
         httpClient = OkHttpClient.Builder()
@@ -49,18 +54,60 @@ class HypechatRepository {
         return retrofit?.create(serviceClass)
     }
 
-    fun loginUser(email: String, password: String, onSuccess: (user: ApiResponse?) -> Unit) {
+    //USERS
+
+    fun loginUser(email: String, password: String, onSuccess: (user: LoginResponse?) -> Unit) {
 
         val body = LoginRequest(email, password)
         val call = client?.loginUser(body)
 
-        call?.enqueue(object : Callback<ApiResponse> {
-            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+        call?.enqueue(object : Callback<LoginResponse> {
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 Log.w("HypechatRepository: ", t)
             }
 
-            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                onSuccess(response.body())
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: LoginResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), LoginResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun facebookLoginUser(token: String, onSuccess: (user: LoginResponse?) -> Unit) {
+
+        val body = FacebookLoginRequest(token)
+        val call = client?.facebookLoginUser(body)
+
+        call?.enqueue(object : Callback<LoginResponse> {
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: LoginResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), LoginResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -84,7 +131,75 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: RegisterResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), RegisterResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun recoverPassword(email: String, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val body = RecoverPasswordRequest(email)
+        val call = client?.recoverPassword(body)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun regeneratePassword(email: String, token: String, onSuccess: (user: LoginResponse?) -> Unit) {
+
+        val body = RegeneratePasswordRequest(email, token)
+        val call = client?.regeneratePassword(body)
+
+        call?.enqueue(object : Callback<LoginResponse> {
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: LoginResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), LoginResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -99,14 +214,26 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
 
-    fun getUserProfile(onSuccess: (user: ProfileResponse?) -> Unit) {
+    fun getMyProfile(onSuccess: (user: ProfileResponse?) -> Unit) {
 
-        val call = client?.getUserProfile()
+        val call = client?.getMyProfile()
 
         call?.enqueue(object : Callback<ProfileResponse> {
             override fun onFailure(call: Call<ProfileResponse>, t: Throwable) {
@@ -114,7 +241,103 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ProfileResponse>, response: Response<ProfileResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ProfileResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ProfileResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun updateMyProfile(username:String, email: String, firstName:String?,
+                     lastName: String?, profilePic: String? , onSuccess: (user: RegisterResponse?) -> Unit) {
+
+        val body = UpdateProfileRequest(username, email, firstName, lastName, profilePic)
+        val call = client?.updateMyProfile(body)
+
+        call?.enqueue(object : Callback<RegisterResponse> {
+            override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: RegisterResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), RegisterResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun updatePassword(password: String, onSuccess: (user: RegisterResponse?) -> Unit) {
+
+        val body = UpdatePasswordRequest(password)
+        val call = client?.updatePassword(body)
+
+        call?.enqueue(object : Callback<RegisterResponse> {
+            override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: RegisterResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), RegisterResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun getUserProfile(teamId: Int, userId: Int, onSuccess: (user: ProfileResponse?) -> Unit) {
+
+        val call = client?.getUserProfile(teamId, userId)
+
+        call?.enqueue(object : Callback<ProfileResponse> {
+            override fun onFailure(call: Call<ProfileResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ProfileResponse>, response: Response<ProfileResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ProfileResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ProfileResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -129,7 +352,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<UsersResponse>, response: Response<UsersResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: UsersResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), UsersResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -144,10 +379,24 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<UsersResponse>, response: Response<UsersResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: UsersResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), UsersResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
+
+    //MESSAGES
 
     fun getMessagesFromChat(teamId: Int, fromId: Int, onSuccess: (user: MessagesResponse?) -> Unit) {
 
@@ -159,14 +408,26 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<MessagesResponse>, response: Response<MessagesResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: MessagesResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), MessagesResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
 
-    fun sendMessage(toId: Int, message: String, teamId: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+    fun sendMessage(toId: Int, message: String, type: String, teamId: Int, mentions: List<Int>, onSuccess: (user: ApiResponse?) -> Unit) {
 
-        val body = MessageRequest(toId, teamId, message)
+        val body = MessageRequest(toId, teamId, message, type, mentions)
         val call = client?.sendMessage(body)
 
         call?.enqueue(object : Callback<ApiResponse> {
@@ -175,7 +436,19 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -190,10 +463,24 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<ChatsResponse>, response: Response<ChatsResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ChatsResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ChatsResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
+
+    //TEAMS
 
     fun getTeams(onSuccess: (teams: TeamsResponse?) -> Unit) {
 
@@ -205,7 +492,73 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<TeamsResponse>, response: Response<TeamsResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: TeamsResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), TeamsResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun getTeamBots(teamId: Int, onSuccess: (teams: TeamBotsResponse?) -> Unit) {
+
+        val call = client?.getTeamBots(teamId)
+
+        call?.enqueue(object : Callback<TeamBotsResponse> {
+            override fun onFailure(call: Call<TeamBotsResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<TeamBotsResponse>, response: Response<TeamBotsResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: TeamBotsResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), TeamBotsResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun getTeamChannels(teamId: Int, onSuccess: (teams: ChannelsResponse?) -> Unit) {
+
+        val call = client?.getTeamChannels(teamId)
+
+        call?.enqueue(object : Callback<ChannelsResponse> {
+            override fun onFailure(call: Call<ChannelsResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ChannelsResponse>, response: Response<ChannelsResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ChannelsResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ChannelsResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }
@@ -222,7 +575,491 @@ class HypechatRepository {
             }
 
             override fun onResponse(call: Call<TeamCreationResponse>, response: Response<TeamCreationResponse>) {
-                onSuccess(response.body())
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: TeamCreationResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), TeamCreationResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun leaveTeam(teamId: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val call = client?.leaveTeam(teamId)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun deleteTeam(teamId: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val call = client?.deleteTeam(teamId)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun removeUserFromTeam(teamId: Int, userId: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val call = client?.removeUserFromTeam(teamId, userId)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun deleteForbiddenWord(teamId: Int, wordId: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val call = client?.deleteForbiddenWord(teamId, wordId)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun inviteUserToTeam(teamId: Int, email: String, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val body = InvitationRequest(teamId, email)
+        val call = client?.inviteUserToTeam(body)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun joinTeam(token: String, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val body = JoinTeamRequest(token)
+        val call = client?.joinTeam(body)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun updateTeam(teamId: Int, teamName: String, location: String?, description: String?, welcomeMessage: String?,
+                   profilePicUrl: String?, onSuccess: (user: TeamCreationResponse?) -> Unit) {
+
+        val body = TeamCreationRequest(teamName, location, description, welcomeMessage, profilePicUrl)
+        val call = client?.updateTeam(teamId, body)
+
+        call?.enqueue(object : Callback<TeamCreationResponse> {
+            override fun onFailure(call: Call<TeamCreationResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<TeamCreationResponse>, response: Response<TeamCreationResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: TeamCreationResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), TeamCreationResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun addForbiddenWord(teamId: Int, word: String, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val body = ForbiddenWordsRequest(teamId, word)
+        val call = client?.addForbiddenWord(body)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun getForbiddenWords(teamId: Int, onSuccess: (user: ForbiddenWordResponse?) -> Unit) {
+
+        val call = client?.getForbiddenWords(teamId)
+
+        call?.enqueue(object : Callback<ForbiddenWordResponse> {
+            override fun onFailure(call: Call<ForbiddenWordResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ForbiddenWordResponse>, response: Response<ForbiddenWordResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ForbiddenWordResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ForbiddenWordResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    //CHANNELS
+
+    fun createChannel(teamId: Int, name: String, visibility: String, description: String?, welcomeMessage: String?,
+                      onSuccess: (user: ChannelCreationResponse?) -> Unit) {
+
+        val body = ChannelCreationRequest(teamId, name, visibility, description, welcomeMessage)
+        val call = client?.createChannel(body)
+
+        call?.enqueue(object : Callback<ChannelCreationResponse> {
+            override fun onFailure(call: Call<ChannelCreationResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ChannelCreationResponse>, response: Response<ChannelCreationResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ChannelCreationResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ChannelCreationResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun updateChannel(teamId: Int, channel_id: Int, name: String, visibility: String, description: String?, welcomeMessage: String?,
+                      onSuccess: (user: ChannelCreationResponse?) -> Unit) {
+
+        val body = UpdateChannelRequest(name, visibility, description, welcomeMessage)
+        val call = client?.updateChannel(teamId, channel_id, body)
+
+        call?.enqueue(object : Callback<ChannelCreationResponse> {
+            override fun onFailure(call: Call<ChannelCreationResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ChannelCreationResponse>, response: Response<ChannelCreationResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ChannelCreationResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ChannelCreationResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun addUserToChannel(teamId: Int, user_invited_id: Int, channel_id: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val body = UserChannelRequest(teamId, user_invited_id, channel_id)
+        val call = client?.addUserToChannel(body)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun joinChannel(teamId: Int, channel_id: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val body = JoinChannelRequest(teamId, channel_id)
+        val call = client?.joinChannel(body)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun getChannelUsers(teamId: Int, channel_id: Int, onSuccess: (user: UsersResponse?) -> Unit) {
+
+        val call = client?.getChannelUsers(teamId, channel_id)
+
+        call?.enqueue(object : Callback<UsersResponse> {
+            override fun onFailure(call: Call<UsersResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<UsersResponse>, response: Response<UsersResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: UsersResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), UsersResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun deleteUserFromChannel(teamId: Int, user_id: Int, channel_id: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val call = client?.deleteUserFromChannel(teamId, channel_id, user_id)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun leaveChannel(teamId: Int, channel_id: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val call = client?.leaveChannel(teamId, channel_id)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
+            }
+        })
+    }
+
+    fun deleteChannel(teamId: Int, channel_id: Int, onSuccess: (user: ApiResponse?) -> Unit) {
+
+        val call = client?.deleteChannel(teamId, channel_id)
+
+        call?.enqueue(object : Callback<ApiResponse> {
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.w("HypechatRepository: ", t)
+            }
+
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                if (response.code() in errors) {
+                    val gson = GsonBuilder().create()
+                    val mError: ApiResponse
+                    try {
+                        mError = gson.fromJson(response.errorBody()?.string(), ApiResponse::class.java)
+                        onSuccess(mError)
+                    } catch (e: IOException) {
+                        // handle failure to read error
+                    }
+
+                } else {
+                    onSuccess(response.body())
+                }
             }
         })
     }

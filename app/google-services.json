@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "121214121105-5pkc46hjcn3can84bgbtdcg40sf8u940.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hypechat",
+            "certificate_hash": "48b9fecc6bb43d218b2dea9dbdf054354efa30b8"
+          }
+        },
+        {
           "client_id": "121214121105-hv4eqsngr2gs1pcu5j3cmko7e3nvfh0o.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -25,15 +33,13 @@
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
+          "other_platform_oauth_client": [
+            {
+              "client_id": "121214121105-hv4eqsngr2gs1pcu5j3cmko7e3nvfh0o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

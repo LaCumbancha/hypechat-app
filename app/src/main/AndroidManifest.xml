@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:dist="http://schemas.android.com/apk/distribution"
+          xmlns:tools="http://schemas.android.com/tools"
           package="com.example.hypechat">
 
     <dist:module dist:instant="true"/>
@@ -12,9 +13,8 @@
     <application
             android:name=".presentation.utils.MyApplication"
             android:allowBackup="true"
-            android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
-            android:roundIcon="@mipmap/ic_launcher_round"
+            android:roundIcon="@mipmap/ic_launcher_hypechat"
             android:supportsRtl="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
@@ -28,9 +28,60 @@
                     android:resource="@xml/filepaths"/>
         </provider>
 
-        <activity android:name=".presentation.ui.MyProfileActivity"
-                  android:parentActivityName=".presentation.ui.LatestMessagesActivity"
+        <service android:name=".data.service.MessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
+        <activity android:name=".presentation.ui.ViewUserTeamsActivity"
+                  android:parentActivityName=".presentation.ui.UserProfileActivity"
                   android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".presentation.ui.ForbiddenWordsActivity"
+                android:parentActivityName=".presentation.ui.EditTeamActivity"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".presentation.ui.RemoveTeamUserActivity"
+                android:parentActivityName=".presentation.ui.EditTeamActivity"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".presentation.ui.ViewChannelUsersActivity"
+                android:parentActivityName=".presentation.ui.EditChannelActivity"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".presentation.ui.AddUserToChannelActivity"
+                android:parentActivityName=".presentation.ui.EditChannelActivity"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".presentation.ui.EditChannelActivity"
+                android:parentActivityName=".presentation.ui.LatestMessagesActivity"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".presentation.ui.EditTeamActivity"
+                android:parentActivityName=".presentation.ui.TeamsActivity"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".presentation.ui.NewChannelActivity"
+                android:parentActivityName=".presentation.ui.LatestMessagesActivity"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".presentation.ui.UserProfileActivity"
+                android:parentActivityName=".presentation.ui.ChatLogActivity"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".presentation.ui.MyProfileActivity"
+                android:parentActivityName=".presentation.ui.LatestMessagesActivity"
+                android:screenOrientation="portrait">
         </activity>
         <activity
                 android:name=".presentation.ui.NewTeamActivity"
@@ -45,6 +96,16 @@
         <activity
                 android:name=".presentation.ui.ChatLogActivity"
                 android:parentActivityName=".presentation.ui.LatestMessagesActivity"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".presentation.ui.UpdatePasswordActivity"
+                android:parentActivityName=".presentation.ui.RecoverPasswordActivity"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".presentation.ui.RecoverPasswordActivity"
+                android:parentActivityName=".presentation.ui.MainActivity"
                 android:screenOrientation="portrait">
         </activity>
         <activity
@@ -78,7 +139,9 @@
         <activity
                 android:name="com.facebook.FacebookActivity"
                 android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-                android:label="@string/app_name"/>
+                android:label="@string/app_name"
+                android:theme="@style/FullyTranslucent"
+                tools:replace="android:theme"/>
         <activity
                 android:name="com.facebook.CustomTabActivity"
                 android:exported="true">

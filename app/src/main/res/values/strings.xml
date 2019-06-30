@@ -33,7 +33,7 @@
     <!--Registration-->
 
     <!--Latest Messages-->
-    <string name="latest_messages_toolbar">Active Chats</string>
+    <string name="latest_messages_toolbar">Chats &amp; Channels</string>
     <string name="my_teams">Teams</string>
     <string name="my_profile">My profile</string>
     <string name="logout">Logout</string>
@@ -49,11 +49,15 @@
     <!--Chat Log-->
     <string name="type_a_message_hint">Type a message</string>
     <string name="this_is_a_message">This is a message</string>
+    <string name="view_profile">View user profile</string>
     <!--Chat Log-->
 
     <!--Teams-->
     <string name="teams_toolbar">Teams</string>
     <string name="no_teams">No teams found</string>
+    <string name="invite_token">Invite token</string>
+    <string name="new_team_fab_button">New Team</string>
+    <string name="join_team_fab_button">Join Team</string>
     <!--Teams-->
 
     <!--New Team-->
@@ -66,6 +70,36 @@
     <string name="new_team_location_placeholder">Location</string>
     <!--New Team-->
 
+    <!--Edit Team-->
+    <string name="edit_team_switch_button">SWITCH TO THIS TEAM</string>
+    <string name="edit_team_leave_button">LEAVE TEAM</string>
+    <string name="edit_team_forbidden_words_button">FORBIDDEN WORDS</string>
+    <string name="edit_team_invite_button">INVITE USER</string>
+    <string name="edit_team_delete_button">DELETE TEAM</string>
+    <string name="edit_team_edit_button">EDIT TEAM</string>
+    <string name="edit_team_save_button">SAVE CHANGES</string>
+    <string name="edit_team_cancel_button">CANCEL</string>
+    <!--Edit Team-->
+
+    <!--Edit Channel-->
+    <string name="edit_channel_invite_button">ADD USER</string>
+    <string name="edit_channel_join_button">JOIN CHANNEL</string>
+    <string name="edit_channel_edit_button">EDIT CHANNEL</string>
+    <string name="edit_channel_view_users_button">VIEW USERS</string>
+    <string name="edit_channel_delete_button">DELETE CHANNEL</string>
+    <string name="edit_channel_remove_user_button">REMOVE USER</string>
+    <string name="edit_channel_delete_user_button">REMOVE USER</string>
+    <string name="edit_channel_leave_button">LEAVE CHANNEL</string>
+    <!--Edit Channel-->
+
+    <!--Add User To Channel-->
+    <string name="add_user_to_channel_toolbar">Add User</string>
+    <!--Add User To Channel-->
+
+    <!--View Channel Users-->
+    <string name="view_channel_user_toolbar">Channel Users</string>
+    <!--View Channel Users-->
+
     <!--My Profile-->
     <string name="my_profile_toolbar">My Profile</string>
     <string name="my_profile_edit_button">EDIT PROFILE</string>
@@ -75,7 +109,45 @@
     <string name="my_profile_last_name">Description</string>
     <string name="my_profile_username">Welcome Message</string>
     <string name="my_profile_email">Location</string>
+    <string name="my_profile_role">Role</string>
     <!--My Profile-->
 
+    <!--New Channel-->
+    <string name="new_channel_toolbar">New Channel</string>
+    <string name="create_channel_button">CREATE CHANNEL</string>
+    <string name="new_channel_name_placeholder">Channel Name</string>
+    <string name="new_channel_description_placeholder">Description</string>
+    <string name="new_channel_welcome_message_placeholder">Welcome Message</string>
+    <string name="new_channel_visibility_placeholder">Visibility</string>
+    <!--New Channel-->
+
+    <!--Remove Team User-->
+    <string name="remove_team_user_toolbar">Remove User</string>
+    <!--Remove Team User-->
+
+    <!--Recover Password-->
+    <string name="recover_password_toolbar">Recover Password</string>
+    <string name="get_recovery_token_button">GET RECOVERY TOKEN</string>
+    <string name="recovery_token">Recovery token</string>
+    <string name="enter_token_button">ENTER TOKEN</string>
+    <!--Recover Password-->
+
+    <!--Update Password-->
+    <string name="update_password_toolbar">Update Password</string>
+    <string name="update_password_button">UPDATE PASSWORD</string>
+    <string name="new_password_placeholder">New Password</string>
+    <!--Update Password-->
+
+    <!--Forbidden Words -->
+    <string name="forbidden_words_toolbar">Forbidden Words</string>
+    <string name="forbidden_words_placeholder">Word</string>
+    <!--Forbidden Words -->
+
+    <!--User Profile -->
+    <string name="user_profile_view_teams">VIEW TEAMS</string>
+    <string name="user_profile_view_teams_team_header">Team</string>
+    <string name="user_profile_view_teams_role_header">Role</string>
+    <string name="user_profile_view_teams_message_header">Sent messages</string>
+    <!--User Profile -->
 
 </resources>

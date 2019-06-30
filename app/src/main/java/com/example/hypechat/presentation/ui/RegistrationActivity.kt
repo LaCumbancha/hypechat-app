@@ -142,8 +142,9 @@ class RegistrationActivity : AppCompatActivity() {
             response?.let {
 
                 when (it.status){
-                    ServerStatus.ACTIVE.status -> navigateToLatestMessages()
+                    ServerStatus.ACTIVE.status -> navigateToLatestMessages(it.user.id)
                     ServerStatus.ALREADY_REGISTERED.status -> registrationFailed(it.message)
+                    else -> errorOccurred(it.message)
                 }
             }
             if (response == null){
@@ -153,8 +154,9 @@ class RegistrationActivity : AppCompatActivity() {
         }
     }
 
-    private fun navigateToLatestMessages(){
+    private fun navigateToLatestMessages(userId: Int){
 
+        AppPreferences.setUserId(userId)
         Log.d(TAG, "registerUser:success")
         val intent = Intent(this, LatestMessagesActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)

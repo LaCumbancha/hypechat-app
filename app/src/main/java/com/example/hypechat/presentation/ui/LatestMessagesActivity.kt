@@ -3,6 +3,7 @@ package com.example.hypechat.presentation.ui
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -10,23 +11,28 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hypechat.R
 import com.example.hypechat.data.local.AppPreferences
+import com.example.hypechat.data.model.ChannelRow
+import com.example.hypechat.data.model.ExpandableHeaderItem
 import com.example.hypechat.data.model.LatestMessageRow
+import com.example.hypechat.data.model.rest.response.ChannelResponse
 import com.example.hypechat.data.model.rest.response.ChatResponse
 import com.example.hypechat.data.repository.HypechatRepository
 import com.example.hypechat.data.rest.utils.ServerStatus
+import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.xwray.groupie.ExpandableGroup
 import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.Section
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.activity_latest_messages.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-
-
 
 class LatestMessagesActivity : AppCompatActivity() {
 
@@ -38,12 +44,21 @@ class LatestMessagesActivity : AppCompatActivity() {
     private val db = FirebaseDatabase.getInstance()
     private val latestMessagesAdapter = GroupAdapter<ViewHolder>()
     private val latestMessagesList = mutableListOf<ChatResponse>()
+    private val channelList = mutableListOf<ChannelResponse>()
     private val TAG = "LatestMessages"
     private var fab_open: Animation? = null
     private var fab_close: Animation? = null
     private var fab_clock: Animation? = null
     private var fab_anticlock: Animation? = null
     private var isOpen = false
+    private var isListening = false
+    private val handler = Handler()
+    private val refresh = object : Runnable {
+        override fun run() {
+            getLatestMessages()
+            handler.postDelayed(this, 8000)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +78,7 @@ class LatestMessagesActivity : AppCompatActivity() {
         latestMessagesRecyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 
         verifyUserIsLoggedIn()
-        initializeLatestMessages()
+        getLatestMessages()
         setAdapterOnItemClickListener()
     }
 
@@ -75,35 +90,88 @@ class LatestMessagesActivity : AppCompatActivity() {
     }
 
     private fun verifyUserIsLoggedIn(){
+
         val auth = AppPreferences.getToken()
+        val teamId = AppPreferences.getTeamId()
+
         if (auth == null){
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
+        } else if (teamId == 0) {
+            verifyUserTeam()
         }
+    }
+
+    private fun verifyUserTeam(){
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Warning")
+        builder.setMessage("You currently have no team selected, please create or choose one.")
+
+        builder.setPositiveButton("Ok"){ dialog, which ->
+            dialog.dismiss()
+            val intent = Intent(this, TeamsActivity::class.java)
+            startActivity(intent)
+        }
+
+        val dialog = builder.create()
+        dialog.show()
     }
 
     private fun setAdapterOnItemClickListener(){
         latestMessagesAdapter.setOnItemClickListener { item, view ->
-            val intent = Intent(this, ChatLogActivity::class.java)
-            val row = item as LatestMessageRow
 
-            intent.putExtra(ChatLogActivity.USERNAME, row.chat.chatName)
-            intent.putExtra(ChatLogActivity.SENDERID, row.chat.senderId)
-            intent.putExtra(ChatLogActivity.RECEIVERID, row.chat.receiverId)
-            startActivity(intent)
+            when (item.layout) {
+                R.layout.latest_message_row -> {
+                    val intent = Intent(this, ChatLogActivity::class.java)
+                    val row = item as LatestMessageRow
+                    intent.putExtra(ChatLogActivity.USERNAME, row.chat.chatName)
+                    intent.putExtra(ChatLogActivity.SENDERID, row.chat.chat_id)
+                    startActivity(intent)
+                }
+                R.layout.channel_row -> {
+                    val intent = Intent(this, EditChannelActivity::class.java)
+                    val row = item as ChannelRow
+                    intent.putExtra(EditChannelActivity.CHANNEL, row.channel)
+                    startActivity(intent)
+                }
+                else -> throw IllegalArgumentException("Invalid view type")
+            }
         }
     }
 
     private fun refreshLatestMessagesRecyclerView(){
         latestMessagesAdapter.clear()
+        val chatList = mutableListOf<LatestMessageRow>()
         for (chat in latestMessagesList){
-            latestMessagesAdapter.add(LatestMessageRow(chat))
+            chatList.add(LatestMessageRow(chat))
+        }
+        ExpandableGroup(ExpandableHeaderItem("Chats"), true).apply {
+            add(Section(chatList))
+            latestMessagesAdapter.add(this)
+        }
+        val list = mutableListOf<ChannelRow>()
+        for (channel in channelList){
+            list.add(ChannelRow(channel))
+        }
+        ExpandableGroup(ExpandableHeaderItem("Channels"), true).apply {
+            add(Section(list))
+            latestMessagesAdapter.add(this)
+        }
+        latestMessagesProgressBar.visibility = View.INVISIBLE
+        if (!isListening){
+            handler.post(refresh)
+            isListening = true
         }
     }
 
-    private fun initializeLatestMessages(){
-        latestMessagesProgressBar.visibility = View.VISIBLE
+    private fun getLatestMessages(){
+
+        if (!isListening){
+            latestMessagesProgressBar.visibility = View.VISIBLE
+        }
+
         val teamId = AppPreferences.getTeamId()
 
         HypechatRepository().getChatsPreviews(teamId){response ->
@@ -112,62 +180,68 @@ class LatestMessagesActivity : AppCompatActivity() {
 
                  when (it.status){
                      ServerStatus.LIST.status -> initializeChats(it.chats)
-                     ServerStatus.WRONG_TOKEN.status -> tokenFailed(it.message)
-                     ServerStatus.CHAT_NOT_FOUND.status -> loadingChatsFailed(it.message)
+                     ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
+                     ServerStatus.CHAT_NOT_FOUND.status -> errorOccurred(it.message)
+                     ServerStatus.ERROR.status -> errorOccurred(it.message)
                  }
              }
             if (response == null){
-                Toast.makeText(this, "getChatsPreviews failed", Toast.LENGTH_SHORT).show()
                 Log.w(TAG, "getChatsPreviews:failure")
-                latestMessagesProgressBar.visibility = View.INVISIBLE
+                //errorOccurred(null)
             }
         }
     }
 
     private fun initializeChats(chats: List<ChatResponse>){
 
-        val sortedChats = chats.sortedByDescending { chat ->
+        val filterChats = chats.distinctBy { it.chat_id }
+        val sortedChats = filterChats.sortedByDescending { chat ->
             LocalDateTime.parse(chat.timestamp, DateTimeFormatter.RFC_1123_DATE_TIME)
         }
+        latestMessagesList.clear()
         for (chat in sortedChats){
             latestMessagesList.add(chat)
         }
         Log.d(TAG, "getChatsPreviews:success")
-        refreshLatestMessagesRecyclerView()
-        latestMessagesProgressBar.visibility = View.INVISIBLE
+        getChannels()
     }
 
-    private fun loadingChatsFailed(msg: String){
+    private fun initializeChannels(channels: List<ChannelResponse>){
 
-        latestMessagesProgressBar.visibility = View.INVISIBLE
-
-        val builder = android.app.AlertDialog.Builder(this)
-        builder.setTitle("Error")
-        builder.setMessage(msg)
-
-        builder.setPositiveButton("Refresh"){ dialog, which ->
-            dialog.dismiss()
-            initializeLatestMessages()
+        channelList.clear()
+        for (channel in channels){
+            channelList.add(channel)
         }
-        builder.setNegativeButton("Cancel"){ dialog, which ->
-            dialog.dismiss()
-        }
+        Log.d(TAG, "getTeamChannels:success")
+        refreshLatestMessagesRecyclerView()
+    }
 
-        val dialog = builder.create()
-        dialog.show()
+    private fun getChannels(){
+
+        val teamId = AppPreferences.getTeamId()
+
+        HypechatRepository().getTeamChannels(teamId){response ->
+
+            response?.let {
+
+                when (it.status){
+                    ServerStatus.LIST.status -> initializeChannels(it.channels)
+                    ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
+                    ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
+                }
+            }
+            if (response == null){
+                Log.w(TAG, "getTeamChannels:failure")
+                //errorOccurred(null)
+            }
+        }
     }
 
     fun openNew(view: View){
 
         if (isOpen) {
-            newMessageTextView.visibility = View.INVISIBLE
-            newChannelTextView.visibility = View.INVISIBLE
-            fabNewChannel.startAnimation(fab_close)
-            fabNewMessage.startAnimation(fab_close)
-            fabNew.startAnimation(fab_anticlock)
-            fabNewChannel.isClickable = false
-            fabNewMessage.isClickable =false
-            isOpen = false
+            closeNew()
 
         } else {
             newMessageTextView.visibility = View.VISIBLE
@@ -181,14 +255,27 @@ class LatestMessagesActivity : AppCompatActivity() {
         }
     }
 
+    private fun closeNew(){
+        newMessageTextView.visibility = View.INVISIBLE
+        newChannelTextView.visibility = View.INVISIBLE
+        fabNewChannel.startAnimation(fab_close)
+        fabNewMessage.startAnimation(fab_close)
+        fabNew.startAnimation(fab_anticlock)
+        fabNewChannel.isClickable = false
+        fabNewMessage.isClickable =false
+        isOpen = false
+    }
+
     fun newMessage(view: View){
+        closeNew()
         val intent = Intent(this, NewMessageActivity::class.java)
         startActivity(intent)
     }
 
     fun newChannel(view: View){
-        //val intent = Intent(this, NewChannelActivity::class.java)
-        //startActivity(intent)
+        closeNew()
+        val intent = Intent(this, NewChannelActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -228,8 +315,15 @@ class LatestMessagesActivity : AppCompatActivity() {
 
             response?.let {
                 when (it.status){
-                    ServerStatus.LOGGED_OUT.status -> navigateToMain()
-                    ServerStatus.WRONG_TOKEN.status -> tokenFailed(it.message)
+                    ServerStatus.LOGGED_OUT.status -> {
+                        AppPreferences.getFacebookToken()?.let {
+                            LoginManager.getInstance().logOut()
+                        }
+                        navigateToMain()
+                    }
+                    ServerStatus.WRONG_TOKEN.status -> errorOccurred(it.message)
+                    ServerStatus.ERROR.status -> errorOccurred(it.message)
+                    else -> errorOccurred(it.message)
                 }
 
             }
@@ -251,21 +345,43 @@ class LatestMessagesActivity : AppCompatActivity() {
         latestMessagesProgressBar.visibility = View.INVISIBLE
     }
 
-    private fun tokenFailed(msg: String){
+    private fun errorOccurred(error: String?){
 
         latestMessagesProgressBar.visibility = View.INVISIBLE
-        Log.w(TAG, msg)
+        handler.removeCallbacks(refresh)
+        isListening = false
 
-        val builder = android.app.AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this)
         builder.setTitle("Error")
+        var msg = "There was a problem during the process. Please, try again."
+        error?.let {
+            msg = it
+        }
         builder.setMessage(msg)
 
         builder.setPositiveButton("Ok"){ dialog, which ->
             dialog.dismiss()
-            verifyUserIsLoggedIn()
         }
 
         val dialog = builder.create()
-        dialog.show()
+        if(!this.isFinishing){
+            dialog.show()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "In the onStop() event")
+        handler.removeCallbacks(refresh)
+        isListening = false
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "In the onResume() event")
+        if (!isListening){
+            handler.post(refresh)
+            isListening = true
+        }
     }
 }
